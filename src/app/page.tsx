@@ -1,69 +1,92 @@
-import Image from "next/image";
+import React from 'react';
+import { 
+  getHeroSlides, 
+  getCategories, 
+  getProducts, 
+  getHomepageSections, 
+  getBusinessSettings 
+} from '@/lib/data/db-service';
+import { HeroSection } from '@/components/storefront/HeroSection';
+import { CategoryCapsules } from '@/components/storefront/CategoryCapsules';
+import { NewFavoritesSection } from '@/components/storefront/NewFavoritesSection';
+import { EditorialSection } from '@/components/storefront/EditorialSection';
+import { PolaroidGallery } from '@/components/storefront/PolaroidGallery';
+import { BabyEssentialsSection } from '@/components/storefront/BabyEssentialsSection';
+import { SplitPromoSection } from '@/components/storefront/SplitPromoSection';
+import { TravelPromoSection } from '@/components/storefront/TravelPromoSection';
+import { GiftBoxSection } from '@/components/storefront/GiftBoxSection';
+import { UnboxingSection } from '@/components/storefront/UnboxingSection';
+import { TrustPillars } from '@/components/storefront/TrustPillars';
+import { InstagramGallery } from '@/components/storefront/InstagramGallery';
 
-export default function Home() {
+export const revalidate = 0; // Ensure fresh content on updates
+
+export default async function HomePage() {
+  const [heroSlides, categories, products, sections, settings] = await Promise.all([
+    getHeroSlides(true),
+    getCategories(true),
+    getProducts({ onlyActive: true, isFeatured: true }),
+    getHomepageSections(),
+    getBusinessSettings(),
+  ]);
+
+  const activeHero = heroSlides[0] || {
+    id: 'hero-default',
+    eyebrow: 'LITTLE THINGS FOR',
+    title: 'Brighter Little Days',
+    description: 'Cute outfits, thoughtful essentials and little toys for your little one.',
+    primary_cta_text: 'Shop the Collection',
+    primary_cta_url: '/categories/apparels',
+    secondary_cta_text: 'Explore New Arrivals',
+    secondary_cta_url: '/categories',
+    desktop_image: '/uploads/ChatGPT Image Oct 2, 2026, 05_55_15 PM-1790943937695-631678435.webp',
+    is_active: true,
+    sort_order: 1,
+  };
+
+  const sweetestDetailsSec = sections.find((s) => s.section_key === 'sweetest_details');
+  const looksSec = sections.find((s) => s.section_key === 'little_looks');
+  const travelSec = sections.find((s) => s.section_key === 'travel');
+  const giftSec = sections.find((s) => s.section_key === 'gift_box');
+  const instagramSec = sections.find((s) => s.section_key === 'instagram');
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+    <div className="flex flex-col min-h-screen">
+      {/* 1. Hero Section */}
+      <HeroSection slide={activeHero} />
+
+      {/* 2. Shop the little world (Category capsules) */}
+      <CategoryCapsules categories={categories} />
+
+      {/* 3. New little favorites (Products with NEW badges & Wishlist) */}
+      <NewFavoritesSection products={products} />
+
+      {/* 4. Editorial Girlswear Section */}
+      <EditorialSection section={sweetestDetailsSec} />
+
+      {/* 5. Polaroid Gallery: Little looks worth saving */}
+      <PolaroidGallery section={looksSec} />
+
+      {/* 6. Baby Essentials: Made for everyday moments */}
+      <BabyEssentialsSection />
+
+      {/* 7. Split Feature: Mealtime & Tiny Teeth */}
+      <SplitPromoSection sections={sections} />
+
+      {/* 8. Travel: Little adventures begin here */}
+      <TravelPromoSection section={travelSec} />
+
+      {/* 9. Gift Boxes: A little love, packed with care */}
+      <GiftBoxSection section={giftSec} />
+
+      {/* 10. Packaging: Unbox the cuteness */}
+      <UnboxingSection />
+
+      {/* 11. Trust / Value Pillars */}
+      <TrustPillars />
+
+      {/* 12. Instagram Gallery: @Baby_cry.in */}
+      <InstagramGallery section={instagramSec} instagramHandle={settings.instagram_handle} />
     </div>
   );
 }
