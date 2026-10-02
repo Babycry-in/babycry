@@ -1,6 +1,6 @@
 import React from 'react';
 import { getHomepageSections } from '@/lib/data/db-service';
-import { InstagramSettingsClient } from '@/components/admin/InstagramSettingsClient';
+import { InstagramSettingsClient } from '../../../../components/admin/InstagramSettingsClient';
 
 export const revalidate = 0;
 

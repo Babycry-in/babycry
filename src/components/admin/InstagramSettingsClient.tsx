@@ -262,3 +262,5 @@ export function InstagramSettingsClient({ initialSection }: InstagramSettingsCli
     </div>
   );
 }
+
+export default InstagramSettingsClient;

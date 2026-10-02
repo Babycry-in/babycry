@@ -100,14 +100,16 @@ export function Footer({ settings }: FooterProps) {
               className="inline-block text-left cursor-pointer group focus:outline-none"
               title="Click to scroll to top"
               aria-label="Baby Cry.in - Scroll to top"
+              suppressHydrationWarning
             >
               <Image
                 src="/images/babycry-logo-transparent.png"
                 alt="Baby Cry.in"
                 width={150}
                 height={40}
-                className="h-9 sm:h-21 w-auto object-contain group-hover:opacity-85 transition-opacity"
+                className="h-9 sm:h-[84px] w-auto object-contain group-hover:opacity-85 transition-opacity"
                 priority
+                suppressHydrationWarning
               />
             </button>
 

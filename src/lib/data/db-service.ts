@@ -42,6 +42,42 @@ function ensureStorage(): StoreData {
     if (fs.existsSync(STORAGE_FILE)) {
       const content = fs.readFileSync(STORAGE_FILE, 'utf-8');
       const data = JSON.parse(content);
+      let needsSave = false;
+      if (!data.sections || !Array.isArray(data.sections) || data.sections.length === 0) {
+        data.sections = INITIAL_HOMEPAGE_SECTIONS;
+        needsSave = true;
+      }
+      if (!data.heroSlides || !Array.isArray(data.heroSlides) || data.heroSlides.length === 0) {
+        data.heroSlides = INITIAL_HERO_SLIDES;
+        needsSave = true;
+      }
+      if (!data.settings) {
+        data.settings = INITIAL_BUSINESS_SETTINGS;
+        needsSave = true;
+      }
+      if (!data.categories || !Array.isArray(data.categories)) {
+        data.categories = INITIAL_CATEGORIES;
+        needsSave = true;
+      }
+      if (!data.products || !Array.isArray(data.products)) {
+        data.products = INITIAL_PRODUCTS;
+        needsSave = true;
+      }
+      if (!data.orders || !Array.isArray(data.orders)) {
+        data.orders = [];
+        needsSave = true;
+      }
+      if (!data.media || !Array.isArray(data.media)) {
+        data.media = [];
+        needsSave = true;
+      }
+      if (needsSave) {
+        try {
+          fs.writeFileSync(STORAGE_FILE, JSON.stringify(data, null, 2), 'utf-8');
+        } catch (e) {
+          console.error('Failed to sync missing keys to db-store.json', e);
+        }
+      }
       return data;
     }
   } catch (err) {
@@ -437,11 +473,15 @@ export async function saveHeroSlide(slide: Partial<HeroSlide>): Promise<HeroSlid
 
 export async function getHomepageSections(): Promise<HomepageSection[]> {
   const store = ensureStorage();
-  return store.sections.sort((a, b) => a.display_order - b.display_order);
+  const list = Array.isArray(store.sections) ? store.sections : INITIAL_HOMEPAGE_SECTIONS;
+  return [...list].sort((a, b) => a.display_order - b.display_order);
 }
 
 export async function updateHomepageSection(section: Partial<HomepageSection>): Promise<HomepageSection | null> {
   const store = ensureStorage();
+  if (!Array.isArray(store.sections)) {
+    store.sections = [...INITIAL_HOMEPAGE_SECTIONS];
+  }
   const idx = store.sections.findIndex(s => s.section_key === section.section_key);
   if (idx >= 0) {
     store.sections[idx] = { ...store.sections[idx], ...section };
