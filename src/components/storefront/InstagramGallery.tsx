@@ -38,11 +38,11 @@ export function InstagramGallery({
       : defaultImages;
 
   return (
-    <section className="py-14 sm:py-20 bg-[#FAF7F2]">
+    <section className="py-10 sm:py-14 lg:py-20 bg-[#FAF7F2]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Title */}
-        <div className="text-center mb-8 sm:mb-10">
+        <div className="text-center mb-6 sm:mb-8 lg:mb-10">
           <h2 className="font-heading text-2xl sm:text-3xl font-bold text-slate-900">
             {title}
           </h2>
@@ -51,9 +51,43 @@ export function InstagramGallery({
           </p>
         </div>
 
-        {/* 6 Grid items with center Pill */}
-        <div className="relative">
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+        {/* ── MOBILE: Single horizontal swipe row ── */}
+        <div className="md:hidden relative">
+          <div
+            className="flex overflow-x-auto no-scrollbar gap-3 pb-2 touch-pan-x"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
+          >
+            {images.slice(0, 6).map((src, idx) => (
+              <a
+                key={idx}
+                href={ctaUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group relative shrink-0 w-[140px] h-[140px] rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition-all bg-white"
+              >
+                <Image
+                  src={src}
+                  alt={`Baby Cry Instagram moment ${idx + 1}`}
+                  fill
+                  sizes="140px"
+                  className="object-cover group-hover:scale-110 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-emerald-950/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                  <InstagramIcon className="w-5 h-5 drop-shadow-md" />
+                </div>
+              </a>
+            ))}
+          </div>
+
+          {/* Swipe hint */}
+          <p className="text-center text-[10px] text-slate-400 mt-2 select-none" aria-hidden="true">
+            Swipe to see more →
+          </p>
+        </div>
+
+        {/* ── DESKTOP: 6-column grid (unchanged) ── */}
+        <div className="hidden md:block relative">
+          <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
             {images.slice(0, 6).map((src, idx) => (
               <a
                 key={idx}
@@ -66,7 +100,7 @@ export function InstagramGallery({
                   src={src}
                   alt={`Baby Cry Instagram moment ${idx + 1}`}
                   fill
-                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
+                  sizes="(max-width: 1024px) 33vw, 16vw"
                   className="object-cover group-hover:scale-110 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-emerald-950/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
@@ -75,20 +109,20 @@ export function InstagramGallery({
               </a>
             ))}
           </div>
+        </div>
 
-          {/* Floating Pill on bottom center */}
-          <div className="flex justify-center mt-6">
-            <a
-              href={ctaUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-6 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-medium text-xs sm:text-sm rounded-full shadow-md inline-flex items-center gap-2 transition-all hover:scale-105"
-            >
-              <InstagramIcon className="w-4 h-4" />
-              <span>{ctaText}</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </a>
-          </div>
+        {/* Floating Pill */}
+        <div className="flex justify-center mt-6">
+          <a
+            href={ctaUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-6 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-medium text-xs sm:text-sm rounded-full shadow-md inline-flex items-center gap-2 transition-all hover:scale-105"
+          >
+            <InstagramIcon className="w-4 h-4" />
+            <span>{ctaText}</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </a>
         </div>
 
       </div>

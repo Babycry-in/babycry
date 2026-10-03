@@ -1,6 +1,5 @@
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { HeroSlide } from '@/types/database';
 import { ArrowRight } from 'lucide-react';
 
@@ -12,6 +11,7 @@ export function HeroSection({ slide }: HeroSectionProps) {
   const bgImage =
     slide.desktop_image ||
     '/uploads/ChatGPT Image Oct 2, 2026, 05_55_15 PM-1790943937695-631678435.webp';
+  const mobileBgImage = slide.mobile_image || bgImage;
 
   const eyebrow = slide.eyebrow || 'LITTLE THINGS FOR';
   const title = slide.title || 'Brighter Little Days';
@@ -51,20 +51,22 @@ export function HeroSection({ slide }: HeroSectionProps) {
 
   return (
     <section className="relative w-full overflow-hidden bg-white">
-      {/* 16:9 full banner image container (No black fade, no bottom wave) */}
-      <div className="relative w-full h-[460px] sm:h-[520px] md:h-[560px] lg:h-[620px] xl:h-[680px] flex items-center overflow-hidden">
-        <Image
-          src={bgImage}
-          alt={title}
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover object-[75%_center] sm:object-center select-none"
-        />
+      {/* Hero banner container: 9:16 aspect ratio on mobile, preserving composition, fixed heights on desktop */}
+      <div className="relative w-full aspect-[9/16] max-h-[85vh] sm:max-h-none sm:aspect-auto sm:h-[520px] md:h-[560px] lg:h-[620px] xl:h-[680px] flex items-center overflow-hidden">
+        <picture className="absolute inset-0 w-full h-full block">
+          <source media="(max-width: 767px)" srcSet={mobileBgImage} />
+          <img
+            src={bgImage}
+            alt={title}
+            className="w-full h-full object-cover object-[75%_center] sm:object-center select-none"
+            loading="eager"
+            fetchPriority="high"
+          />
+        </picture>
 
         {/* Content layer: Left side typography matching the reference graphic */}
         <div
-          className="absolute z-10 flex flex-col items-start justify-center left-6 sm:left-[8%] md:left-[9%] lg:left-[18%] top-[45%] sm:top-[48%] -translate-y-1/2 max-w-[310px] sm:max-w-[380px] md:max-w-[460px] lg:max-w-[500px]"
+          className="absolute z-10 flex flex-col items-start justify-center left-5 sm:left-[8%] md:left-[9%] lg:left-[18%] top-[38%] sm:top-[48%] -translate-y-1/2 max-w-[280px] sm:max-w-[380px] md:max-w-[460px] lg:max-w-[500px]"
         >
           {/* Eyebrow: LITTLE THINGS FOR with wide tracking */}
           <span className="text-[10px] sm:text-xs md:text-sm font-semibold tracking-[0.28em] text-slate-700 uppercase mb-1 sm:mb-2 select-none">

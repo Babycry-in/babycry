@@ -67,8 +67,20 @@ export function PolaroidGallery({ section }: PolaroidGalleryProps) {
   });
 
   return (
-    <section className="w-full bg-[#FFFFFF] py-14 sm:py-20 lg:py-24 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="relative w-full py-12 sm:py-16 lg:py-16 overflow-hidden">
+      {/* Background Image: Dreamy-bg (2).png */}
+      <div className="absolute inset-0 w-full h-full -z-10 pointer-events-none">
+        <Image
+          src="/images/Dreamy-bg (2).png"
+          alt="Dreamy background"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center select-none"
+        />
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
           
           {/* LEFT SIDE: Heading, description, and Explore Looks button (32–35% width) */}
@@ -98,7 +110,7 @@ export function PolaroidGallery({ section }: PolaroidGalleryProps) {
           <div className="lg:col-span-8 w-full">
             
             {/* Desktop Layout (lg+): Layered editorial arrangement with subtle 8-12% overlap */}
-            <div className="hidden lg:block relative w-full h-[480px] xl:h-[520px]">
+           <div className="hidden lg:block relative w-full h-[280px] xl:h-[320px] pt-12">
               {looks.map((item) => (
                 <div
                   key={item.id}
