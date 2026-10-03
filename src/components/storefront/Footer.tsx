@@ -47,24 +47,24 @@ export function Footer({ settings }: FooterProps) {
 
   return (
     <footer
-      className="relative w-full bg-cover bg-center bg-no-repeat pt-16 sm:pt-20 pb-8 text-slate-900"
-      style={{ backgroundImage: `url('/images/footer-bg.png')` }}
+      className="relative w-full bg-cover bg-center bg-no-repeat pt-10 sm:pt-16 lg:pt-20 pb-6 sm:pb-8 text-slate-900"
+      style={{ backgroundImage: `url('/images/Pastel-footer.png')` }}
     >
-      <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16 relative z-10">
+      <div className="max-w-7xl mx-auto px-5 sm:px-10 lg:px-16 relative z-10">
         
         {/* TOP: Newsletter Area (Centered) */}
-        <div className="text-center max-w-2xl mx-auto mb-14 sm:mb-16">
-          <h3 className="font-heading text-2xl sm:text-3xl font-extrabold text-[#111111] tracking-tight">
+        <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-14 lg:mb-16">
+          <h3 className="font-heading text-xl sm:text-2xl lg:text-3xl font-extrabold text-[#111111] tracking-tight">
             Stay close to the little moments.
           </h3>
-          <p className="text-sm sm:text-base text-slate-900 mt-2 font-bold">
+          <p className="text-xs sm:text-sm lg:text-base text-slate-900 mt-1.5 sm:mt-2 font-bold">
             Get new arrivals, little finds and special updates from Baby Cry.in.
           </p>
 
           {/* Compact Newsletter Input */}
           <form
             onSubmit={handleSubscribe}
-            className="mt-5 max-w-md mx-auto relative flex items-center bg-white rounded-full p-1.5 pl-6 shadow-sm border border-slate-300 focus-within:ring-2 focus-within:ring-emerald-700/30 transition-all"
+            className="mt-4 sm:mt-5 max-w-md mx-auto relative flex items-center bg-white rounded-full p-1.5 pl-5 sm:pl-6 shadow-sm border border-slate-300 focus-within:ring-2 focus-within:ring-emerald-700/30 transition-all"
           >
             <input
               type="email"
@@ -72,26 +72,26 @@ export function Footer({ settings }: FooterProps) {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Your email address"
               required
-              className="w-full bg-transparent text-sm sm:text-base text-[#111111] font-semibold placeholder:text-slate-500 focus:outline-none"
+              className="w-full bg-transparent text-xs sm:text-sm lg:text-base text-[#111111] font-semibold placeholder:text-slate-500 focus:outline-none"
             />
             <button
               type="submit"
-              className="shrink-0 bg-[#18181B] hover:bg-black active:scale-95 text-white pl-4 pr-3 py-2 rounded-full text-xs sm:text-sm font-bold inline-flex items-center gap-2 transition-all shadow-xs"
+              className="shrink-0 bg-[#18181B] hover:bg-black active:scale-95 text-white pl-3 sm:pl-4 pr-2.5 sm:pr-3 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold inline-flex items-center gap-1.5 sm:gap-2 transition-all shadow-xs"
             >
               <span>{subscribed ? 'Joined!' : 'Join Us'}</span>
-              <span className="w-5 h-5 rounded-full bg-[#A3D2B8] text-slate-900 flex items-center justify-center">
+              <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#A3D2B8] text-slate-900 flex items-center justify-center">
                 {subscribed ? (
-                  <Check className="w-3.5 h-3.5 text-emerald-950 font-bold" />
+                  <Check className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-emerald-950 font-bold" />
                 ) : (
-                  <ArrowRight className="w-3.5 h-3.5 text-slate-900 font-bold" />
+                  <ArrowRight className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-slate-900 font-bold" />
                 )}
               </span>
             </button>
           </form>
         </div>
 
-        {/* MAIN: 4-Column Layout */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 pb-12">
+        {/* ── DESKTOP (lg+): Full 4-column Layout (unchanged) ── */}
+        <div className="hidden lg:grid grid-cols-4 gap-8 lg:gap-12 pb-12">
           
           {/* COLUMN 1 — BRAND */}
           <div className="space-y-4">
@@ -107,172 +107,74 @@ export function Footer({ settings }: FooterProps) {
                 alt="Baby Cry.in"
                 width={150}
                 height={40}
-                className="h-9 sm:h-[84px] w-auto object-contain group-hover:opacity-85 transition-opacity"
+                className="h-[84px] w-auto object-contain group-hover:opacity-85 transition-opacity"
                 priority
                 suppressHydrationWarning
               />
             </button>
 
-            <p className="text-sm sm:text-base text-slate-900 font-bold leading-relaxed max-w-xs">
+            <p className="text-sm lg:text-base text-slate-900 font-bold leading-relaxed max-w-xs">
               Little things for little ones.
             </p>
 
-            {/* Social Icons — Bold & Dark */}
             <div className="flex items-center gap-4 pt-1 text-slate-950">
-              <a
-                href={`https://instagram.com/${settings.instagram_handle}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-slate-950 hover:text-emerald-900 transition-colors p-1"
-                aria-label="Instagram"
-              >
+              <a href={`https://instagram.com/${settings.instagram_handle}`} target="_blank" rel="noopener noreferrer" className="text-slate-950 hover:text-emerald-900 transition-colors p-1" aria-label="Instagram">
                 <InstagramIcon className="w-4.5 h-4.5" />
               </a>
-              <a
-                href={settings.facebook_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-slate-950 hover:text-emerald-900 transition-colors p-1"
-                aria-label="Facebook"
-              >
+              <a href={settings.facebook_url} target="_blank" rel="noopener noreferrer" className="text-slate-950 hover:text-emerald-900 transition-colors p-1" aria-label="Facebook">
                 <FacebookIcon className="w-4.5 h-4.5" />
               </a>
-              <a
-                href="https://pinterest.com/babycryin"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-slate-950 hover:text-emerald-900 transition-colors p-1"
-                aria-label="Pinterest"
-              >
+              <a href="https://pinterest.com/babycryin" target="_blank" rel="noopener noreferrer" className="text-slate-950 hover:text-emerald-900 transition-colors p-1" aria-label="Pinterest">
                 <PinterestIcon className="w-4.5 h-4.5" />
               </a>
-              <a
-                href={settings.youtube_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-slate-950 hover:text-emerald-900 transition-colors p-1"
-                aria-label="YouTube"
-              >
+              <a href={settings.youtube_url} target="_blank" rel="noopener noreferrer" className="text-slate-950 hover:text-emerald-900 transition-colors p-1" aria-label="YouTube">
                 <YoutubeIcon className="w-4.5 h-4.5" />
               </a>
             </div>
           </div>
 
-          {/* COLUMN 2 — SHOP (Real Categories Only) */}
+          {/* COLUMN 2 — SHOP */}
           <div className="space-y-3">
-            <h4 className="font-heading font-extrabold text-base sm:text-lg text-slate-950">
-              Shop
-            </h4>
-            <ul className="space-y-2 text-sm sm:text-base text-slate-900 font-bold">
-              <li>
-                <Link href="/categories/apparels" className="hover:text-emerald-900 transition-colors block py-0.5">
-                  Apparels
-                </Link>
-              </li>
-              <li>
-                <Link href="/categories/footwear" className="hover:text-emerald-900 transition-colors block py-0.5">
-                  Footwear
-                </Link>
-              </li>
-              <li>
-                <Link href="/categories/accessories" className="hover:text-emerald-900 transition-colors block py-0.5">
-                  Accessories
-                </Link>
-              </li>
-              <li>
-                <Link href="/categories/gift-and-hampers" className="hover:text-emerald-900 transition-colors block py-0.5">
-                  Gift and Hampers
-                </Link>
-              </li>
-              <li>
-                <Link href="/categories/hospital-kit" className="hover:text-emerald-900 transition-colors block py-0.5">
-                  Hospital Kit
-                </Link>
-              </li>
-              <li>
-                <Link href="/categories/toys" className="hover:text-emerald-900 transition-colors block py-0.5">
-                  Toys
-                </Link>
-              </li>
-              <li>
-                <Link href="/categories" className="text-xs sm:text-sm font-extrabold text-emerald-900 hover:underline block pt-1">
-                  View All Collections →
-                </Link>
-              </li>
+            <h4 className="font-heading font-extrabold text-lg text-slate-950">Shop</h4>
+            <ul className="space-y-2 text-sm lg:text-base text-slate-900 font-bold">
+              <li><Link href="/categories/apparels" className="hover:text-emerald-900 transition-colors block py-0.5">Apparels</Link></li>
+              <li><Link href="/categories/footwear" className="hover:text-emerald-900 transition-colors block py-0.5">Footwear</Link></li>
+              <li><Link href="/categories/accessories" className="hover:text-emerald-900 transition-colors block py-0.5">Accessories</Link></li>
+              <li><Link href="/categories/gift-and-hampers" className="hover:text-emerald-900 transition-colors block py-0.5">Gift and Hampers</Link></li>
+              <li><Link href="/categories/hospital-kit" className="hover:text-emerald-900 transition-colors block py-0.5">Hospital Kit</Link></li>
+              <li><Link href="/categories/toys" className="hover:text-emerald-900 transition-colors block py-0.5">Toys</Link></li>
+              <li><Link href="/categories" className="text-xs font-extrabold text-emerald-900 hover:underline block pt-1">View All Collections →</Link></li>
             </ul>
           </div>
 
           {/* COLUMN 3 — HELP */}
           <div className="space-y-3">
-            <h4 className="font-heading font-extrabold text-base sm:text-lg text-slate-950">
-              Help
-            </h4>
-            <ul className="space-y-2 text-sm sm:text-base text-slate-900 font-bold">
-              <li>
-                <Link href="/about" className="hover:text-emerald-900 transition-colors block py-0.5">
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="hover:text-emerald-900 transition-colors block py-0.5">
-                  Contact
-                </Link>
-              </li>
-              <li>
-                <Link href="/shipping" className="hover:text-emerald-900 transition-colors block py-0.5">
-                  Shipping
-                </Link>
-              </li>
-              <li>
-                <Link href="/returns" className="hover:text-emerald-900 transition-colors block py-0.5">
-                  Returns
-                </Link>
-              </li>
-              <li>
-                <Link href="/faq" className="hover:text-emerald-900 transition-colors block py-0.5">
-                  FAQs
-                </Link>
-              </li>
+            <h4 className="font-heading font-extrabold text-lg text-slate-950">Help</h4>
+            <ul className="space-y-2 text-sm lg:text-base text-slate-900 font-bold">
+              <li><Link href="/about" className="hover:text-emerald-900 transition-colors block py-0.5">About Us</Link></li>
+              <li><Link href="/contact" className="hover:text-emerald-900 transition-colors block py-0.5">Contact</Link></li>
+              <li><Link href="/shipping" className="hover:text-emerald-900 transition-colors block py-0.5">Shipping</Link></li>
+              <li><Link href="/returns" className="hover:text-emerald-900 transition-colors block py-0.5">Returns</Link></li>
+              <li><Link href="/faq" className="hover:text-emerald-900 transition-colors block py-0.5">FAQs</Link></li>
             </ul>
           </div>
 
           {/* COLUMN 4 — CONTACT */}
           <div className="space-y-3">
-            <h4 className="font-heading font-extrabold text-base sm:text-lg text-slate-950">
-              Contact
-            </h4>
-            <div className="space-y-3 text-sm sm:text-base text-slate-900 font-bold">
-              {/* Phone / WhatsApp */}
+            <h4 className="font-heading font-extrabold text-lg text-slate-950">Contact</h4>
+            <div className="space-y-3 text-sm lg:text-base text-slate-900 font-bold">
               <div className="flex items-center gap-2.5">
                 <WhatsAppIcon className="w-4 h-4 text-slate-950 shrink-0" />
-                <a
-                  href={`https://wa.me/91${cleanPhone}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-emerald-900 transition-colors font-bold"
-                >
-                  {settings.phone}
-                </a>
+                <a href={`https://wa.me/91${cleanPhone}`} target="_blank" rel="noopener noreferrer" className="hover:text-emerald-900 transition-colors font-bold">{settings.phone}</a>
               </div>
-
-              {/* Email */}
               <div className="flex items-center gap-2.5">
                 <Mail className="w-4 h-4 text-slate-950 shrink-0" />
-                <a
-                  href={`mailto:${settings.email}`}
-                  className="hover:text-emerald-900 transition-colors font-bold"
-                >
-                  {settings.email}
-                </a>
+                <a href={`mailto:${settings.email}`} className="hover:text-emerald-900 transition-colors font-bold">{settings.email}</a>
               </div>
-
-              {/* Address */}
               <div className="flex items-start gap-2.5">
                 <MapPin className="w-4 h-4 text-slate-950 shrink-0 mt-1" />
                 <address className="not-italic leading-relaxed font-bold text-slate-900">
-                  Wandoor Road, Kanjirapadi
-                  <br />
-                  Pandikkad
+                  Wandoor Road, Kanjirapadi<br />Pandikkad
                 </address>
               </div>
             </div>
@@ -280,8 +182,96 @@ export function Footer({ settings }: FooterProps) {
 
         </div>
 
-        {/* BOTTOM BAR: Thin divider & copyright */}
-        <div className="border-t border-slate-400/40 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs sm:text-sm text-slate-900 font-bold">
+        {/* ── MOBILE/TABLET (< lg): Compact 2-column + contact row ── */}
+        <div className="lg:hidden pb-8 sm:pb-10">
+          {/* Logo + Tagline */}
+          <div className="flex items-center gap-3 mb-5 sm:mb-6">
+            <button
+              onClick={handleScrollToTop}
+              className="inline-block text-left cursor-pointer group focus:outline-none"
+              title="Click to scroll to top"
+              aria-label="Baby Cry.in - Scroll to top"
+              suppressHydrationWarning
+            >
+              <Image
+                src="/images/babycry-logo-transparent.png"
+                alt="Baby Cry.in"
+                width={100}
+                height={30}
+                className="h-10 sm:h-12 w-auto object-contain group-hover:opacity-85 transition-opacity"
+                priority
+                suppressHydrationWarning
+              />
+            </button>
+            <p className="text-xs sm:text-sm text-slate-900 font-bold leading-relaxed">
+              Little things<br />for little ones.
+            </p>
+          </div>
+
+          {/* 2-column Shop + Help grid */}
+          <div className="grid grid-cols-2 gap-6 sm:gap-8 mb-6 sm:mb-8">
+            {/* Shop */}
+            <div className="space-y-2">
+              <h4 className="font-heading font-extrabold text-sm sm:text-base text-slate-950 mb-2">Shop</h4>
+              <ul className="space-y-1.5 text-xs sm:text-sm text-slate-900 font-bold">
+                <li><Link href="/categories/apparels" className="hover:text-emerald-900 transition-colors block">Apparels</Link></li>
+                <li><Link href="/categories/footwear" className="hover:text-emerald-900 transition-colors block">Footwear</Link></li>
+                <li><Link href="/categories/accessories" className="hover:text-emerald-900 transition-colors block">Accessories</Link></li>
+                <li><Link href="/categories/gift-and-hampers" className="hover:text-emerald-900 transition-colors block">Gift & Hampers</Link></li>
+                <li><Link href="/categories/hospital-kit" className="hover:text-emerald-900 transition-colors block">Hospital Kit</Link></li>
+                <li><Link href="/categories/toys" className="hover:text-emerald-900 transition-colors block">Toys</Link></li>
+                <li><Link href="/categories" className="text-[11px] font-extrabold text-emerald-900 hover:underline block pt-0.5">View All →</Link></li>
+              </ul>
+            </div>
+
+            {/* Help */}
+            <div className="space-y-2">
+              <h4 className="font-heading font-extrabold text-sm sm:text-base text-slate-950 mb-2">Help</h4>
+              <ul className="space-y-1.5 text-xs sm:text-sm text-slate-900 font-bold">
+                <li><Link href="/about" className="hover:text-emerald-900 transition-colors block">About Us</Link></li>
+                <li><Link href="/contact" className="hover:text-emerald-900 transition-colors block">Contact</Link></li>
+                <li><Link href="/shipping" className="hover:text-emerald-900 transition-colors block">Shipping</Link></li>
+                <li><Link href="/returns" className="hover:text-emerald-900 transition-colors block">Returns</Link></li>
+                <li><Link href="/faq" className="hover:text-emerald-900 transition-colors block">FAQs</Link></li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Contact row — compact icons */}
+          <div className="flex flex-col gap-2 sm:gap-2.5 text-xs sm:text-sm text-slate-900 font-bold mb-5 sm:mb-6">
+            <div className="flex items-center gap-2">
+              <WhatsAppIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-950 shrink-0" />
+              <a href={`https://wa.me/91${cleanPhone}`} target="_blank" rel="noopener noreferrer" className="hover:text-emerald-900 transition-colors">{settings.phone}</a>
+            </div>
+            <div className="flex items-center gap-2">
+              <Mail className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-950 shrink-0" />
+              <a href={`mailto:${settings.email}`} className="hover:text-emerald-900 transition-colors break-all">{settings.email}</a>
+            </div>
+            <div className="flex items-center gap-2">
+              <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-950 shrink-0" />
+              <span>Wandoor Road, Kanjirapadi, Pandikkad</span>
+            </div>
+          </div>
+
+          {/* Social icons row */}
+          <div className="flex items-center gap-4 text-slate-950">
+            <a href={`https://instagram.com/${settings.instagram_handle}`} target="_blank" rel="noopener noreferrer" className="text-slate-950 hover:text-emerald-900 transition-colors" aria-label="Instagram">
+              <InstagramIcon className="w-4 h-4" />
+            </a>
+            <a href={settings.facebook_url} target="_blank" rel="noopener noreferrer" className="text-slate-950 hover:text-emerald-900 transition-colors" aria-label="Facebook">
+              <FacebookIcon className="w-4 h-4" />
+            </a>
+            <a href="https://pinterest.com/babycryin" target="_blank" rel="noopener noreferrer" className="text-slate-950 hover:text-emerald-900 transition-colors" aria-label="Pinterest">
+              <PinterestIcon className="w-4 h-4" />
+            </a>
+            <a href={settings.youtube_url} target="_blank" rel="noopener noreferrer" className="text-slate-950 hover:text-emerald-900 transition-colors" aria-label="YouTube">
+              <YoutubeIcon className="w-4 h-4" />
+            </a>
+          </div>
+        </div>
+
+        {/* BOTTOM BAR */}
+        <div className="border-t border-slate-400/40 pt-4 sm:pt-6 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-3 text-[10px] sm:text-sm text-slate-900 font-bold">
           <p>© 2026 Baby Cry.in. All rights reserved.</p>
           <p className="flex items-center gap-1.5 font-bold">
             <span>Made with</span>

@@ -471,10 +471,11 @@ export const INITIAL_HOMEPAGE_SECTIONS: HomepageSection[] = [
   {
     id: 'sec-travel',
     section_key: 'travel',
-    title: 'Little adventures begin here.',
-    description: 'Thoughtful essentials for everyday journeys with your little one.',
-    cta_text: 'Explore Travel Essentials',
-    cta_url: '/categories/baby-gear',
+    title: 'The sweetest little details.',
+    subtitle: 'APPARELS EDIT',
+    description: 'Adorable styles made for tiny personalities and big little moments.',
+    cta_text: 'Shop Apparels',
+    cta_url: '/categories/apparels',
     image_url: 'https://images.unsplash.com/photo-1591088398332-8a7791972843?auto=format&fit=crop&w=1200&q=80',
     is_active: true,
     display_order: 4

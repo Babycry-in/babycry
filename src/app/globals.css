@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  --background: #FAF7F2;
+  --background: #ffffff;
   --foreground: #22292F;
   --font-heading: 'Fredoka', cursive, sans-serif;
   --font-body: 'Quicksand', sans-serif;
   
   /* Brand Palette */
-  --color-mint-light: #EBF7F1;
+  --color-mint-light: #ffffff;
   --color-mint-soft: #D3ECE0;
   --color-mint-primary: #98D4BC;
   --color-mint-dark: #376F59;
@@ -24,7 +24,7 @@
 }
 
 body {
-  background-color: var(--color-cream-base);
+  background-color:#ffffff;
   color: var(--foreground);
   font-family: var(--font-body), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   overflow-x: hidden;
@@ -123,4 +123,14 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 
 .animate-gentle-pulse {
   animation: gentlePulse 4s ease-in-out infinite;
+}
+
+/* ── No-scrollbar utility ── */
+/* Used by horizontal swipe / marquee tracks on mobile */
+.no-scrollbar {
+  scrollbar-width: none;        /* Firefox */
+  -ms-overflow-style: none;     /* IE / Edge */
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;                /* Chrome, Safari, Opera */
 }

@@ -145,11 +145,16 @@ export function HeroSlideEditor({ initialSlide }: HeroSlideEditorProps) {
           </div>
         </div>
 
-        <div className="pt-2">
+        <div className="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
           <ImageUploader
-            label="Hero Desktop Lifestyle Image (Auto-uploaded to Cloudinary)"
+            label="Desktop Hero Lifestyle Image"
             currentImageUrl={slide.desktop_image}
             onUploadComplete={(url) => setSlide({ ...slide, desktop_image: url })}
+          />
+          <ImageUploader
+            label="Mobile Hero Lifestyle Image (Recommended 9:16)"
+            currentImageUrl={slide.mobile_image}
+            onUploadComplete={(url) => setSlide({ ...slide, mobile_image: url })}
           />
         </div>
 
