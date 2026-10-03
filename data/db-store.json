@@ -21,15 +21,15 @@
       "name": "Apparels",
       "slug": "apparels",
       "short_description": "Soft organic cotton rompers, dresses, and comfy daily wear",
-      "image_url": "https://images.unsplash.com/photo-1522771930-78848d9293e8?auto=format&fit=crop&w=600&q=80",
+      "image_url": "/uploads/Overlapping Kids’ Outfits in Cream and Pastels-1791023861821-901315992.webp",
       "banner_url": "",
       "mobile_banner_url": "",
       "display_order": 1,
       "is_active": true,
       "seo_title": "Baby & Kids Apparels | Baby Cry.in",
       "seo_description": "Discover super-soft organic baby clothes, rompers, and dresses for little ones.",
-      "updated_at": "2026-10-02T14:12:36.251Z",
-      "created_at": "2026-10-02T14:12:36.251Z"
+      "updated_at": "2026-10-03T10:37:45.011Z",
+      "created_at": "2026-10-03T10:37:45.011Z"
     },
     {
       "id": "cat-footwear",
@@ -534,10 +534,10 @@
       "id": "sec-unboxing",
       "section_key": "unboxing",
       "title": "Unbox the cuteness.",
-      "description": "A little love packed into every order.",
-      "cta_text": "Our Packaging ♡",
+      "description": "A little love packed into every order. Eco-friendly kraft boxes with custom baby tissue and heartfelt notes.",
+      "cta_text": "Our Packaging ♥",
       "cta_url": "/about",
-      "image_url": "/images/babycry-logo.png",
+      "image_url": "/uploads/ChatGPT Image Oct 3, 2026, 02_18_19 PM-1791017309151-452341399.webp",
       "is_active": true,
       "display_order": 7
     },
@@ -629,6 +629,36 @@
     }
   ],
   "media": [
+    {
+      "file_name": "Overlapping Kids’ Outfits in Cream and Pastels.webp",
+      "cloudinary_url": "/uploads/Overlapping Kids’ Outfits in Cream and Pastels-1791023861821-901315992.webp",
+      "cloudinary_public_id": "local-1791023861821-901315992",
+      "format": "webp",
+      "size_bytes": 240788,
+      "used_by": "Local Upload",
+      "id": "media-1791023861824",
+      "created_at": "2026-10-03T10:37:41.824Z"
+    },
+    {
+      "file_name": "ChatGPT Image Oct 3, 2026, 02_18_19 PM.webp",
+      "cloudinary_url": "/uploads/ChatGPT Image Oct 3, 2026, 02_18_19 PM-1791017309151-452341399.webp",
+      "cloudinary_public_id": "local-1791017309151-452341399",
+      "format": "webp",
+      "size_bytes": 27678,
+      "used_by": "Local Upload",
+      "id": "media-1791017309153",
+      "created_at": "2026-10-03T08:48:29.154Z"
+    },
+    {
+      "file_name": "Baby Cry’in Cloud Parcel Banner-Photoroom.webp",
+      "cloudinary_url": "/uploads/Baby Cry’in Cloud Parcel Banner-Photoroom-1791017093222-710703647.webp",
+      "cloudinary_public_id": "local-1791017093222-710703647",
+      "format": "webp",
+      "size_bytes": 28752,
+      "used_by": "Local Upload",
+      "id": "media-1791017093228",
+      "created_at": "2026-10-03T08:44:53.228Z"
+    },
     {
       "file_name": "ChatGPT Image Oct 2, 2026, 06_11_44 PM.webp",
       "cloudinary_url": "/uploads/ChatGPT Image Oct 2, 2026, 06_11_44 PM-1790944912169-98739263.webp",

@@ -19,44 +19,38 @@ export function EditorialSection({ section }: EditorialSectionProps) {
   const ctaUrl = section?.cta_url || '/categories/apparels';
 
   return (
-    <section className="relative w-full overflow-hidden bg-[#FAF7F2]">
+    <section className="relative w-full overflow-hidden  ">
       {/* Full-bleed banner edge-to-edge (no card, no box, no border) */}
       <div 
-        className="relative w-full min-h-[280px] sm:min-h-[360px] md:min-h-0 md:aspect-[1024/384]"
+        className="relative w-full min-h-[300px] sm:min-h-[360px] md:min-h-0 md:aspect-[1024/384]"
       >
         <Image
-          src="/images/apparels-banner11.png"
+          src="/images/apparels-banner1.png"
           alt="Apparels Edit - The sweetest little details"
           fill
           sizes="100vw"
           priority
-          className="object-cover object-center select-none"
+          className="object-cover object-[25%_center] sm:object-center select-none"
         />
 
-        {/* Center Content: Placed directly over the banner */}
+        {/* Content: Positioned on the right side with enhanced mobile readability */}
         <div
-          className="absolute z-10 flex flex-col items-start justify-center"
-          style={{
-            left: '52.5%',
-            top: '52%',
-            transform: 'translateY(-50%)',
-            maxWidth: '30%',
-          }}
+          className="absolute z-10 flex flex-col items-start justify-center right-3 sm:right-[7%] md:right-[8%] lg:left-[54%] left-auto lg:right-auto top-1/2 -translate-y-1/2 max-w-[58%] xs:max-w-[54%] sm:max-w-[380px] md:max-w-[420px] lg:max-w-[460px] bg-white/75 sm:bg-transparent backdrop-blur-[2px] sm:backdrop-blur-none p-3.5 sm:p-0 rounded-2xl sm:rounded-none shadow-xs sm:shadow-none"
         >
           {/* APPARELS EDIT label */}
-          <span className="text-[9px] sm:text-[11px] md:text-xs lg:text-sm font-semibold tracking-[0.26em] text-slate-700 uppercase mb-0.5 sm:mb-1">
+          <span className="text-[9px] sm:text-[11px] md:text-xs lg:text-sm font-bold tracking-[0.24em] text-slate-800 uppercase mb-0.5 sm:mb-1">
             {label}
           </span>
 
           {/* Heading */}
-          <h2 className="font-heading font-medium text-slate-900 text-base sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl leading-[1.12] tracking-tight">
+          <h2 className="font-heading font-bold text-slate-900 text-base xs:text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl leading-[1.12] tracking-tight">
             {titleLine1}
             <br />
             {titleLine2}
           </h2>
 
           {/* Subtitle */}
-          <p className="text-slate-600 text-[9px] sm:text-xs md:text-sm lg:text-base mt-1 sm:mt-2 leading-relaxed max-w-[220px] sm:max-w-[280px] md:max-w-[340px] lg:max-w-[420px]">
+          <p className="text-slate-700 font-medium text-[10px] xs:text-[11px] sm:text-xs md:text-sm lg:text-base mt-1 sm:mt-2 leading-relaxed">
             {subtitle}
           </p>
 
@@ -64,7 +58,7 @@ export function EditorialSection({ section }: EditorialSectionProps) {
           <div className="mt-2 sm:mt-4 md:mt-5 lg:mt-6">
             <Link
               href={ctaUrl}
-              className="group inline-flex items-center gap-2 sm:gap-3 bg-[#A3D2B8] hover:bg-[#8ec2a6] active:scale-95 text-slate-800 font-medium text-[10px] sm:text-xs md:text-sm lg:text-base px-3 sm:px-5 md:px-6 py-1.5 sm:py-2.5 md:py-3 rounded-full shadow-xs hover:shadow transition-all"
+              className="group inline-flex items-center gap-1.5 sm:gap-3 bg-[#A3D2B8] hover:bg-[#8ec2a6] active:scale-95 text-slate-900 font-semibold text-[10px] sm:text-xs md:text-sm lg:text-base px-3 sm:px-5 md:px-6 py-1.5 sm:py-2.5 md:py-3 rounded-full shadow-xs hover:shadow transition-all"
             >
               <span>{ctaText}</span>
               <span className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 rounded-full bg-slate-800 text-white flex items-center justify-center group-hover:translate-x-0.5 transition-transform">
@@ -72,23 +66,6 @@ export function EditorialSection({ section }: EditorialSectionProps) {
               </span>
             </Link>
           </div>
-        </div>
-
-        {/* Polaroid caption under photo on right */}
-        <div
-          className="absolute z-10 pointer-events-none text-center"
-          style={{
-            left: '83.5%',
-            top: '71%',
-          }}
-        >
-          <p className="font-heading text-slate-700 text-[8px] sm:text-[10px] md:text-xs lg:text-sm font-medium leading-tight -rotate-3 select-none">
-            Made for
-            <br />
-            little
-            <br />
-            moments ♡
-          </p>
         </div>
       </div>
     </section>

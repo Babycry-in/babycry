@@ -341,7 +341,7 @@ export function HomepageSectionsEditor({ initialSections }: HomepageSectionsEdit
             )}
 
             {/* Default Banner image for other sections */}
-            {!isLittleLooks && (
+            {!isLittleLooks && sec.section_key !== 'gift_box' && (
               <div>
                 <ImageUploader
                   label="Section Banner Image"
@@ -350,6 +350,13 @@ export function HomepageSectionsEditor({ initialSections }: HomepageSectionsEdit
                     handleUpdate(sec.section_key, { image_url: url })
                   }
                 />
+              </div>
+            )}
+
+            {sec.section_key === 'gift_box' && (
+              <div className="flex items-center gap-2 p-3.5 bg-emerald-50/60 border border-emerald-100 rounded-xl text-xs text-emerald-900">
+                <Info className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>This section uses the custom branded Dreamy Gift Box background graphic (/images/Dreamy-bg.png).</span>
               </div>
             )}
 

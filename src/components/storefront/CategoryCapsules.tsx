@@ -5,6 +5,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Category } from '@/types/database';
 
+import { getTopCategories } from '@/lib/homepage-categories';
+import { MobileCategoryRow } from './MobileCategoryRow';
+
 interface CategoryCapsulesProps {
   categories: Category[];
 }
@@ -26,28 +29,11 @@ function CloudIcon({ className }: { className?: string }) {
   );
 }
 
-// Use real DB categories in this order
-const DISPLAY_CATEGORIES = [
-  { slug: 'apparels',       label: 'Apparels' },
-  { slug: 'footwear',       label: 'Footwear' },
-  { slug: 'accessories',    label: 'Accessories' },
-  { slug: 'gift-and-hampers', label: 'Gifts' },
-  { slug: 'toys',           label: 'Toys' },
-  { slug: 'hospital-kit',   label: 'Hospital Kit' },
-];
-
 export function CategoryCapsules({ categories }: CategoryCapsulesProps) {
-  const displayItems = DISPLAY_CATEGORIES.map((dc) => {
-    const cat = categories.find((c) => c.slug === dc.slug);
-    return {
-      label: dc.label,
-      slug: dc.slug,
-      image: cat?.image_url || 'https://images.unsplash.com/photo-1522771930-78848d9293e8?auto=format&fit=crop&w=400&q=80',
-    };
-  });
+  const displayItems = getTopCategories(categories);
 
   return (
-    <section className="relative py-14 sm:py-20 overflow-hidden bg-[#FAFAF7]">
+    <section className="relative py-10 sm:py-20 overflow-hidden bg-[#FAFAF7]">
 
       {/* ── Decorative floating SVG clouds in background ── */}
       <CloudIcon className="absolute -top-3 left-4 w-28 sm:w-36 opacity-80 pointer-events-none select-none" />
@@ -60,7 +46,7 @@ export function CategoryCapsules({ categories }: CategoryCapsulesProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
         {/* Section Header — keep as reference design */}
-        <div className="text-center mb-10 sm:mb-14">
+        <div className="text-center mb-8 sm:mb-14">
           <h2 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-800 tracking-tight">
             Shop the little world
           </h2>
@@ -69,11 +55,14 @@ export function CategoryCapsules({ categories }: CategoryCapsulesProps) {
           </p>
         </div>
 
-        {/* Category items — each sitting on a cloud-shape platform */}
-        <div className="flex flex-wrap justify-center gap-6 sm:gap-8 lg:gap-10">
+        {/* Mobile Horizontal Auto-Scroll Marquee Track */}
+        <MobileCategoryRow items={displayItems} />
+
+        {/* Desktop Category items — unchanged flex wrap on md+ */}
+        <div className="hidden md:flex flex-wrap justify-center gap-6 sm:gap-8 lg:gap-10">
           {displayItems.map((item) => (
             <Link
-              key={item.label}
+              key={item.id || item.slug}
               href={`/categories/${item.slug}`}
               className="group flex flex-col items-center text-center"
             >
@@ -84,18 +73,18 @@ export function CategoryCapsules({ categories }: CategoryCapsulesProps) {
                   src="/images/cloud-shape.png"
                   alt=""
                   fill
-                  sizes="148px"
-                  className="object-contain drop-shadow-sm group-hover:drop-shadow-md group-hover:scale-105 transition-all duration-300"
+                  sizes="168px"
+                  className="object-contain drop-shadow-sm group-hover:drop-shadow-md group-hover:scale-105 transition-all duration-300 pointer-events-none select-none"
                   aria-hidden
                 />
-                {/* Product image — sits on top of cloud, slightly smaller */}
-                <div className="relative z-10 w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden">
+                {/* Product image — sits on top of cloud, contained without cropping */}
+                <div className="relative z-10 w-24 h-24 sm:w-28 sm:h-28 flex items-center justify-center p-2">
                   <Image
                     src={item.image}
                     alt={item.label}
                     fill
-                    sizes="96px"
-                    className="object-cover object-center group-hover:scale-110 transition-transform duration-500"
+                    sizes="112px"
+                    className="object-contain object-center group-hover:scale-110 transition-transform duration-500"
                   />
                 </div>
               </div>

@@ -48,6 +48,7 @@ export default async function HomePage() {
   const looksSec = sections.find((s) => s.section_key === 'little_looks');
   const travelSec = sections.find((s) => s.section_key === 'travel');
   const giftSec = sections.find((s) => s.section_key === 'gift_box');
+  const unboxingSec = sections.find((s) => s.section_key === 'unboxing');
   const instagramSec = sections.find((s) => s.section_key === 'instagram');
 
   return (
@@ -68,7 +69,7 @@ export default async function HomePage() {
       <PolaroidGallery section={looksSec} />
 
       {/* 6. Baby Essentials: Made for everyday moments */}
-      <BabyEssentialsSection />
+      <BabyEssentialsSection categories={categories} />
 
       {/* 7. Split Feature: Mealtime & Tiny Teeth */}
       <SplitPromoSection sections={sections} />
@@ -80,7 +81,7 @@ export default async function HomePage() {
       <GiftBoxSection section={giftSec} />
 
       {/* 10. Packaging: Unbox the cuteness */}
-      <UnboxingSection />
+      <UnboxingSection section={unboxingSec} />
 
       {/* 11. Trust / Value Pillars */}
       <TrustPillars />

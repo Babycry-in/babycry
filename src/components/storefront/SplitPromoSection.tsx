@@ -9,96 +9,220 @@ interface SplitPromoSectionProps {
 }
 
 export function SplitPromoSection({ sections }: SplitPromoSectionProps) {
-  const mealtimeSec = sections?.find((s) => s.section_key === 'mealtime');
-  const tinyTeethSec = sections?.find((s) => s.section_key === 'tiny_teeth');
+  const mealtimeSec = sections?.find(
+    (s) => s.section_key === 'mealtime'
+  );
+
+  const tinyTeethSec = sections?.find(
+    (s) => s.section_key === 'tiny_teeth'
+  );
 
   return (
-    <section className="py-14 sm:py-20 bg-[#FAF7F2]">
+    <section className="py-8 sm:py-10 lg:py-14">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
-          
-          {/* Card 1: Mealtime Made a Little Happier */}
-          <div className="rounded-[40px] bg-gradient-to-br from-[#E4F5EC] to-white p-6 sm:p-8 border border-emerald-100 shadow-sm flex flex-col justify-between">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-center">
-              <div className="relative aspect-square w-full rounded-[30px] overflow-hidden shadow-md">
+
+        <div className="grid grid-cols-2 lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-6 items-stretch">
+
+          {/* =========================
+              MEALTIME CARD
+          ========================== */}
+          <div
+            className="
+              h-full
+              overflow-hidden
+              border border-emerald-100
+              bg-[#FAF5EE]
+              rounded-[20px] lg:rounded-none
+            "
+            style={{
+              borderRadius: typeof window !== 'undefined' && window.innerWidth >= 1024 ? '30px 30px 4px 30px' : undefined,
+            }}
+          >
+            <div className="flex flex-col lg:grid lg:grid-cols-[45%_55%] items-stretch h-full lg:min-h-[270px]">
+
+              {/* IMAGE: Square on mobile (aspect-square), full-height on desktop */}
+              <div
+                className="
+                  relative
+                  w-full
+                  aspect-square lg:aspect-auto
+                  lg:h-full
+                  lg:min-h-[270px]
+                  overflow-hidden
+                  rounded-t-[19px] lg:rounded-none
+                "
+                style={{
+                  borderRadius: typeof window !== 'undefined' && window.innerWidth >= 1024 ? '0 42px 0 30px' : undefined,
+                }}
+              >
                 <Image
                   src={
                     mealtimeSec?.image_url ||
-                    'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=700&q=80'
+                    'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=800&q=80'
                   }
-                  alt="Mealtime made happier"
+                  alt={
+                    mealtimeSec?.title ||
+                    'Mealtime made happier'
+                  }
                   fill
-                  sizes="(max-width: 640px) 100vw, 300px"
+                  sizes="(max-width: 1024px) 50vw, 420px"
                   className="object-cover"
+                  priority
                 />
               </div>
 
-              <div className="space-y-4">
-                <h3 className="font-heading text-2xl font-bold text-slate-900 leading-snug">
-                  {mealtimeSec?.title || 'Mealtime made a little happier.'}
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                  {mealtimeSec?.description ||
-                    'Give your little one a comfortable space to enjoy every bite.'}
-                </p>
+              {/* CONTENT */}
+              <div className="flex flex-col justify-between p-3 sm:p-5 lg:px-7 lg:py-6 flex-1">
+                <div>
+                  <h3 className="font-heading text-xs xs:text-sm sm:text-lg lg:text-[22px] font-bold text-slate-900 leading-snug lg:leading-tight">
+                    {mealtimeSec?.title ||
+                      'Mealtime made a little happier.'}
+                  </h3>
 
-                {/* Feature checklist */}
-                <div className="space-y-2 pt-1">
-                  {['Comfortable seating', 'Sturdy design', 'Easy to clean'].map((item) => (
-                    <div key={item} className="flex items-center gap-2 text-xs font-medium text-emerald-900">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                      <span>{item}</span>
-                    </div>
-                  ))}
+                  <p className="mt-1 sm:mt-2 lg:mt-3 text-[10px] sm:text-xs lg:text-sm text-slate-600 leading-relaxed line-clamp-2 lg:line-clamp-none">
+                    {mealtimeSec?.description ||
+                      'Give your little one a comfortable space to enjoy every bite with our ergonomic highchairs & silicone dining sets.'}
+                  </p>
+
+                  {/* FEATURES — Desktop only */}
+                  <div className="hidden lg:block mt-3 space-y-1.5">
+                    {[
+                      'Comfortable seating',
+                      'Sturdy design',
+                      'Easy to clean',
+                    ].map((item) => (
+                      <div
+                        key={item}
+                        className="flex items-center gap-2 text-xs sm:text-sm font-medium text-emerald-950"
+                      >
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                        <span>{item}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
-                <div className="pt-2">
+                {/* BUTTON */}
+                <div className="mt-2.5 sm:mt-4">
                   <Link
-                    href={mealtimeSec?.cta_url || '/categories/feeding'}
-                    className="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-full text-xs sm:text-sm font-medium inline-flex items-center gap-2 transition-all shadow-xs"
+                    href={
+                      mealtimeSec?.cta_url ||
+                      '/categories/feeding'
+                    }
+                    className="
+                      inline-flex items-center gap-1.5 sm:gap-2
+                      rounded-full
+                      bg-emerald-700
+                      hover:bg-emerald-800
+                      px-3 sm:px-5 py-1.5 sm:py-2.5
+                      text-[10px] sm:text-xs lg:text-sm
+                      font-medium
+                      text-white
+                      transition-colors
+                    "
                   >
-                    <span>{mealtimeSec?.cta_text || 'Explore Feeding'}</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    <span>
+                      {mealtimeSec?.cta_text ||
+                        'Explore Feeding'}
+                    </span>
+
+                    <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                   </Link>
                 </div>
+
               </div>
             </div>
           </div>
 
-          {/* Card 2: Tiny Teeth, Tiny Discoveries */}
-          <div className="rounded-[40px] bg-gradient-to-br from-[#FAF5EE] to-[#EBF7F1] p-6 sm:p-8 border border-emerald-100 shadow-sm flex flex-col justify-between">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-center">
-              <div className="relative aspect-square w-full rounded-[30px] overflow-hidden shadow-md">
+          {/* =========================
+              TINY TEETH CARD
+          ========================== */}
+          <div
+            className="
+              h-full
+              overflow-hidden
+              border border-emerald-100
+              bg-[#FAF5EE]
+              rounded-[20px] lg:rounded-none
+            "
+            style={{
+              borderRadius: typeof window !== 'undefined' && window.innerWidth >= 1024 ? '30px 30px 4px 30px' : undefined,
+            }}
+          >
+            <div className="flex flex-col lg:grid lg:grid-cols-[45%_55%] items-stretch h-full lg:min-h-[270px]">
+
+              {/* IMAGE: Square on mobile (aspect-square), full-height on desktop */}
+              <div
+                className="
+                  relative
+                  w-full
+                  aspect-square lg:aspect-auto
+                  lg:h-full
+                  lg:min-h-[270px]
+                  overflow-hidden
+                  rounded-t-[19px] lg:rounded-none
+                "
+                style={{
+                  borderRadius: typeof window !== 'undefined' && window.innerWidth >= 1024 ? '0 42px 0 30px' : undefined,
+                }}
+              >
                 <Image
                   src={
                     tinyTeethSec?.image_url ||
-                    'https://images.unsplash.com/photo-1558060370-d644479cb6f7?auto=format&fit=crop&w=700&q=80'
+                    'https://images.unsplash.com/photo-1558060370-d644479cb6f7?auto=format&fit=crop&w=800&q=80'
                   }
-                  alt="Tiny teeth discoveries"
+                  alt={
+                    tinyTeethSec?.title ||
+                    'Tiny teeth discoveries'
+                  }
                   fill
-                  sizes="(max-width: 640px) 100vw, 300px"
+                  sizes="(max-width: 1024px) 50vw, 420px"
                   className="object-cover"
                 />
               </div>
 
-              <div className="space-y-4">
-                <h3 className="font-heading text-2xl font-bold text-slate-900 leading-snug">
-                  {tinyTeethSec?.title || 'Tiny teeth. Tiny discoveries.'}
-                </h3>
-                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                  {tinyTeethSec?.description ||
-                    'A little extra comfort for those teething days. Soft, certified safe silicone and natural beechwood.'}
-                </p>
+              {/* CONTENT */}
+              <div className="flex flex-col justify-between p-3 sm:p-5 lg:px-7 lg:py-6 flex-1">
+                <div>
+                  <h3 className="font-heading text-xs xs:text-sm sm:text-lg lg:text-[22px] font-bold text-slate-900 leading-snug lg:leading-tight">
+                    {tinyTeethSec?.title ||
+                      'Tiny teeth. Tiny discoveries.'}
+                  </h3>
 
-                <div className="pt-4">
+                  <p className="mt-1 sm:mt-2 lg:mt-3 text-[10px] sm:text-xs lg:text-sm text-slate-600 leading-relaxed line-clamp-2 lg:line-clamp-none">
+                    {tinyTeethSec?.description ||
+                      'A little extra comfort for those teething days.'}
+                  </p>
+                </div>
+
+                {/* BUTTON */}
+                <div className="mt-2.5 sm:mt-4">
                   <Link
-                    href={tinyTeethSec?.cta_url || '/categories/toys'}
-                    className="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-full text-xs sm:text-sm font-medium inline-flex items-center gap-2 transition-all shadow-xs"
+                    href={
+                      tinyTeethSec?.cta_url ||
+                      '/categories/toys'
+                    }
+                    className="
+                      inline-flex items-center gap-1.5 sm:gap-2
+                      rounded-full
+                      bg-emerald-700
+                      hover:bg-emerald-800
+                      px-3 sm:px-5 py-1.5 sm:py-2.5
+                      text-[10px] sm:text-xs lg:text-sm
+                      font-medium
+                      text-white
+                      transition-colors
+                    "
                   >
-                    <span>{tinyTeethSec?.cta_text || 'Shop Baby Essentials'}</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    <span>
+                      {tinyTeethSec?.cta_text ||
+                        'Shop Baby Essentials'}
+                    </span>
+
+                    <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                   </Link>
                 </div>
+
               </div>
             </div>
           </div>

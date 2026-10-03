@@ -1,7 +1,9 @@
-import React from 'react';
+'use client';
+
+import React, { useRef, useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, Gift } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { HomepageSection } from '@/types/database';
 
 interface GiftBoxSectionProps {
@@ -9,68 +11,111 @@ interface GiftBoxSectionProps {
 }
 
 export function GiftBoxSection({ section }: GiftBoxSectionProps) {
+  const sectionRef = useRef<HTMLElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    // If reduced motion is preferred, display immediately without animation
+    if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setIsVisible(true);
+      return;
+    }
+
+    const node = sectionRef.current;
+    if (!node) {
+      setIsVisible(true);
+      return;
+    }
+
+    if (typeof IntersectionObserver === 'undefined') {
+      setIsVisible(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.12 }
+    );
+
+    observer.observe(node);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  const sectionLabel = section?.subtitle || 'BABY SHOWERS & NEWBORNS';
+  const rawTitle = section?.title || 'A little love, packed with care.';
+  const description =
+    section?.description ||
+    'Beautifully curated newborn essentials for baby showers, newborn welcomes and special occasions.';
+  const ctaText = section?.cta_text || 'Explore Gift Boxes';
+  const ctaUrl = section?.cta_url || '/categories/gift-and-hampers';
+
   return (
-    <section className="py-14 sm:py-20 bg-[#FAF7F2]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        <div className="relative rounded-[48px] bg-gradient-to-r from-[#FAF6EE] via-[#EAF6F0] to-[#DCF0E7] p-8 sm:p-12 lg:p-16 border border-emerald-100 shadow-md overflow-hidden">
-          
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            
-            {/* Left Column: Text */}
-            <div className="lg:col-span-5 space-y-5">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/90 border border-emerald-100 text-xs font-bold uppercase tracking-wider text-emerald-900 shadow-2xs">
-                <Gift className="w-3.5 h-3.5 text-emerald-600" />
-                <span>BABY SHOWERS & NEWBORNS</span>
-              </div>
+    <section ref={sectionRef} className="relative w-full overflow-hidden bg-[#FAF7F2]">
+      {/* Full-bleed banner edge-to-edge with mobile subtle fade-in */}
+      <div
+        className={`relative w-full min-h-[300px] sm:min-h-[380px] md:min-h-0 md:aspect-[2157/729] transition-all duration-700 ease-out ${
+          isVisible
+            ? 'opacity-100 translate-y-0'
+            : 'opacity-40 translate-y-2 md:opacity-100 md:translate-y-0'
+        }`}
+      >
+        <Image
+          src="/images/Dreamy-bg(1)copy.png"
+          alt="Baby Showers & Newborns - A little love, packed with care"
+          fill
+          sizes="100vw"
+          priority
+          className="object-cover object-center select-none"
+        />
 
-              <h2 className="font-heading text-3xl sm:text-4xl font-bold text-slate-900 leading-tight">
-                {section?.title || 'A little love, packed with care.'}
-              </h2>
+        {/* Text Overlay: Placed on the left over the cloud area */}
+        <div
+          className="absolute z-10 flex flex-col items-start justify-center left-[6%] sm:left-[8%] lg:left-[15%] top-1/2 -translate-y-1/2 max-w-[70%] sm:max-w-[45%] md:max-w-[40%] lg:max-w-[36%]"
+        >
+          {/* Section Label */}
+          <span className="text-[9px] sm:text-[11px] md:text-xs lg:text-sm font-semibold tracking-[0.24em] text-slate-700 uppercase mb-0.5 sm:mb-1">
+            {sectionLabel}
+          </span>
 
-              <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
-                {section?.description ||
-                  'Beautifully curated newborn essentials for baby showers, newborn welcomes and special occasions.'}
-              </p>
+          {/* Heading */}
+          <h2 className="font-heading font-medium text-slate-900 text-base sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl leading-[1.12] tracking-tight">
+            {rawTitle === 'A little love, packed with care.' ? (
+              <>
+                A little love,
+                <br />
+                packed with care.
+              </>
+            ) : (
+              rawTitle
+            )}
+          </h2>
 
-              <div>
-                <Link
-                  href={section?.cta_url || '/categories/gift-and-hampers'}
-                  className="px-7 py-3.5 bg-emerald-700 hover:bg-emerald-800 text-white font-medium text-xs sm:text-sm rounded-full shadow-md inline-flex items-center gap-2 transition-all"
-                >
-                  <span>{section?.cta_text || 'Explore Gift Boxes'}</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-              </div>
-            </div>
+          {/* Description */}
+          <p className="text-slate-600 text-[9px] sm:text-xs md:text-sm lg:text-base mt-1 sm:mt-2 md:mt-3 leading-relaxed">
+            {description}
+          </p>
 
-            {/* Right Column: Deluxe Mint Hamper Visual */}
-            <div className="lg:col-span-7 relative">
-              <div className="relative aspect-[16/10] w-full rounded-[36px] overflow-hidden shadow-2xl border-4 border-white">
-                <Image
-                  src="https://images.unsplash.com/photo-1513885535751-8b9238bd345a?auto=format&fit=crop&w=1200&q=80"
-                  alt="Baby Cry Deluxe Gift Hampers"
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 700px"
-                  className="object-cover"
-                />
-
-                {/* Hand-drawn badge */}
-                <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-md border border-emerald-100 text-right">
-                  <p className="font-heading text-xs font-bold text-emerald-900">
-                    For little
-                  </p>
-                  <p className="font-heading text-xs font-bold text-emerald-700">
-                    new beginnings ♡
-                  </p>
-                </div>
-              </div>
-            </div>
-
+          {/* CTA Button */}
+          <div className="mt-2 sm:mt-4 md:mt-5 lg:mt-6">
+            <Link
+              href={ctaUrl}
+              className="group inline-flex items-center gap-2 sm:gap-3 bg-[#A3D2B8] hover:bg-[#8ec2a6] active:scale-95 text-slate-800 font-medium text-[10px] sm:text-xs md:text-sm lg:text-base px-3 sm:px-5 md:px-6 py-1.5 sm:py-2.5 md:py-3 rounded-full shadow-xs hover:shadow transition-all"
+            >
+              <span>{ctaText}</span>
+              <span className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 rounded-full bg-slate-800 text-white flex items-center justify-center group-hover:translate-x-0.5 transition-transform">
+                <ArrowRight className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-3.5 md:h-3.5" />
+              </span>
+            </Link>
           </div>
-
         </div>
-
       </div>
     </section>
   );
