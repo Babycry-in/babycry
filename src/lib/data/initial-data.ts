@@ -45,8 +45,9 @@ export const INITIAL_CATEGORIES: Category[] = [
     name: 'Apparels',
     slug: 'apparels',
     short_description: 'Soft organic cotton rompers, dresses, and comfy daily wear',
-    image_url: 'https://images.unsplash.com/photo-1522771930-78848d9293e8?auto=format&fit=crop&w=600&q=80',
-    banner_url: 'https://images.unsplash.com/photo-1522771930-78848d9293e8?auto=format&fit=crop&w=1600&q=80',
+    image_url: '/uploads/Overlapping Kids’ Outfits in Cream and Pastels-1791023861821-901315992.webp',
+    banner_url: '',
+    mobile_banner_url: '',
     display_order: 1,
     is_active: true,
     seo_title: 'Baby & Kids Apparels | Baby Cry.in',
@@ -57,8 +58,9 @@ export const INITIAL_CATEGORIES: Category[] = [
     name: 'Footwear',
     slug: 'footwear',
     short_description: 'Gentle pre-walkers, cozy booties, and comfy shoes',
-    image_url: 'https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=600&q=80',
-    banner_url: 'https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=1600&q=80',
+    image_url: '/uploads/Kids’ Pink and Blue Sneaker Collection-1791193419460-722245963.webp',
+    banner_url: '',
+    mobile_banner_url: '',
     display_order: 2,
     is_active: true,
   },
@@ -67,7 +69,9 @@ export const INITIAL_CATEGORIES: Category[] = [
     name: 'Accessories',
     slug: 'accessories',
     short_description: 'Cute beanies, bibs, mittens, and headbands',
-    image_url: 'https://images.unsplash.com/photo-1596870230751-ebdfce98ec42?auto=format&fit=crop&w=600&q=80',
+    image_url: '/uploads/Pastel Bunny Kids’ Accessory Collection-1791193508027-132372465.webp',
+    banner_url: '',
+    mobile_banner_url: '',
     display_order: 3,
     is_active: true,
   },
@@ -76,8 +80,9 @@ export const INITIAL_CATEGORIES: Category[] = [
     name: 'Gift & Hampers',
     slug: 'gift-and-hampers',
     short_description: 'Beautifully boxed gift bundles for baby showers & celebrations',
-    image_url: 'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?auto=format&fit=crop&w=600&q=80',
-    banner_url: 'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?auto=format&fit=crop&w=1600&q=80',
+    image_url: '/uploads/Pastel Gift Collection with Teddy Bear-1791193534235-168019494.webp',
+    banner_url: '',
+    mobile_banner_url: '',
     display_order: 4,
     is_active: true,
   },
@@ -86,8 +91,9 @@ export const INITIAL_CATEGORIES: Category[] = [
     name: 'Hospital Kit',
     slug: 'hospital-kit',
     short_description: 'Essential newborn arrival kits with sterilized maternity care',
-    image_url: 'https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=600&q=80',
-    banner_url: 'https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=1600&q=80',
+    image_url: '/uploads/Pastel Baby Hospital Kit Essentials-1791194553831-366964051.webp',
+    banner_url: '',
+    mobile_banner_url: '',
     display_order: 5,
     is_active: true,
   },
@@ -96,8 +102,9 @@ export const INITIAL_CATEGORIES: Category[] = [
     name: 'Toys',
     slug: 'toys',
     short_description: 'Sensory plushies, wooden rattles, and developmental playsets',
-    image_url: 'https://images.unsplash.com/photo-1558060370-d644479cb6f7?auto=format&fit=crop&w=600&q=80',
-    banner_url: 'https://images.unsplash.com/photo-1558060370-d644479cb6f7?auto=format&fit=crop&w=1600&q=80',
+    image_url: '/uploads/Adorable Toytime Friends-1791194463524-902518026.webp',
+    banner_url: '',
+    mobile_banner_url: '',
     display_order: 6,
     is_active: true,
   },
@@ -106,7 +113,9 @@ export const INITIAL_CATEGORIES: Category[] = [
     name: 'Diapering',
     slug: 'diapering',
     short_description: 'Breathable cloth diapers, changing mats, and wet wipes',
-    image_url: 'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&w=600&q=80',
+    image_url: '',
+    banner_url: '',
+    mobile_banner_url: '',
     display_order: 7,
     is_active: true,
   },
@@ -115,7 +124,9 @@ export const INITIAL_CATEGORIES: Category[] = [
     name: 'Bath & Skin Care',
     slug: 'bath-and-skin-care',
     short_description: 'Gentle tear-free cleansers, soft towels, and nourishing oils',
-    image_url: 'https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?auto=format&fit=crop&w=600&q=80',
+    image_url: '',
+    banner_url: '',
+    mobile_banner_url: '',
     display_order: 8,
     is_active: true,
   },
@@ -124,8 +135,9 @@ export const INITIAL_CATEGORIES: Category[] = [
     name: 'Baby Gear',
     slug: 'baby-gear',
     short_description: 'Compact strollers, ergonomic carriers, and travel bags',
-    image_url: 'https://images.unsplash.com/photo-1591088398332-8a7791972843?auto=format&fit=crop&w=600&q=80',
-    banner_url: 'https://images.unsplash.com/photo-1591088398332-8a7791972843?auto=format&fit=crop&w=1600&q=80',
+    image_url: '',
+    banner_url: '',
+    mobile_banner_url: '',
     display_order: 9,
     is_active: true,
   },
@@ -134,8 +146,9 @@ export const INITIAL_CATEGORIES: Category[] = [
     name: 'Feeding',
     slug: 'feeding',
     short_description: 'BPA-free suction bowls, training cups, silicone spoons & highchairs',
-    image_url: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=600&q=80',
-    banner_url: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=1600&q=80',
+    image_url: '',
+    banner_url: '',
+    mobile_banner_url: '',
     display_order: 10,
     is_active: true,
   },
@@ -144,7 +157,9 @@ export const INITIAL_CATEGORIES: Category[] = [
     name: 'Nursery',
     slug: 'nursery',
     short_description: 'Soft crib bedding, calming night lights, and storage baskets',
-    image_url: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80',
+    image_url: '',
+    banner_url: '',
+    mobile_banner_url: '',
     display_order: 11,
     is_active: true,
   },
@@ -153,7 +168,9 @@ export const INITIAL_CATEGORIES: Category[] = [
     name: 'Health & Safety',
     slug: 'health-and-safety',
     short_description: 'Nail trimmers, nasal aspirators, safety locks & monitors',
-    image_url: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=600&q=80',
+    image_url: '',
+    banner_url: '',
+    mobile_banner_url: '',
     display_order: 12,
     is_active: true,
   }
@@ -176,213 +193,8 @@ export const INITIAL_HERO_SLIDES: HeroSlide[] = [
   }
 ];
 
-export const INITIAL_PRODUCTS: Product[] = [
-  {
-    id: 'prod-floral-bow-dress',
-    name: 'Floral Bow Dress',
-    slug: 'floral-bow-dress',
-    short_description: 'Delicate floral pattern cotton dress with subtle ruffled sleeves and back bow tie',
-    description: 'Crafted from pure breathable muslin cotton, this soft floral dress keeps your little one comfortable all day. Designed with gentle elasticated trims, smooth inner lining, and easy snap closures at the back.',
-    price: 1499,
-    sale_price: 1299,
-    sku: 'BC-AP-001',
-    stock: 25,
-    category_id: 'cat-apparels',
-    brand: 'Baby Cry',
-    age_group: '6-12M, 12-18M, 18-24M',
-    gender: 'Girls',
-    sizes: ['6-12M', '12-18M', '18-24M', '2-3Y'],
-    colors: ['Cream Floral', 'Blush Peach'],
-    material: '100% Organic Muslin Cotton',
-    features: ['Ultra-soft breathable weave', 'Gentle elastic cuffs', 'Nickel-free snaps', 'Tagless back label'],
-    care_instructions: 'Hand wash or gentle cycle cold. Line dry in shade.',
-    is_featured: true,
-    is_new: true,
-    is_best_seller: true,
-    is_active: true,
-    images: [
-      {
-        id: 'img-prod-1-1',
-        cloudinary_url: 'https://images.unsplash.com/photo-1522771930-78848d9293e8?auto=format&fit=crop&w=800&q=80',
-        alt_text: 'Floral Bow Dress',
-        sort_order: 0,
-        is_primary: true
-      },
-      {
-        id: 'img-prod-1-2',
-        cloudinary_url: 'https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?auto=format&fit=crop&w=800&q=80',
-        alt_text: 'Floral Bow Dress back detail',
-        sort_order: 1,
-        is_primary: false
-      }
-    ]
-  },
-  {
-    id: 'prod-cute-bear-romper',
-    name: 'Cute Bear Romper',
-    slug: 'cute-bear-romper',
-    short_description: 'Cozy embroidered bear face romper with bottom diaper snap buttons',
-    description: 'Softest rib-knit cotton romper featuring an adorable smiling bear chest patch. Engineered for hassle-free diaper changes and all-day cuddles.',
-    price: 1099,
-    sale_price: 899,
-    sku: 'BC-AP-002',
-    stock: 40,
-    category_id: 'cat-apparels',
-    brand: 'Baby Cry',
-    age_group: '0-3M, 3-6M, 6-12M',
-    gender: 'Baby',
-    sizes: ['0-3M', '3-6M', '6-12M'],
-    colors: ['Warm Cream', 'Soft Mint', 'Butter Yellow'],
-    material: '95% Organic Cotton, 5% Elastane',
-    features: ['Easy-access bottom snap closures', 'Flatlock non-irritant seams', 'Stretchy neck opening'],
-    care_instructions: 'Machine wash 30°C. Do not bleach.',
-    is_featured: true,
-    is_new: true,
-    is_best_seller: true,
-    is_active: true,
-    images: [
-      {
-        id: 'img-prod-2-1',
-        cloudinary_url: 'https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=800&q=80',
-        alt_text: 'Cute Bear Romper',
-        sort_order: 0,
-        is_primary: true
-      }
-    ]
-  },
-  {
-    id: 'prod-knit-bunny-set',
-    name: 'Knit Bunny Set',
-    slug: 'knit-bunny-set',
-    short_description: 'Charming ribbed beanie with fluffy pompom ears and matching booties',
-    description: 'Keep tiny heads and feet toasty with our handcrafted knit set. Made from hypoallergenic cotton yarn that protects sensitive baby skin without itching.',
-    price: 1299,
-    sale_price: 1099,
-    sku: 'BC-AC-003',
-    stock: 18,
-    category_id: 'cat-accessories',
-    brand: 'Baby Cry',
-    age_group: '0-12 Months',
-    gender: 'Unisex',
-    sizes: ['0-6M', '6-12M'],
-    colors: ['Oatmeal Heather', 'Sage Green'],
-    material: '100% Combed Cotton Yarn',
-    features: ['Non-scratchy ultra-soft feel', 'Double folded rim', 'Includes matching booties'],
-    care_instructions: 'Gentle hand wash in cold water.',
-    is_featured: true,
-    is_new: true,
-    is_best_seller: false,
-    is_active: true,
-    images: [
-      {
-        id: 'img-prod-3-1',
-        cloudinary_url: 'https://images.unsplash.com/photo-1596870230751-ebdfce98ec42?auto=format&fit=crop&w=800&q=80',
-        alt_text: 'Knit Bunny Set',
-        sort_order: 0,
-        is_primary: true
-      }
-    ]
-  },
-  {
-    id: 'prod-feeding-set',
-    name: 'Pastel Feeding Set',
-    slug: 'feeding-set',
-    short_description: 'Complete food-grade silicone suction bowl, divider plate, bib & cup',
-    description: 'Transform mealtime into an enjoyable, mess-free experience! Strong suction base firmly grips highchair trays while the soft ergonomic spoon is gentle on sensitive gums.',
-    price: 1699,
-    sale_price: 1499,
-    sku: 'BC-FD-004',
-    stock: 30,
-    category_id: 'cat-feeding',
-    brand: 'Baby Cry',
-    age_group: '6+ Months',
-    gender: 'Unisex',
-    sizes: ['Standard Kit'],
-    colors: ['Soft Mint', 'Dusty Rose', 'Warm Honey'],
-    material: '100% Food-Grade Platinum Silicone (BPA & PVC Free)',
-    features: ['Deep suction lock base', 'Dishwasher & Microwave safe', 'Catch-all bib pocket', 'Easy-grip toddler fork and spoon'],
-    care_instructions: 'Dishwasher safe on top rack or wash with warm soapy water.',
-    is_featured: true,
-    is_new: true,
-    is_best_seller: true,
-    is_active: true,
-    images: [
-      {
-        id: 'img-prod-4-1',
-        cloudinary_url: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=800&q=80',
-        alt_text: 'Pastel Feeding Set',
-        sort_order: 0,
-        is_primary: true
-      }
-    ]
-  },
-  {
-    id: 'prod-plush-teddy-hamper',
-    name: 'Deluxe Baby Welcome Hamper',
-    slug: 'deluxe-baby-welcome-hamper',
-    short_description: 'Curated premium gift box with plush teddy, organic romper, blanket & teether',
-    description: 'Presented in our signature mint green keepsake magnetic box with satin ribbon. Packed with love for baby showers, hospital homecoming, and memorable newborn milestones.',
-    price: 3499,
-    sale_price: 2999,
-    sku: 'BC-GF-005',
-    stock: 15,
-    category_id: 'cat-gift-and-hampers',
-    brand: 'Baby Cry',
-    age_group: '0-6 Months',
-    gender: 'Unisex',
-    sizes: ['Gift Boxed'],
-    colors: ['Mint & Cream Box'],
-    material: 'Curated Organic Blend',
-    features: ['Includes plush teddy bear', 'Includes 100% organic cotton muslin wrap', 'Complimentary handwritten greeting card', 'Rigid keepsake storage box'],
-    care_instructions: 'Care guide included inside hamper.',
-    is_featured: true,
-    is_new: true,
-    is_best_seller: true,
-    is_active: true,
-    images: [
-      {
-        id: 'img-prod-5-1',
-        cloudinary_url: 'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?auto=format&fit=crop&w=800&q=80',
-        alt_text: 'Deluxe Baby Welcome Hamper',
-        sort_order: 0,
-        is_primary: true
-      }
-    ]
-  },
-  {
-    id: 'prod-teething-rattle',
-    name: 'Natural Beechwood Teething Ring',
-    slug: 'natural-beechwood-teething-ring',
-    short_description: 'Safe organic beechwood ring with food-grade silicone textured beads',
-    description: 'Soothes sore aching gums during teething phases. Lightweight for tiny baby hands to grasp, shake, and chew safely without chemicals.',
-    price: 549,
-    sale_price: 449,
-    sku: 'BC-TH-006',
-    stock: 50,
-    category_id: 'cat-toys',
-    brand: 'Baby Cry',
-    age_group: '3-12 Months',
-    gender: 'Unisex',
-    sizes: ['One Size'],
-    colors: ['Mint Sage', 'Peach Rose'],
-    material: 'Natural Untreated Beech Wood & Silicone',
-    features: ['Smooth non-splinter finish', 'Double safety knot core', 'Multi-textured ridges'],
-    care_instructions: 'Wipe with damp cloth and air dry. Do not submerge wood in water.',
-    is_featured: false,
-    is_new: false,
-    is_best_seller: true,
-    is_active: true,
-    images: [
-      {
-        id: 'img-prod-6-1',
-        cloudinary_url: 'https://images.unsplash.com/photo-1558060370-d644479cb6f7?auto=format&fit=crop&w=800&q=80',
-        alt_text: 'Natural Beechwood Teething Ring',
-        sort_order: 0,
-        is_primary: true
-      }
-    ]
-  }
-];
+// Empty products array so only products added by admin will appear
+export const INITIAL_PRODUCTS: Product[] = [];
 
 export const INITIAL_HOMEPAGE_SECTIONS: HomepageSection[] = [
   {
@@ -393,7 +205,7 @@ export const INITIAL_HOMEPAGE_SECTIONS: HomepageSection[] = [
     description: 'Adorable styles made for tiny personalities and big little moments.',
     cta_text: 'Shop Girlswear',
     cta_url: '/categories/apparels',
-    image_url: 'https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?auto=format&fit=crop&w=800&q=80',
+    image_url: '',
     is_active: true,
     display_order: 1
   },
@@ -405,40 +217,11 @@ export const INITIAL_HOMEPAGE_SECTIONS: HomepageSection[] = [
     description: 'Cute, dreamy and effortlessly stylish.',
     cta_text: 'Explore Looks',
     cta_url: '/categories/apparels',
-    image_url: 'https://images.unsplash.com/photo-1522771930-78848d9293e8?auto=format&w=800&q=85',
+    image_url: '',
     is_active: true,
     display_order: 2,
     metadata: {
-      looks: [
-        {
-          id: 1,
-          image: 'https://images.unsplash.com/photo-1522771930-78848d9293e8?auto=format&w=800&q=85',
-          alt: 'Baby in cozy bear fleece romper',
-          aspectRatio: '800 / 1067',
-          caption: ''
-        },
-        {
-          id: 2,
-          image: 'https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&w=800&q=85',
-          alt: 'Baby in playful summer outfit',
-          aspectRatio: '800 / 533',
-          caption: ''
-        },
-        {
-          id: 3,
-          image: 'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&w=800&q=85',
-          alt: 'Baby exploring wooden toys and plushies',
-          aspectRatio: '800 / 531',
-          caption: 'Princess little outfits ♡'
-        },
-        {
-          id: 4,
-          image: 'https://images.unsplash.com/photo-1555252333-9f8e92e65df9?auto=format&w=800&q=85',
-          alt: 'Newborn cozy little moments',
-          aspectRatio: '800 / 533',
-          caption: ''
-        }
-      ]
+      looks: []
     }
   },
   {
@@ -448,9 +231,9 @@ export const INITIAL_HOMEPAGE_SECTIONS: HomepageSection[] = [
     description: 'Give your little one a comfortable space to enjoy every bite with our ergonomic highchairs & silicone dining sets.',
     cta_text: 'Explore Feeding',
     cta_url: '/categories/feeding',
-    image_url: 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=800&q=80',
+    image_url: '',
     is_active: true,
-    display_order: 2,
+    display_order: 3,
     metadata: {
       bullet_1: 'Comfortable seating & posture',
       bullet_2: 'Sturdy & tip-resistant design',
@@ -464,9 +247,9 @@ export const INITIAL_HOMEPAGE_SECTIONS: HomepageSection[] = [
     description: 'A little extra comfort for those teething days.',
     cta_text: 'Shop Baby Essentials',
     cta_url: '/categories/toys',
-    image_url: 'https://images.unsplash.com/photo-1558060370-d644479cb6f7?auto=format&fit=crop&w=800&q=80',
+    image_url: '',
     is_active: true,
-    display_order: 3
+    display_order: 4
   },
   {
     id: 'sec-travel',
@@ -476,9 +259,9 @@ export const INITIAL_HOMEPAGE_SECTIONS: HomepageSection[] = [
     description: 'Adorable styles made for tiny personalities and big little moments.',
     cta_text: 'Shop Apparels',
     cta_url: '/categories/apparels',
-    image_url: 'https://images.unsplash.com/photo-1591088398332-8a7791972843?auto=format&fit=crop&w=1200&q=80',
+    image_url: '',
     is_active: true,
-    display_order: 4
+    display_order: 5
   },
   {
     id: 'sec-gift-box',
@@ -487,9 +270,9 @@ export const INITIAL_HOMEPAGE_SECTIONS: HomepageSection[] = [
     description: 'Beautifully curated newborn essentials for baby showers, newborn welcomes and special occasions.',
     cta_text: 'Explore Gift Boxes',
     cta_url: '/categories/gift-and-hampers',
-    image_url: 'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?auto=format&fit=crop&w=1200&q=80',
+    image_url: '/images/Dreamy-bg(1)copy.png',
     is_active: true,
-    display_order: 5
+    display_order: 6
   },
   {
     id: 'sec-unboxing',
@@ -498,9 +281,9 @@ export const INITIAL_HOMEPAGE_SECTIONS: HomepageSection[] = [
     description: 'A little love packed into every order.',
     cta_text: 'Our Packaging ♡',
     cta_url: '/about',
-    image_url: '/images/babycry-logo.png',
+    image_url: '/images/packaging-banner.png',
     is_active: true,
-    display_order: 6
+    display_order: 7
   },
   {
     id: 'sec-instagram',
@@ -510,18 +293,11 @@ export const INITIAL_HOMEPAGE_SECTIONS: HomepageSection[] = [
     description: 'Tag us in your cutest baby moments to get featured!',
     cta_text: 'Follow Along',
     cta_url: 'https://instagram.com/Baby_cry.in',
-    image_url: 'https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?auto=format&w=400&q=80',
+    image_url: '',
     is_active: true,
-    display_order: 7,
+    display_order: 8,
     metadata: {
-      images: [
-        'https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?auto=format&w=400&q=80',
-        'https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&w=400&q=80',
-        'https://images.unsplash.com/photo-1522771930-78848d9293e8?auto=format&w=400&q=80',
-        'https://images.unsplash.com/photo-1555252333-9f8e92e65df9?auto=format&w=400&q=80',
-        'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?auto=format&w=400&q=80',
-        'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&w=400&q=80'
-      ]
+      images: []
     }
   }
 ];

@@ -25,7 +25,7 @@ interface ProductDetailClientProps {
 export function ProductDetailClient({ product, whatsappNumber }: ProductDetailClientProps) {
   const images = product.images && product.images.length > 0
     ? product.images
-    : [{ id: '1', cloudinary_url: 'https://images.unsplash.com/photo-1522771930-78848d9293e8?auto=format&fit=crop&w=800&q=80', is_primary: true, sort_order: 0 }];
+    : [{ id: 'placeholder', cloudinary_url: '/images/babycry-logo.png', is_primary: true, sort_order: 0 }];
 
   const [activeImage, setActiveImage] = useState(images[0]?.cloudinary_url);
   const [selectedSize, setSelectedSize] = useState(product.sizes?.[0] || '');

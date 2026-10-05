@@ -43,14 +43,7 @@ export function InstagramSettingsClient({ initialSection }: InstagramSettingsCli
   };
 
   const handleImageChange = (index: number, url: string) => {
-    const defaultList = [
-      'https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?auto=format&w=400&q=80',
-      'https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&w=400&q=80',
-      'https://images.unsplash.com/photo-1522771930-78848d9293e8?auto=format&w=400&q=80',
-      'https://images.unsplash.com/photo-1555252333-9f8e92e65df9?auto=format&w=400&q=80',
-      'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?auto=format&w=400&q=80',
-      'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&w=400&q=80',
-    ];
+    const defaultList = ['', '', '', '', '', ''];
     const currentList = Array.isArray(section.metadata?.images) ? section.metadata.images : defaultList;
     const nextList = [...currentList];
     nextList[index] = url;
@@ -205,14 +198,7 @@ export function InstagramSettingsClient({ initialSection }: InstagramSettingsCli
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
             {[0, 1, 2, 3, 4, 5].map((idx) => {
-              const defaultImages = [
-                'https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?auto=format&w=400&q=80',
-                'https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&w=400&q=80',
-                'https://images.unsplash.com/photo-1522771930-78848d9293e8?auto=format&w=400&q=80',
-                'https://images.unsplash.com/photo-1555252333-9f8e92e65df9?auto=format&w=400&q=80',
-                'https://images.unsplash.com/photo-1513885535751-8b9238bd345a?auto=format&w=400&q=80',
-                'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&w=400&q=80',
-              ];
+              const defaultImages = ['', '', '', '', '', ''];
               const list = Array.isArray(section.metadata?.images) ? section.metadata.images : defaultImages;
               const imgUrl = list[idx] || '';
 

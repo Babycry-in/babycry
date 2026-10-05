@@ -22,7 +22,7 @@ export function CategoryForm({ initialCategory, isEditing = false }: CategoryFor
     name: initialCategory?.name || '',
     slug: initialCategory?.slug || '',
     short_description: initialCategory?.short_description || '',
-    image_url: initialCategory?.image_url || 'https://images.unsplash.com/photo-1522771930-78848d9293e8?auto=format&fit=crop&w=600&q=80',
+    image_url: initialCategory?.image_url || '',
     banner_url: initialCategory?.banner_url || '',
     mobile_banner_url: initialCategory?.mobile_banner_url || '',
     display_order: initialCategory?.display_order || 1,

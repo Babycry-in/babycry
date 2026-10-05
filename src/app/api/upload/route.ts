@@ -23,9 +23,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
-    const apiKey = process.env.CLOUDINARY_API_KEY;
-    const apiSecret = process.env.CLOUDINARY_API_SECRET;
+    const cloudName = process.env.CLOUDINARY_CLOUD_NAME?.trim();
+    const apiKey = process.env.CLOUDINARY_API_KEY?.trim();
+    const apiSecret = process.env.CLOUDINARY_API_SECRET?.trim();
 
     const fileBuffer = Buffer.from(await file.arrayBuffer());
 
@@ -49,9 +49,16 @@ export async function POST(req: NextRequest) {
       });
 
       if (!cloudRes.ok) {
-        const errorText = await cloudRes.text();
-        console.error('Cloudinary upload failure:', errorText);
-        throw new Error('Failed to upload image to Cloudinary');
+        const errorBody = await cloudRes.text();
+        console.error('Cloudinary upload failure response:', errorBody);
+        let cloudinaryMessage = 'Failed to upload image to Cloudinary';
+        try {
+          const parsed = JSON.parse(errorBody);
+          if (parsed?.error?.message) {
+            cloudinaryMessage = `Cloudinary error: ${parsed.error.message}`;
+          }
+        } catch {}
+        return NextResponse.json({ error: cloudinaryMessage }, { status: 500 });
       }
 
       const cloudData = await cloudRes.json();

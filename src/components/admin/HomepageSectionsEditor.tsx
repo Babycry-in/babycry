@@ -83,6 +83,7 @@ export function HomepageSectionsEditor({ initialSections }: HomepageSectionsEdit
 
       {sections.filter((s) => s.section_key !== 'instagram').map((sec) => {
         const isLittleLooks = sec.section_key === 'little_looks';
+        const isSweetestDetails = sec.section_key === 'sweetest_details';
 
         return (
           <div
@@ -341,7 +342,7 @@ export function HomepageSectionsEditor({ initialSections }: HomepageSectionsEdit
             )}
 
             {/* Default Banner image for other sections */}
-            {!isLittleLooks && sec.section_key !== 'gift_box' && (
+            {!isLittleLooks && !isSweetestDetails && sec.section_key !== 'gift_box' && (
               <div>
                 <ImageUploader
                   label="Section Banner Image"
@@ -350,6 +351,13 @@ export function HomepageSectionsEditor({ initialSections }: HomepageSectionsEdit
                     handleUpdate(sec.section_key, { image_url: url })
                   }
                 />
+              </div>
+            )}
+
+            {isSweetestDetails && (
+              <div className="flex items-center gap-2 p-3.5 bg-amber-50/60 border border-amber-100 rounded-xl text-xs text-amber-900">
+                <Info className="w-4 h-4 text-amber-500 shrink-0" />
+                <span>This section uses a built-in editorial banner image. The background cannot be changed here — edit the text, subtitle and button link above.</span>
               </div>
             )}
 

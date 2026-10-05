@@ -9,14 +9,20 @@ interface EditorialSectionProps {
 }
 
 export function EditorialSection({ section }: EditorialSectionProps) {
-  const label = 'APPARELS EDIT';
+  const label = section?.subtitle || 'APPARELS EDIT';
   const titleLine1 = 'The sweetest';
   const titleLine2 = 'little details.';
   const subtitle =
     section?.description ||
     'Adorable styles made for tiny personalities and big little moments.';
-  const ctaText = 'Shop Apparels';
+  const ctaText = section?.cta_text || 'Shop Apparels';
   const ctaUrl = section?.cta_url || '/categories/apparels';
+
+  // This section uses a fixed built-in editorial banner — not admin-uploadable
+  // Admin can only edit text, subtitle and CTA via the homepage builder
+  const imageUrl = '/images/apparels-banner1.png';
+
+  if (section?.is_active === false) return null;
 
   return (
     <section className="relative w-full overflow-hidden  ">
@@ -25,7 +31,7 @@ export function EditorialSection({ section }: EditorialSectionProps) {
         className="relative w-full min-h-[300px] sm:min-h-[360px] md:min-h-0 md:aspect-[1024/384]"
       >
         <Image
-          src="/images/apparels-banner1.png"
+          src={imageUrl}
           alt="Apparels Edit - The sweetest little details"
           fill
           sizes="100vw"

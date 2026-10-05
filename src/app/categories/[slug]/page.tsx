@@ -158,13 +158,13 @@ export default async function CategoryPage({ params }: Props) {
                   href={`/categories/${c.slug}`}
                   className="group p-3 bg-white rounded-2xl border border-emerald-50 shadow-2xs hover:shadow-md transition-all text-center"
                 >
-                  <div className="relative aspect-square w-full rounded-xl overflow-hidden bg-emerald-50 mb-2">
+                  <div className="relative aspect-square w-full rounded-xl overflow-hidden bg-white mb-2">
                     <Image
                       src={c.image_url}
                       alt={c.name}
                       fill
                       sizes="200px"
-                      className="object-cover group-hover:scale-105 transition-transform"
+                      className="object-contain group-hover:scale-105 transition-transform duration-300"
                     />
                   </div>
                   <span className="font-heading font-medium text-xs sm:text-sm text-slate-800 group-hover:text-emerald-700">
