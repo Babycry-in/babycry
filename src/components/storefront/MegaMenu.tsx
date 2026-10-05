@@ -30,14 +30,18 @@ export function MegaMenu({ categories, isOpen, onClose }: MegaMenuProps) {
               onClick={onClose}
               className="group flex items-start gap-3 p-2.5 rounded-2xl hover:bg-[#EBF7F1] transition-colors"
             >
-              <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-emerald-50 shrink-0">
-                <Image
-                  src={cat.image_url}
-                  alt={cat.name}
-                  fill
-                  sizes="48px"
-                  className="object-cover group-hover:scale-110 transition-transform duration-300"
-                />
+              <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-emerald-50 shrink-0 flex items-center justify-center">
+                {cat.image_url ? (
+                  <Image
+                    src={cat.image_url}
+                    alt={cat.name}
+                    fill
+                    sizes="48px"
+                    className="object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                ) : (
+                  <span className="text-emerald-400 text-xl select-none">🧸</span>
+                )}
               </div>
               <div className="min-w-0">
                 <p className="font-heading font-medium text-sm text-slate-800 group-hover:text-emerald-700 transition-colors">

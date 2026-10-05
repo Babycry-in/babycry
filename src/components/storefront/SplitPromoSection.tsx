@@ -17,6 +17,17 @@ export function SplitPromoSection({ sections }: SplitPromoSectionProps) {
     (s) => s.section_key === 'tiny_teeth'
   );
 
+  // Only show cards that have an admin-uploaded image
+  const mealtimeImage = mealtimeSec?.image_url && !mealtimeSec.image_url.includes('unsplash.com')
+    ? mealtimeSec.image_url
+    : null;
+  const tinyTeethImage = tinyTeethSec?.image_url && !tinyTeethSec.image_url.includes('unsplash.com')
+    ? tinyTeethSec.image_url
+    : null;
+
+  // Hide section entirely if neither card has an image
+  if (!mealtimeImage && !tinyTeethImage) return null;
+
   return (
     <section className="py-8 sm:py-10 lg:py-14">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -55,20 +66,16 @@ export function SplitPromoSection({ sections }: SplitPromoSectionProps) {
                   borderRadius: typeof window !== 'undefined' && window.innerWidth >= 1024 ? '0 42px 0 30px' : undefined,
                 }}
               >
-                <Image
-                  src={
-                    mealtimeSec?.image_url ||
-                    'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?auto=format&fit=crop&w=800&q=80'
-                  }
-                  alt={
-                    mealtimeSec?.title ||
-                    'Mealtime made happier'
-                  }
-                  fill
-                  sizes="(max-width: 1024px) 50vw, 420px"
-                  className="object-cover"
-                  priority
-                />
+                {mealtimeImage && (
+                  <Image
+                    src={mealtimeImage}
+                    alt={mealtimeSec?.title || 'Mealtime made happier'}
+                    fill
+                    sizes="(max-width: 1024px) 50vw, 420px"
+                    className="object-cover"
+                    priority
+                  />
+                )}
               </div>
 
               {/* CONTENT */}
@@ -166,19 +173,15 @@ export function SplitPromoSection({ sections }: SplitPromoSectionProps) {
                   borderRadius: typeof window !== 'undefined' && window.innerWidth >= 1024 ? '0 42px 0 30px' : undefined,
                 }}
               >
-                <Image
-                  src={
-                    tinyTeethSec?.image_url ||
-                    'https://images.unsplash.com/photo-1558060370-d644479cb6f7?auto=format&fit=crop&w=800&q=80'
-                  }
-                  alt={
-                    tinyTeethSec?.title ||
-                    'Tiny teeth discoveries'
-                  }
-                  fill
-                  sizes="(max-width: 1024px) 50vw, 420px"
-                  className="object-cover"
-                />
+                {tinyTeethImage && (
+                  <Image
+                    src={tinyTeethImage}
+                    alt={tinyTeethSec?.title || 'Tiny teeth discoveries'}
+                    fill
+                    sizes="(max-width: 1024px) 50vw, 420px"
+                    className="object-cover"
+                  />
+                )}
               </div>
 
               {/* CONTENT */}

@@ -116,7 +116,7 @@ export function BabyEssentialsSection({ categories = [] }: BabyEssentialsSection
                 {/* Product image on top of cloud — object-contain so NO CROPPING */}
                 <div className="relative z-10 w-24 h-24 sm:w-28 sm:h-28 flex items-center justify-center p-2">
                   <Image
-                    src={item.image}
+                    src={item.image || '/images/babycry-logo.png'}
                     alt={item.label}
                     fill
                     sizes="112px"

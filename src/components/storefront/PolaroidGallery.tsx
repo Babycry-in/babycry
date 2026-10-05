@@ -18,53 +18,29 @@ export function PolaroidGallery({ section }: PolaroidGalleryProps) {
   const ctaText = section?.cta_text || 'Explore Looks';
   const ctaUrl = section?.cta_url || '/categories/apparels';
 
-  // Configured default looks
-  const defaultLooks = [
-    {
-      id: 1,
-      image: 'https://images.unsplash.com/photo-1522771930-78848d9293e8?auto=format&w=800&q=85',
-      alt: 'Baby in cozy bear fleece romper',
-      aspectRatio: '800 / 1067',
-      caption: '',
-      desktopClasses: 'left-[0%] top-[4%] w-[28%] z-10 -rotate-2',
-    },
-    {
-      id: 2,
-      image: 'https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&w=800&q=85',
-      alt: 'Baby in playful summer outfit',
-      aspectRatio: '800 / 533',
-      caption: '',
-      desktopClasses: 'left-[24%] top-[8%] w-[28%] z-20 rotate-2',
-    },
-    {
-      id: 3,
-      image: 'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&w=800&q=85',
-      alt: 'Baby exploring wooden toys and plushies',
-      aspectRatio: '800 / 531',
-      caption: 'Princess little outfits ♡',
-      desktopClasses: 'left-[48%] top-[14%] w-[28%] z-30 -rotate-1',
-    },
-    {
-      id: 4,
-      image: 'https://images.unsplash.com/photo-1555252333-9f8e92e65df9?auto=format&w=800&q=85',
-      alt: 'Newborn cozy little moments',
-      aspectRatio: '800 / 533',
-      caption: '',
-      desktopClasses: 'left-[72%] top-[6%] w-[28%] z-20 rotate-3',
-    },
+  const desktopPositionClasses = [
+    'left-[0%] top-[4%] w-[28%] z-10 -rotate-2',
+    'left-[24%] top-[8%] w-[28%] z-20 rotate-2',
+    'left-[48%] top-[14%] w-[28%] z-30 -rotate-1',
+    'left-[72%] top-[6%] w-[28%] z-20 rotate-3',
   ];
 
   const adminLooks = section?.metadata?.looks;
-  const looks = defaultLooks.map((def, idx) => {
-    const custom = adminLooks?.[idx];
-    return {
-      ...def,
-      image: custom?.image || def.image,
-      alt: custom?.alt || def.alt,
-      caption: custom?.caption !== undefined ? custom.caption : def.caption,
-      aspectRatio: custom?.aspectRatio || def.aspectRatio,
-    };
-  });
+  const looks = (Array.isArray(adminLooks) ? adminLooks : [])
+    .filter((l: any) => typeof l?.image === 'string' && l.image.trim().length > 0 && !l.image.includes('unsplash.com'))
+    .map((item: any, idx: number) => ({
+      id: item.id || idx + 1,
+      image: item.image,
+      alt: item.alt || 'Little look',
+      aspectRatio: item.aspectRatio || (idx === 0 ? '800 / 1067' : '800 / 533'),
+      caption: item.caption || '',
+      desktopClasses: desktopPositionClasses[idx % desktopPositionClasses.length],
+    }));
+
+  // Only show section if admin has uploaded at least one look photograph
+  if (looks.length === 0) {
+    return null;
+  }
 
   return (
     <section className="relative w-full py-12 sm:py-16 lg:py-16 overflow-hidden">
