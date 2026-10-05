@@ -197,7 +197,54 @@
       "created_at": "2026-10-05T12:32:10.607Z"
     }
   ],
-  "products": [],
+  "products": [
+    {
+      "id": "prod-1791207149888",
+      "name": "ibfisefi gsfius",
+      "slug": "ibfisefi-gsfius",
+      "description": "asd daf efwf WFwf WE",
+      "short_description": "efefef",
+      "price": 33,
+      "sale_price": 33,
+      "sku": "BC-9888",
+      "stock": 15,
+      "category_id": "cat-apparels",
+      "brand": "Baby Cry",
+      "age_group": "0-24M",
+      "gender": "Unisex",
+      "sizes": [
+        "0-6M",
+        "6-12M",
+        "12-18M"
+      ],
+      "colors": [
+        "Soft Mint",
+        "Warm Cream"
+      ],
+      "material": "100% Organic Muslin Cotton",
+      "features": [
+        "Ultra soft breathable fabric",
+        "Snap bottom closures",
+        "Tagless comfort label"
+      ],
+      "care_instructions": "Machine wash gentle cold",
+      "is_featured": true,
+      "is_new": true,
+      "is_best_seller": false,
+      "is_active": true,
+      "images": [
+        {
+          "id": "img-1791207142034",
+          "cloudinary_url": "https://res.cloudinary.com/hjkjyndc/image/upload/v1791207141/babycry/ijkazupyndek7kcbgdil.webp",
+          "cloudinary_public_id": "babycry/ijkazupyndek7kcbgdil",
+          "sort_order": 0,
+          "is_primary": true
+        }
+      ],
+      "updated_at": "2026-10-05T13:33:03.673Z",
+      "created_at": "2026-10-05T13:33:03.673Z"
+    }
+  ],
   "heroSlides": [
     {
       "id": "hero-1",
@@ -209,7 +256,7 @@
       "secondary_cta_text": "Explore New Arrivals",
       "secondary_cta_url": "/categories",
       "desktop_image": "/uploads/ChatGPT Image Oct 2, 2026, 06_11_44 PM-1790944912169-98739263.webp",
-      "mobile_image": "",
+      "mobile_image": "https://res.cloudinary.com/hjkjyndc/image/upload/v1791207555/babycry/b8zfgv2mjseigqwcrp3h.webp",
       "is_active": true,
       "sort_order": 1
     }
@@ -266,7 +313,7 @@
       "description": "Give your little one a comfortable space to enjoy every bite with our ergonomic highchairs & silicone dining sets.",
       "cta_text": "Explore Feeding",
       "cta_url": "/categories/feeding",
-      "image_url": "https://res.cloudinary.com/hjkjyndc/image/upload/v1791204223/babycry/svufnzf6vsaoq3hahon4.webp",
+      "image_url": "https://res.cloudinary.com/hjkjyndc/image/upload/v1791211339/babycry/tifn7zrsp79wpkknolxz.webp",
       "is_active": true,
       "display_order": 3,
       "metadata": {
@@ -282,7 +329,7 @@
       "description": "A little extra comfort for those teething days.",
       "cta_text": "Shop Baby Essentials",
       "cta_url": "/categories/toys",
-      "image_url": "https://res.cloudinary.com/hjkjyndc/image/upload/v1791204225/babycry/omko9qchdirtkqyggzau.webp",
+      "image_url": "https://res.cloudinary.com/hjkjyndc/image/upload/v1791211309/babycry/b7kfmxbigp1grpwsswuu.webp",
       "is_active": true,
       "display_order": 4
     },
@@ -293,7 +340,7 @@
       "description": "Thoughtful essentials for everyday journeys with your little one.",
       "cta_text": "Explore Travel Essentials",
       "cta_url": "/categories/baby-gear",
-      "image_url": "https://res.cloudinary.com/hjkjyndc/image/upload/v1791204233/babycry/gtyirnjyjjfiz6iq4bwo.webp",
+      "image_url": "https://res.cloudinary.com/hjkjyndc/image/upload/v1791211223/babycry/lvecqtqhyjogxzfxpng9.webp",
       "is_active": true,
       "display_order": 5
     },
@@ -337,6 +384,90 @@
   ],
   "orders": [],
   "media": [
+    {
+      "file_name": "Joyful Baby’s Mealtime Moment.webp",
+      "cloudinary_url": "https://res.cloudinary.com/hjkjyndc/image/upload/v1791211339/babycry/tifn7zrsp79wpkknolxz.webp",
+      "cloudinary_public_id": "babycry/tifn7zrsp79wpkknolxz",
+      "width": 1436,
+      "height": 1095,
+      "format": "webp",
+      "size_bytes": 105390,
+      "used_by": "Admin Upload",
+      "id": "media-1791211340193",
+      "created_at": "2026-10-05T14:42:20.193Z"
+    },
+    {
+      "file_name": "Happy Baby with Mint Teether.webp",
+      "cloudinary_url": "https://res.cloudinary.com/hjkjyndc/image/upload/v1791211309/babycry/b7kfmxbigp1grpwsswuu.webp",
+      "cloudinary_public_id": "babycry/b7kfmxbigp1grpwsswuu",
+      "width": 1312,
+      "height": 1199,
+      "format": "webp",
+      "size_bytes": 70750,
+      "used_by": "Admin Upload",
+      "id": "media-1791211310380",
+      "created_at": "2026-10-05T14:41:50.380Z"
+    },
+    {
+      "file_name": "Joyful Baby’s Mealtime Moment.webp",
+      "cloudinary_url": "https://res.cloudinary.com/hjkjyndc/image/upload/v1791211308/babycry/acn85siuzhqsvscd2x9h.webp",
+      "cloudinary_public_id": "babycry/acn85siuzhqsvscd2x9h",
+      "width": 1436,
+      "height": 1095,
+      "format": "webp",
+      "size_bytes": 105390,
+      "used_by": "Admin Upload",
+      "id": "media-1791211309901",
+      "created_at": "2026-10-05T14:41:49.901Z"
+    },
+    {
+      "file_name": "Dreamy Toddler Bike Ride Banner.webp",
+      "cloudinary_url": "https://res.cloudinary.com/hjkjyndc/image/upload/v1791211223/babycry/lvecqtqhyjogxzfxpng9.webp",
+      "cloudinary_public_id": "babycry/lvecqtqhyjogxzfxpng9",
+      "width": 1600,
+      "height": 553,
+      "format": "webp",
+      "size_bytes": 39158,
+      "used_by": "Admin Upload",
+      "id": "media-1791211223888",
+      "created_at": "2026-10-05T14:40:23.888Z"
+    },
+    {
+      "file_name": "Joyful Toddler Bike Ride in Pastel Clouds.webp",
+      "cloudinary_url": "https://res.cloudinary.com/hjkjyndc/image/upload/v1791211135/babycry/zddib1euudfthp4xy9ey.webp",
+      "cloudinary_public_id": "babycry/zddib1euudfthp4xy9ey",
+      "width": 1600,
+      "height": 553,
+      "format": "webp",
+      "size_bytes": 50560,
+      "used_by": "Admin Upload",
+      "id": "media-1791211135483",
+      "created_at": "2026-10-05T14:38:55.483Z"
+    },
+    {
+      "file_name": "Dreamy Baby Cloud Nursery.webp",
+      "cloudinary_url": "https://res.cloudinary.com/hjkjyndc/image/upload/v1791207555/babycry/b8zfgv2mjseigqwcrp3h.webp",
+      "cloudinary_public_id": "babycry/b8zfgv2mjseigqwcrp3h",
+      "width": 900,
+      "height": 1600,
+      "format": "webp",
+      "size_bytes": 34732,
+      "used_by": "Admin Upload",
+      "id": "media-1791207556309",
+      "created_at": "2026-10-05T13:39:16.309Z"
+    },
+    {
+      "file_name": "Baby Health and Safety Kit.webp",
+      "cloudinary_url": "https://res.cloudinary.com/hjkjyndc/image/upload/v1791207141/babycry/ijkazupyndek7kcbgdil.webp",
+      "cloudinary_public_id": "babycry/ijkazupyndek7kcbgdil",
+      "width": 1536,
+      "height": 1024,
+      "format": "webp",
+      "size_bytes": 218224,
+      "used_by": "Admin Upload",
+      "id": "media-1791207141979",
+      "created_at": "2026-10-05T13:32:21.979Z"
+    },
     {
       "file_name": "Neutral Baby Gear Collection.webp",
       "cloudinary_url": "https://res.cloudinary.com/hjkjyndc/image/upload/v1791204233/babycry/gtyirnjyjjfiz6iq4bwo.webp",

@@ -39,9 +39,9 @@ export function EditorialSection({ section }: EditorialSectionProps) {
           className="object-cover object-[25%_center] sm:object-center select-none"
         />
 
-        {/* Content: Positioned on the right side with enhanced mobile readability */}
+        {/* Content: Positioned on the right side with clean natural design */}
         <div
-          className="absolute z-10 flex flex-col items-start justify-center right-3 sm:right-[7%] md:right-[8%] lg:left-[54%] left-auto lg:right-auto top-1/2 -translate-y-1/2 max-w-[58%] xs:max-w-[54%] sm:max-w-[380px] md:max-w-[420px] lg:max-w-[460px] bg-white/75 sm:bg-transparent backdrop-blur-[2px] sm:backdrop-blur-none p-3.5 sm:p-0 rounded-2xl sm:rounded-none shadow-xs sm:shadow-none"
+          className="absolute z-10 flex flex-col items-start justify-center right-3 sm:right-[7%] md:right-[8%] lg:left-[54%] left-auto lg:right-auto top-1/2 -translate-y-1/2 max-w-[58%] xs:max-w-[54%] sm:max-w-[380px] md:max-w-[420px] lg:max-w-[460px]"
         >
           {/* APPARELS EDIT label */}
           <span className="text-[9px] sm:text-[11px] md:text-xs lg:text-sm font-bold tracking-[0.24em] text-slate-800 uppercase mb-0.5 sm:mb-1">
@@ -56,7 +56,7 @@ export function EditorialSection({ section }: EditorialSectionProps) {
           </h2>
 
           {/* Subtitle */}
-          <p className="text-slate-700 font-medium text-[10px] xs:text-[11px] sm:text-xs md:text-sm lg:text-base mt-1 sm:mt-2 leading-relaxed">
+          <p className="text-slate-700 font-medium text-[10px] xs:text-[11px] sm:text-xs md:text-sm lg:text-base mt-1 sm:mt-2 leading-relaxed line-clamp-3 lg:line-clamp-none">
             {subtitle}
           </p>
 

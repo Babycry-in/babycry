@@ -60,7 +60,7 @@ export function PolaroidGallery({ section }: PolaroidGalleryProps) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
           
           {/* LEFT SIDE: Heading, description, and Explore Looks button (32–35% width) */}
-          <div className="lg:col-span-4 flex flex-col items-start text-left space-y-4 sm:space-y-5">
+          <div className="lg:col-span-4 flex flex-col items-center lg:items-start text-center lg:text-left space-y-4 sm:space-y-5">
             <h2 className="font-heading text-3xl sm:text-4xl lg:text-[44px] font-semibold text-slate-900 leading-[1.12] tracking-tight">
               {title}
             </h2>
@@ -122,36 +122,59 @@ export function PolaroidGallery({ section }: PolaroidGalleryProps) {
               ))}
             </div>
 
-            {/* Mobile / Tablet Layout (< lg): Controlled 2-column collage (No cropped images) */}
-            <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:hidden w-full pt-4">
-              {looks.map((item, idx) => (
-                <div
-                  key={item.id}
-                  className={`transform ${idx % 2 === 0 ? '-rotate-1' : 'rotate-1'} transition-transform duration-300`}
-                >
-                  {/* Physical printed photograph frame */}
-                  <div className="bg-white rounded-[4px] p-2.5 sm:p-3 pb-4 sm:pb-5 border border-black/[0.04] shadow-[0_8px_24px_rgba(0,0,0,0.06)] flex flex-col items-center">
-                    <div
-                      className="relative w-full overflow-hidden bg-slate-50/50 flex items-center justify-center rounded-[2px]"
-                      style={{ aspectRatio: item.aspectRatio }}
-                    >
-                      <Image
-                        src={item.image}
-                        alt={item.alt}
-                        fill
-                        sizes="(max-width: 768px) 45vw, 250px"
-                        className="object-contain object-center select-none"
-                      />
-                    </div>
+            {/* Mobile / Tablet Layout (< lg): Staggered Polaroid collage matching reference */}
+            <div className="grid grid-cols-2 gap-3.5 xs:gap-4 lg:hidden w-full pt-4 px-1 max-w-[380px] mx-auto">
+              {looks.slice(0, 4).map((item, idx) => {
+                // Exact staggered offsets and rotations from reference image 1:
+                // idx 0 (top-left): slightly lower, rotated left
+                // idx 1 (top-right): higher, rotated right
+                // idx 2 (bottom-left): snug under idx 0, subtle tilt
+                // idx 3 (bottom-right): below idx 1, subtle tilt
+                const offsetClass = 
+                  idx === 0 ? 'mt-4' : 
+                  idx === 1 ? 'mt-0' : 
+                  idx === 2 ? '-mt-2' : 
+                  'mt-2';
+                const rotateClass = 
+                  idx === 0 ? '-rotate-[2.5deg]' : 
+                  idx === 1 ? 'rotate-[3deg]' : 
+                  idx === 2 ? 'rotate-[1.5deg]' : 
+                  '-rotate-[1.5deg]';
 
-                    {item.caption && (
-                      <p className="font-heading text-[9px] sm:text-[10px] text-slate-700 text-center mt-2 font-medium tracking-tight">
-                        {item.caption}
-                      </p>
-                    )}
+                return (
+                  <div
+                    key={item.id}
+                    className={`transform ${rotateClass} ${offsetClass} transition-transform duration-300 hover:scale-105 hover:z-20`}
+                  >
+                    {/* Polaroid frame */}
+                    <div className="bg-white rounded-[4px] p-2 xs:p-2.5 pb-5 xs:pb-6 border border-black/[0.06] shadow-[0_8px_20px_rgba(0,0,0,0.08)] flex flex-col items-center">
+                      <div
+                        className="relative w-full aspect-[4/5] overflow-hidden bg-slate-100 rounded-[2px]"
+                      >
+                        <Image
+                          src={item.image}
+                          alt={item.alt}
+                          fill
+                          sizes="(max-width: 640px) 45vw, 200px"
+                          className="object-cover object-center select-none"
+                        />
+                      </div>
+                      {item.caption && (
+                        <p className="font-heading text-[8px] sm:text-[9px] text-slate-700 text-center mt-1.5 font-medium tracking-tight leading-tight">
+                          {item.caption}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
+
+              {/* Bottom cursive caption matching reference */}
+              <div className="col-span-2 flex justify-center pt-2">
+                <p className="font-heading italic text-[11px] sm:text-xs text-slate-600 font-medium select-none tracking-wide text-center">
+                  Essentially little outfits ♡
+                </p>
+              </div>
             </div>
 
           </div>

@@ -61,8 +61,8 @@ export function TravelPromoSection({ section }: TravelPromoSectionProps) {
             border-emerald-100
             shadow-xs
 
-            min-h-[300px]
-            sm:min-h-[360px]
+            min-h-[220px]
+            sm:min-h-[320px]
             md:min-h-[390px]
             lg:min-h-[420px]
           "
@@ -109,8 +109,8 @@ export function TravelPromoSection({ section }: TravelPromoSectionProps) {
               relative
               z-10
 
-              min-h-[300px]
-              sm:min-h-[360px]
+              min-h-[220px]
+              sm:min-h-[320px]
               md:min-h-[390px]
               lg:min-h-[420px]
 
@@ -119,20 +119,23 @@ export function TravelPromoSection({ section }: TravelPromoSectionProps) {
 
               justify-end
 
-              px-6
+              px-5
               sm:px-10
               md:px-14
               lg:px-16
               xl:px-20
 
-              py-10
+              py-6
+              sm:py-10
             "
           >
 
             <div
               className="
                 w-full
-                max-w-[480px]
+                max-w-[320px]
+                xs:max-w-[380px]
+                sm:max-w-[480px]
                 lg:max-w-[500px]
 
                 flex
@@ -142,11 +145,6 @@ export function TravelPromoSection({ section }: TravelPromoSectionProps) {
                 mr-0
                 lg:px-3
                 xl:px-30
-                bg-white/75 sm:bg-transparent
-                backdrop-blur-[2px] sm:backdrop-blur-none
-                p-4 sm:p-0
-                rounded-2xl sm:rounded-none
-                shadow-xs sm:shadow-none
               "
             >
 
@@ -199,7 +197,7 @@ export function TravelPromoSection({ section }: TravelPromoSectionProps) {
               {/* DESCRIPTION */}
               <p
                 className="
-                  mt-3
+                  mt-2
                   sm:mt-4
 
                   text-xs
@@ -210,6 +208,8 @@ export function TravelPromoSection({ section }: TravelPromoSectionProps) {
                   font-medium
 
                   leading-relaxed
+                  line-clamp-3
+                  lg:line-clamp-none
 
                   max-w-[440px]
                 "

@@ -66,7 +66,7 @@ export function HeroSection({ slide }: HeroSectionProps) {
 
         {/* Content layer: Left side typography matching the reference graphic */}
         <div
-          className="absolute z-10 flex flex-col items-start justify-center left-5 sm:left-[8%] md:left-[9%] lg:left-[18%] top-[38%] sm:top-[48%] -translate-y-1/2 max-w-[280px] sm:max-w-[380px] md:max-w-[460px] lg:max-w-[500px]"
+          className="absolute z-10 flex flex-col items-start justify-center left-5 sm:left-[8%] md:left-[9%] lg:left-[18%] top-[28%] sm:top-[48%] -translate-y-1/2 max-w-[280px] sm:max-w-[380px] md:max-w-[460px] lg:max-w-[500px]"
         >
           {/* Eyebrow: LITTLE THINGS FOR with wide tracking */}
           <span className="text-[10px] sm:text-xs md:text-sm font-semibold tracking-[0.28em] text-slate-700 uppercase mb-1 sm:mb-2 select-none">
