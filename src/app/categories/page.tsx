@@ -38,13 +38,13 @@ export default async function CategoriesPage() {
               href={`/categories/${cat.slug}`}
               className="group flex flex-col bg-white rounded-3xl p-5 border border-emerald-50 shadow-xs hover:shadow-xl hover:-translate-y-1.5 transition-all"
             >
-              <div className="relative aspect-[16/10] w-full rounded-2xl overflow-hidden bg-emerald-50 mb-4">
+              <div className="relative aspect-[16/10] w-full rounded-2xl overflow-hidden bg-white mb-4">
                 <Image
                   src={cat.image_url}
                   alt={cat.name}
                   fill
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  className="object-contain group-hover:scale-105 transition-transform duration-500"
                 />
               </div>
               <div className="flex items-center justify-between mt-1">

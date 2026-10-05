@@ -35,10 +35,13 @@ export function TravelPromoSection({ section }: TravelPromoSectionProps) {
       ? section.cta_url
       : '/categories/apparels';
 
-  // Admin-managed image
+  // Admin-managed image — only show section if image is set
   const imageUrl =
-    section?.image_url ||
-    'https://images.unsplash.com/photo-1591088398332-8a7791972843?auto=format&fit=crop&w=1600&q=80';
+    section?.image_url && !section.image_url.includes('unsplash.com')
+      ? section.image_url
+      : null;
+
+  if (!imageUrl) return null;
 
   return (
     <section className="py-8 sm:py-10 lg:py-12 ">

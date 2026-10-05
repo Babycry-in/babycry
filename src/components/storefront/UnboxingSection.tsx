@@ -15,7 +15,12 @@ export function UnboxingSection({ section }: UnboxingSectionProps) {
     'A little love packed into every order. Eco-friendly kraft boxes with custom baby tissue and heartfelt notes.';
   const ctaText = section?.cta_text || 'Our Packaging ♥';
   const ctaUrl = section?.cta_url || '/about';
-  const imageUrl = section?.image_url || '/images/packaging-banner.png';
+  const imageUrl = section?.image_url && !section.image_url.includes('unsplash.com')
+    ? section.image_url
+    : null;
+
+  // Only show section if admin has set an image
+  if (!imageUrl) return null;
 
   return (
     <section className="py-8 sm:py-12 lg:py-14 bg-[#FAF7F2]">

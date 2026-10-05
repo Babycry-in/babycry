@@ -68,7 +68,11 @@ export function GiftBoxSection({ section }: GiftBoxSectionProps) {
         }`}
       >
         <Image
-          src="/images/Dreamy-bg(1)copy.png"
+          src={
+            (section?.image_url && !section.image_url.includes('unsplash.com'))
+              ? section.image_url
+              : '/images/Dreamy-bg(1)copy.png'
+          }
           alt="Baby Showers & Newborns - A little love, packed with care"
           fill
           sizes="100vw"

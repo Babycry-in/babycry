@@ -15,7 +15,7 @@ export default async function AdminHeroSettingsPage() {
     primary_cta_url: '/categories/apparels',
     secondary_cta_text: 'Explore New Arrivals',
     secondary_cta_url: '/categories',
-    desktop_image: 'https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=1000&q=80',
+    desktop_image: '/uploads/ChatGPT Image Oct 2, 2026, 05_55_15 PM-1790943937695-631678435.webp',
     is_active: true,
     sort_order: 1,
   };

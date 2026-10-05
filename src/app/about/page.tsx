@@ -34,7 +34,7 @@ export default async function AboutPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-white p-6 sm:p-12 rounded-[40px] border border-emerald-100 shadow-sm">
           <div className="relative aspect-square w-full rounded-[30px] overflow-hidden shadow-md">
             <Image
-              src="https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=800&q=80"
+              src="/images/packaging-banner.png"
               alt="Baby Cry Story"
               fill
               className="object-cover"

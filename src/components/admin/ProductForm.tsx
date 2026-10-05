@@ -46,16 +46,7 @@ export function ProductForm({
     is_active: initialProduct?.is_active ?? true,
   });
 
-  const [images, setImages] = useState(
-    initialProduct?.images || [
-      {
-        id: 'img-1',
-        cloudinary_url: 'https://images.unsplash.com/photo-1522771930-78848d9293e8?auto=format&fit=crop&w=800&q=80',
-        sort_order: 0,
-        is_primary: true,
-      },
-    ]
-  );
+  const [images, setImages] = useState(initialProduct?.images || []);
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.target.value;

@@ -121,7 +121,7 @@ export function MobileCategoryRow({ items }: MobileCategoryRowProps) {
             {/* Product image centered inside cloud — object-contain so NO cropping */}
             <div className="relative z-10 w-20 h-20 flex items-center justify-center p-1.5">
               <Image
-                src={item.image}
+                src={item.image || '/images/babycry-logo.png'}
                 alt={item.label}
                 fill
                 sizes="80px"

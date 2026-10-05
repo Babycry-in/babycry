@@ -20,7 +20,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const primaryImage =
     product.images?.find((img) => img.is_primary)?.cloudinary_url ||
     product.images?.[0]?.cloudinary_url ||
-    'https://images.unsplash.com/photo-1522771930-78848d9293e8?auto=format&fit=crop&w=600&q=80';
+    '/images/babycry-logo.png';
 
   const inWishlist = isInWishlist(product.id);
   const price = product.sale_price || product.price;

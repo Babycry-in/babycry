@@ -207,7 +207,7 @@ export async function saveCategory(categoryData: Partial<Category>): Promise<Cat
     name: categoryData.name || 'New Category',
     slug: categoryData.slug || `category-${Date.now()}`,
     short_description: categoryData.short_description || '',
-    image_url: categoryData.image_url || 'https://images.unsplash.com/photo-1522771930-78848d9293e8?auto=format&fit=crop&w=600&q=80',
+    image_url: categoryData.image_url || '',
     banner_url: categoryData.banner_url || '',
     mobile_banner_url: categoryData.mobile_banner_url || '',
     display_order: categoryData.display_order || store.categories.length + 1,
@@ -324,6 +324,24 @@ export async function getProducts(options?: {
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
+  const admin = getSupabaseAdmin();
+  if (admin) {
+    try {
+      const { data, error } = await admin
+        .from('products')
+        .select(`
+          *,
+          images:product_images(*),
+          category:categories(*)
+        `)
+        .eq('slug', slug)
+        .maybeSingle();
+      if (!error && data) return data;
+    } catch (err) {
+      console.warn('Supabase getProductBySlug error:', err);
+    }
+  }
+
   const store = ensureStorage();
   const prod = store.products.find(p => p.slug === slug);
   if (!prod) return null;
@@ -334,6 +352,24 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
 }
 
 export async function getProductById(id: string): Promise<Product | null> {
+  const admin = getSupabaseAdmin();
+  if (admin) {
+    try {
+      const { data, error } = await admin
+        .from('products')
+        .select(`
+          *,
+          images:product_images(*),
+          category:categories(*)
+        `)
+        .eq('id', id)
+        .maybeSingle();
+      if (!error && data) return data;
+    } catch (err) {
+      console.warn('Supabase getProductById error:', err);
+    }
+  }
+
   const store = ensureStorage();
   const prod = store.products.find(p => p.id === id);
   if (!prod) return null;
@@ -375,15 +411,7 @@ export async function saveProduct(productData: Partial<Product>): Promise<Produc
     is_active: productData.is_active ?? true,
     seo_title: productData.seo_title,
     seo_description: productData.seo_description,
-    images: productData.images && productData.images.length > 0 ? productData.images : [
-      {
-        id: `img-${Date.now()}`,
-        cloudinary_url: 'https://images.unsplash.com/photo-1522771930-78848d9293e8?auto=format&fit=crop&w=800&q=80',
-        alt_text: productData.name || 'Product Image',
-        sort_order: 0,
-        is_primary: true
-      }
-    ],
+    images: productData.images || [],
     updated_at: now,
     created_at: productData.created_at || now,
   };
@@ -437,6 +465,17 @@ export async function deleteProduct(id: string): Promise<boolean> {
 // HERO SLIDES & HOMEPAGE SECTIONS
 // -------------------------------------------------------------
 export async function getHeroSlides(onlyActive = true): Promise<HeroSlide[]> {
+  const admin = getSupabaseAdmin();
+  if (admin) {
+    try {
+      let query = admin.from('hero_slides').select('*').order('sort_order', { ascending: true });
+      if (onlyActive) query = query.eq('is_active', true);
+      const { data, error } = await query;
+      if (!error && data && data.length > 0) return data;
+    } catch {
+      // Fallback
+    }
+  }
   const store = ensureStorage();
   return store.heroSlides
     .filter(s => !onlyActive || s.is_active)
@@ -444,6 +483,7 @@ export async function getHeroSlides(onlyActive = true): Promise<HeroSlide[]> {
 }
 
 export async function saveHeroSlide(slide: Partial<HeroSlide>): Promise<HeroSlide> {
+  const admin = getSupabaseAdmin();
   const store = ensureStorage();
   const id = slide.id || `hero-${Date.now()}`;
   const fullSlide: HeroSlide = {
@@ -455,11 +495,19 @@ export async function saveHeroSlide(slide: Partial<HeroSlide>): Promise<HeroSlid
     primary_cta_url: slide.primary_cta_url || '/categories/apparels',
     secondary_cta_text: slide.secondary_cta_text || 'Explore New Arrivals',
     secondary_cta_url: slide.secondary_cta_url || '/categories',
-    desktop_image: slide.desktop_image || 'https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=1000&q=80',
+    desktop_image: slide.desktop_image || '',
     mobile_image: slide.mobile_image || '',
     is_active: slide.is_active ?? true,
     sort_order: slide.sort_order || 1,
   };
+
+  if (admin) {
+    try {
+      await admin.from('hero_slides').upsert(fullSlide);
+    } catch (e) {
+      console.warn('Supabase hero slide save error:', e);
+    }
+  }
 
   const idx = store.heroSlides.findIndex(s => s.id === id);
   if (idx >= 0) {
@@ -472,23 +520,32 @@ export async function saveHeroSlide(slide: Partial<HeroSlide>): Promise<HeroSlid
 }
 
 export async function getHomepageSections(): Promise<HomepageSection[]> {
+  const admin = getSupabaseAdmin();
+  if (admin) {
+    try {
+      const { data, error } = await admin.from('homepage_sections').select('*').order('display_order', { ascending: true });
+      if (!error && data && data.length > 0) return data;
+    } catch {}
+  }
   const store = ensureStorage();
   const list = Array.isArray(store.sections) ? store.sections : INITIAL_HOMEPAGE_SECTIONS;
   return [...list].sort((a, b) => a.display_order - b.display_order);
 }
 
 export async function updateHomepageSection(section: Partial<HomepageSection>): Promise<HomepageSection | null> {
+  const admin = getSupabaseAdmin();
   const store = ensureStorage();
   if (!Array.isArray(store.sections)) {
     store.sections = [...INITIAL_HOMEPAGE_SECTIONS];
   }
   const idx = store.sections.findIndex(s => s.section_key === section.section_key);
+  let updatedSec: HomepageSection;
+
   if (idx >= 0) {
-    store.sections[idx] = { ...store.sections[idx], ...section };
-    saveStorage(store);
-    return store.sections[idx];
+    updatedSec = { ...store.sections[idx], ...section };
+    store.sections[idx] = updatedSec;
   } else if (section.section_key) {
-    const newSection: HomepageSection = {
+    updatedSec = {
       id: section.id || `sec-${section.section_key}`,
       section_key: section.section_key,
       title: section.title || '',
@@ -502,11 +559,21 @@ export async function updateHomepageSection(section: Partial<HomepageSection>): 
       display_order: section.display_order ?? (store.sections.length + 1),
       metadata: section.metadata || {},
     };
-    store.sections.push(newSection);
-    saveStorage(store);
-    return newSection;
+    store.sections.push(updatedSec);
+  } else {
+    return null;
   }
-  return null;
+
+  if (admin) {
+    try {
+      await admin.from('homepage_sections').upsert(updatedSec);
+    } catch (e) {
+      console.warn('Supabase section update error:', e);
+    }
+  }
+
+  saveStorage(store);
+  return updatedSec;
 }
 
 // -------------------------------------------------------------

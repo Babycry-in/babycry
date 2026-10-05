@@ -60,7 +60,7 @@ export default async function HomePage() {
       <CategoryCapsules categories={categories} />
 
       {/* 3. New little favorites (Products with NEW badges & Wishlist) */}
-      <NewFavoritesSection products={products} />
+      {products && products.length > 0 && <NewFavoritesSection products={products} />}
 
       {/* 4. Editorial Girlswear Section */}
       <EditorialSection section={sweetestDetailsSec} />
