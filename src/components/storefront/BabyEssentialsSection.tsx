@@ -88,8 +88,8 @@ export function BabyEssentialsSection({ categories = [] }: BabyEssentialsSection
           </Link>
         </div>
 
-        {/* Mobile Horizontal Auto-Scroll Marquee Track */}
-        <MobileCategoryRow items={essentials} />
+        {/* Mobile Horizontal Auto-Scroll Marquee Track with preserved animation */}
+        <MobileCategoryRow items={essentials} mode="marquee" />
 
         {/* Desktop Items row — unchanged flex wrap on md+ */}
         <div className="hidden md:flex flex-wrap justify-center gap-6 sm:gap-8 lg:gap-10">
