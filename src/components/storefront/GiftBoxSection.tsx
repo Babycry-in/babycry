@@ -68,7 +68,7 @@ export function GiftBoxSection({ section }: GiftBoxSectionProps) {
       : '/images/Gift-bg-mb.png';
 
   return (
-    <section ref={sectionRef} className="relative w-full overflow-hidden bg-[#FAF7F2]">
+    <section ref={sectionRef} className="relative w-full overflow-hidden ">
       {/*
         Mobile (< md): text at the TOP, placed over the background image (gift box anchored at the bottom).
         Desktop (md+): original full-bleed banner with text overlay (unchanged).
@@ -148,7 +148,7 @@ export function GiftBoxSection({ section }: GiftBoxSectionProps) {
           </div>
 
           {/* Soft cream wash behind the text so it stays readable on top of the image (mobile only) */}
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-[62%] bg-gradient-to-b from-[#FAF7F2] via-[#FAF7F2]/75 to-transparent md:hidden" />
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-[62%] md:hidden" />
         </div>
       </div>
     </section>
