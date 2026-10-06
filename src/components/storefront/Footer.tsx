@@ -330,13 +330,52 @@ export function Footer({ settings }: FooterProps) {
         </div>
 
         {/* BOTTOM BAR */}
-        <div className="border-t border-slate-400/40 pt-4 sm:pt-6 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-3 text-[10px] sm:text-sm text-slate-900 font-bold">
-          <p>© 2026 Baby Cry.in. All rights reserved.</p>
-          <p className="flex items-center gap-1.5 font-bold">
-            <span>Made with</span>
-            <span className="text-red-600 text-sm">♥</span>
-            <span>for little ones.</span>
+        <div className="border-t border-slate-400/40 pt-4 sm:pt-6 flex flex-col items-center gap-2 text-[10px] sm:text-sm text-slate-900 font-bold">
+
+          {/* Desktop: copyright + made with heart in a row */}
+          <div className="hidden lg:flex w-full items-center justify-between">
+            <p>© 2026 Baby Cry.in. All rights reserved.</p>
+            <p className="flex items-center gap-1.5 font-bold">
+              <span>Made with</span>
+              <span className="text-red-600 text-sm">♥</span>
+              <span>for little ones.</span>
+            </p>
+          </div>
+
+          {/* Desktop: Ekodrix credit centered below — same size as footer text */}
+          <p className="hidden lg:block font-bold">
+            Crafted by{' '}
+            <a
+              href="https://ekodrix.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-emerald-800 underline underline-offset-2 transition-colors"
+            >
+              Ekodrix
+            </a>
           </p>
+
+          {/* Mobile: copyright, made with ♥, then Ekodrix at the bottom */}
+          <div className="lg:hidden flex flex-col items-center gap-1.5 text-center">
+            <p>© 2026 Baby Cry.in. All rights reserved.</p>
+            <p className="flex items-center gap-1.5 font-bold">
+              <span>Made with</span>
+              <span className="text-red-600 text-sm">♥</span>
+              <span>for little ones.</span>
+            </p>
+            <p className="font-bold">
+              Crafted by{' '}
+              <a
+                href="https://ekodrix.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-emerald-800 underline underline-offset-2 transition-colors"
+              >
+                Ekodrix
+              </a>
+            </p>
+          </div>
+
         </div>
 
       </div>
