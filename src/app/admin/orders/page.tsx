@@ -2,7 +2,9 @@ import React from 'react';
 import Link from 'next/link';
 import { getOrders } from '@/lib/data/db-service';
 import { ShoppingBag, Eye, MessageCircle } from 'lucide-react';
+import { OrdersRefreshButton } from '@/components/admin/OrdersRefreshButton';
 
+export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export default async function AdminOrdersPage() {
@@ -19,13 +21,16 @@ export default async function AdminOrdersPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl sm:text-3xl font-bold font-heading text-slate-900">
-          Orders ({orders.length})
-        </h1>
-        <p className="text-xs sm:text-sm text-slate-500 mt-1">
-          Monitor incoming customer orders and track fulfillment status.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold font-heading text-slate-900">
+            Orders ({orders.length})
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            Monitor incoming customer orders and track fulfillment status.
+          </p>
+        </div>
+        <OrdersRefreshButton />
       </div>
 
       <div className="bg-white rounded-2xl border border-slate-200 shadow-2xs overflow-hidden">

@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { randomUUID } from 'crypto';
 import { 
   BusinessSettings, 
   Category, 
@@ -600,34 +601,53 @@ export async function createOrderServerSide(payload: {
     product_id: string;
     variant_snapshot?: string;
     quantity: number;
+    name?: string;
+    price?: number;
+    image?: string;
   }>;
 }): Promise<Order> {
   const store = ensureStorage();
   const settings = await getBusinessSettings();
+  const admin = getSupabaseAdmin();
 
-  // Price security: Retrieve real products from database
+  // Price security: Retrieve real products from local store or Supabase
   let subtotal = 0;
   const orderItems: OrderItem[] = [];
 
   for (const item of payload.items) {
-    const product = store.products.find(p => p.id === item.product_id);
-    if (!product) {
-      throw new Error(`Product not found: ${item.product_id}`);
+    let product = store.products.find(p => p.id === item.product_id);
+    if (!product && admin) {
+      try {
+        const { data } = await admin
+          .from('products')
+          .select('*, images:product_images(*)')
+          .eq('id', item.product_id)
+          .maybeSingle();
+        if (data) product = data;
+      } catch {}
     }
 
-    const unitPrice = product.sale_price !== null && product.sale_price !== undefined
-      ? product.sale_price
-      : product.price;
+    let unitPrice = 0;
+    let productName = item.name || 'Product';
+    let primaryImg = item.image || '/images/babycry-logo.png';
+
+    if (product) {
+      unitPrice = product.sale_price !== null && product.sale_price !== undefined
+        ? product.sale_price
+        : product.price;
+      productName = product.name;
+      primaryImg = product.images?.find(img => img.is_primary)?.cloudinary_url || product.images?.[0]?.cloudinary_url || primaryImg;
+    } else if (item.price !== undefined && item.price !== null) {
+      unitPrice = Number(item.price);
+    }
 
     const qty = Math.max(1, Math.floor(item.quantity));
     const itemTotal = unitPrice * qty;
     subtotal += itemTotal;
 
-    const primaryImg = product.images.find(img => img.is_primary)?.cloudinary_url || product.images[0]?.cloudinary_url || '';
-
     orderItems.push({
-      product_id: product.id,
-      product_name_snapshot: product.name,
+      product_id: product?.id || item.product_id,
+      product_name_snapshot: productName,
       product_image_snapshot: primaryImg,
       variant_snapshot: item.variant_snapshot || 'Default',
       quantity: qty,
@@ -639,12 +659,13 @@ export async function createOrderServerSide(payload: {
   const deliveryCharge = subtotal >= settings.free_shipping_threshold ? 0 : settings.standard_delivery_fee;
   const total = subtotal + deliveryCharge;
 
-  // Generate unique order number #BC-XXXXXX
+  // Generate unique order number #BC-XXXXXX and standard UUID id
   const randomSuffix = Math.floor(100000 + Math.random() * 900000);
   const orderNumber = `BC-${randomSuffix}`;
+  const orderId = randomUUID();
 
   const order: Order = {
-    id: `order-${Date.now()}`,
+    id: orderId,
     order_number: orderNumber,
     customer_name: payload.customer_name,
     customer_phone: payload.customer_phone,
@@ -665,17 +686,30 @@ export async function createOrderServerSide(payload: {
     items: orderItems
   };
 
-  const admin = getSupabaseAdmin();
   if (admin) {
     try {
       const { items: _, ...orderHeader } = order;
-      await admin.from('orders').insert(orderHeader);
-      await admin.from('order_items').insert(
-        orderItems.map(it => ({
+      const { error: ordErr } = await admin.from('orders').insert(orderHeader);
+      if (ordErr) {
+        console.warn('Supabase orders insert warning:', ordErr);
+      } else {
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        const dbItems = orderItems.map(it => ({
+          id: randomUUID(),
           order_id: order.id,
-          ...it
-        }))
-      );
+          product_id: uuidRegex.test(it.product_id) ? it.product_id : null,
+          product_name_snapshot: it.product_name_snapshot,
+          product_image_snapshot: it.product_image_snapshot,
+          variant_snapshot: it.variant_snapshot,
+          quantity: it.quantity,
+          unit_price: it.unit_price,
+          total_price: it.total_price
+        }));
+        const { error: itErr } = await admin.from('order_items').insert(dbItems);
+        if (itErr) {
+          console.warn('Supabase order_items insert warning:', itErr);
+        }
+      }
     } catch (e) {
       console.warn('Supabase order insert failed:', e);
     }
@@ -689,34 +723,143 @@ export async function createOrderServerSide(payload: {
 
 export async function getOrders(): Promise<Order[]> {
   const store = ensureStorage();
-  return store.orders.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  const localOrders = store.orders || [];
+
+  const admin = getSupabaseAdmin();
+  if (admin) {
+    try {
+      const { data: supabaseOrders, error } = await admin
+        .from('orders')
+        .select(`
+          *,
+          items:order_items(*)
+        `)
+        .order('created_at', { ascending: false });
+
+      if (!error && Array.isArray(supabaseOrders) && supabaseOrders.length > 0) {
+        const mappedSupabaseOrders: Order[] = supabaseOrders.map((so: any) => ({
+          id: so.id,
+          order_number: so.order_number,
+          customer_name: so.customer_name,
+          customer_phone: so.customer_phone,
+          customer_email: so.customer_email,
+          address: so.address,
+          city: so.city,
+          state: so.state,
+          pincode: so.pincode,
+          delivery_instructions: so.delivery_instructions,
+          subtotal: Number(so.subtotal),
+          delivery_charge: Number(so.delivery_charge || 0),
+          discount: Number(so.discount || 0),
+          total: Number(so.total),
+          payment_status: so.payment_status,
+          order_status: so.order_status,
+          whatsapp_status: so.whatsapp_status,
+          created_at: so.created_at,
+          updated_at: so.updated_at,
+          items: (so.items || []).map((it: any) => ({
+            product_id: it.product_id || '',
+            product_name_snapshot: it.product_name_snapshot,
+            product_image_snapshot: it.product_image_snapshot,
+            variant_snapshot: it.variant_snapshot,
+            quantity: Number(it.quantity || 1),
+            unit_price: Number(it.unit_price || 0),
+            total_price: Number(it.total_price || 0),
+          }))
+        }));
+
+        const orderMap = new Map<string, Order>();
+        for (const lo of localOrders) {
+          orderMap.set(lo.order_number || lo.id, lo);
+        }
+        for (const so of mappedSupabaseOrders) {
+          orderMap.set(so.order_number || so.id, so);
+        }
+
+        const merged = Array.from(orderMap.values());
+        return merged.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      }
+    } catch (e) {
+      console.warn('Failed to load orders from Supabase:', e);
+    }
+  }
+
+  return localOrders.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 }
 
 export async function getOrderByNumber(orderNumber: string): Promise<Order | null> {
+  const admin = getSupabaseAdmin();
+  if (admin) {
+    try {
+      const { data, error } = await admin
+        .from('orders')
+        .select(`
+          *,
+          items:order_items(*)
+        `)
+        .eq('order_number', orderNumber)
+        .maybeSingle();
+
+      if (!error && data) {
+        return {
+          id: data.id,
+          order_number: data.order_number,
+          customer_name: data.customer_name,
+          customer_phone: data.customer_phone,
+          customer_email: data.customer_email,
+          address: data.address,
+          city: data.city,
+          state: data.state,
+          pincode: data.pincode,
+          delivery_instructions: data.delivery_instructions,
+          subtotal: Number(data.subtotal),
+          delivery_charge: Number(data.delivery_charge || 0),
+          discount: Number(data.discount || 0),
+          total: Number(data.total),
+          payment_status: data.payment_status,
+          order_status: data.order_status,
+          whatsapp_status: data.whatsapp_status,
+          created_at: data.created_at,
+          updated_at: data.updated_at,
+          items: (data.items || []).map((it: any) => ({
+            product_id: it.product_id || '',
+            product_name_snapshot: it.product_name_snapshot,
+            product_image_snapshot: it.product_image_snapshot,
+            variant_snapshot: it.variant_snapshot,
+            quantity: Number(it.quantity || 1),
+            unit_price: Number(it.unit_price || 0),
+            total_price: Number(it.total_price || 0),
+          }))
+        };
+      }
+    } catch {}
+  }
+
   const store = ensureStorage();
   return store.orders.find(o => o.order_number === orderNumber) || null;
 }
 
 export async function updateOrderStatus(orderId: string, status: OrderStatus): Promise<Order | null> {
+  const now = new Date().toISOString();
   const store = ensureStorage();
-  const order = store.orders.find(o => o.id === orderId);
-  if (!order) return null;
-
-  order.order_status = status;
-  order.updated_at = new Date().toISOString();
+  const order = store.orders.find(o => o.id === orderId || o.order_number === orderId);
+  if (order) {
+    order.order_status = status;
+    order.updated_at = now;
+    saveStorage(store);
+  }
 
   const admin = getSupabaseAdmin();
   if (admin) {
     try {
       await admin.from('orders').update({
         order_status: status,
-        updated_at: order.updated_at
-      }).eq('id', orderId);
+        updated_at: now
+      }).or(`id.eq.${orderId},order_number.eq.${orderId}`);
     } catch {}
   }
 
-  saveStorage(store);
-  return order;
+  return order || null;
 }
 
 // -------------------------------------------------------------
