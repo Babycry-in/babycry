@@ -63,6 +63,9 @@ export default function CheckoutPage() {
           delivery_instructions: form.deliveryInstructions,
           items: items.map((it) => ({
             productId: it.productId,
+            name: it.name,
+            price: it.salePrice || it.price,
+            image: it.image,
             variant: `${it.selectedSize || ''} ${it.selectedColor || ''}`.trim() || 'Standard',
             quantity: it.quantity,
           })),

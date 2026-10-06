@@ -239,6 +239,7 @@ alter table public.business_settings enable row level security;
 alter table public.categories enable row level security;
 alter table public.subcategories enable row level security;
 alter table public.products enable row level security;
+
 alter table public.product_images enable row level security;
 alter table public.product_variants enable row level security;
 alter table public.hero_slides enable row level security;
@@ -251,21 +252,83 @@ alter table public.wishlist_items enable row level security;
 alter table public.media_library enable row level security;
 
 -- Public Read Policies
+drop policy if exists "Allow public read on business_settings" on public.business_settings;
 create policy "Allow public read on business_settings" on public.business_settings for select using (true);
+
+drop policy if exists "Allow public read on categories" on public.categories;
 create policy "Allow public read on categories" on public.categories for select using (is_active = true);
+
+drop policy if exists "Allow public read on subcategories" on public.subcategories;
 create policy "Allow public read on subcategories" on public.subcategories for select using (is_active = true);
+
+drop policy if exists "Allow public read on products" on public.products;
 create policy "Allow public read on products" on public.products for select using (is_active = true);
+
+drop policy if exists "Allow public read on product_images" on public.product_images;
 create policy "Allow public read on product_images" on public.product_images for select using (true);
+
+drop policy if exists "Allow public read on product_variants" on public.product_variants;
 create policy "Allow public read on product_variants" on public.product_variants for select using (true);
+
+drop policy if exists "Allow public read on hero_slides" on public.hero_slides;
 create policy "Allow public read on hero_slides" on public.hero_slides for select using (is_active = true);
+
+drop policy if exists "Allow public read on homepage_sections" on public.homepage_sections;
 create policy "Allow public read on homepage_sections" on public.homepage_sections for select using (is_active = true);
+
+drop policy if exists "Allow public read on reviews" on public.reviews;
 create policy "Allow public read on reviews" on public.reviews for select using (is_approved = true);
 
--- Orders: Public can insert their own orders and read their placed order
+-- Orders Policies: Public & Admin can insert, view, update status, and manage orders
+drop policy if exists "Allow public insert on orders" on public.orders;
 create policy "Allow public insert on orders" on public.orders for insert with check (true);
+
+drop policy if exists "Allow public read on orders" on public.orders;
 create policy "Allow public read on orders" on public.orders for select using (true);
+
+drop policy if exists "Allow public update on orders" on public.orders;
+create policy "Allow public update on orders" on public.orders for update using (true) with check (true);
+
+drop policy if exists "Allow public delete on orders" on public.orders;
+create policy "Allow public delete on orders" on public.orders for delete using (true);
+
+drop policy if exists "Allow public insert on order_items" on public.order_items;
 create policy "Allow public insert on order_items" on public.order_items for insert with check (true);
+
+drop policy if exists "Allow public read on order_items" on public.order_items;
 create policy "Allow public read on order_items" on public.order_items for select using (true);
 
--- Admin Full Access policies (Service Role bypasses RLS)
-create policy "Allow full access for service_role on all tables" on public.business_settings using (auth.role() = 'service_role');
+drop policy if exists "Allow public update on order_items" on public.order_items;
+create policy "Allow public update on order_items" on public.order_items for update using (true) with check (true);
+
+drop policy if exists "Allow public delete on order_items" on public.order_items;
+create policy "Allow public delete on order_items" on public.order_items for delete using (true);
+
+-- Admin Full Access Policies (for anon API key if service_role is not set)
+drop policy if exists "Allow full access on categories" on public.categories;
+create policy "Allow full access on categories" on public.categories for all using (true) with check (true);
+
+drop policy if exists "Allow full access on subcategories" on public.subcategories;
+create policy "Allow full access on subcategories" on public.subcategories for all using (true) with check (true);
+
+drop policy if exists "Allow full access on products" on public.products;
+create policy "Allow full access on products" on public.products for all using (true) with check (true);
+
+drop policy if exists "Allow full access on product_images" on public.product_images;
+create policy "Allow full access on product_images" on public.product_images for all using (true) with check (true);
+
+drop policy if exists "Allow full access on product_variants" on public.product_variants;
+create policy "Allow full access on product_variants" on public.product_variants for all using (true) with check (true);
+
+drop policy if exists "Allow full access on hero_slides" on public.hero_slides;
+create policy "Allow full access on hero_slides" on public.hero_slides for all using (true) with check (true);
+
+drop policy if exists "Allow full access on homepage_sections" on public.homepage_sections;
+create policy "Allow full access on homepage_sections" on public.homepage_sections for all using (true) with check (true);
+
+drop policy if exists "Allow full access on business_settings" on public.business_settings;
+create policy "Allow full access on business_settings" on public.business_settings for all using (true) with check (true);
+
+drop policy if exists "Allow full access on media_library" on public.media_library;
+create policy "Allow full access on media_library" on public.media_library for all using (true) with check (true);
+

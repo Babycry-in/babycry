@@ -99,10 +99,10 @@ export function HeroSection({ slide }: HeroSectionProps) {
             {/* Subtle Divider */}
             <span className="hidden sm:inline-block w-[1px] h-5 sm:h-6 bg-slate-300" />
 
-            {/* Secondary text link */}
+            {/* Secondary text link — hidden on mobile */}
             <Link
               href={secondaryCtaUrl}
-              className="text-slate-700 hover:text-emerald-900 font-semibold sm:font-medium text-xs sm:text-sm md:text-base transition-colors"
+              className="hidden sm:inline-block text-slate-700 hover:text-emerald-900 font-semibold sm:font-medium text-xs sm:text-sm md:text-base transition-colors"
             >
               {secondaryCtaText}
             </Link>

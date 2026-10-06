@@ -45,6 +45,9 @@ export async function POST(req: NextRequest) {
       delivery_instructions,
       items: items.map((it: any) => ({
         product_id: it.productId || it.product_id,
+        name: it.name || it.product_name || it.product_name_snapshot,
+        price: it.price !== undefined && it.price !== null ? Number(it.price) : undefined,
+        image: it.image || it.product_image || it.product_image_snapshot,
         variant_snapshot: it.variant || `${it.selectedSize || ''} ${it.selectedColor || ''}`.trim() || 'Default',
         quantity: it.quantity || 1,
       })),
