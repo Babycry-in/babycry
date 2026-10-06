@@ -12,7 +12,7 @@ import {
   YoutubeIcon,
   WhatsAppIcon,
 } from '@/components/ui/SocialIcons';
-import { Mail, MapPin, ArrowRight, Check } from 'lucide-react';
+import { Mail, MapPin, ArrowRight, Check, ChevronDown } from 'lucide-react';
 
 interface FooterProps {
   settings: BusinessSettings;
@@ -22,6 +22,8 @@ export function Footer({ settings }: FooterProps) {
   const pathname = usePathname();
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
+  // Mobile accordion: which footer menu is open (only one at a time)
+  const [openMenu, setOpenMenu] = useState<'shop' | 'help' | null>(null);
 
   // Hide storefront footer on admin routes
   if (pathname?.startsWith('/admin')) {
@@ -29,6 +31,39 @@ export function Footer({ settings }: FooterProps) {
   }
 
   const cleanPhone = settings.phone.replace(/[^0-9]/g, '');
+
+  // Mobile accordion data
+  const mobileMenus: {
+    key: 'shop' | 'help';
+    title: string;
+    links: { href: string; label: string }[];
+    extra?: { href: string; label: string };
+  }[] = [
+    {
+      key: 'shop',
+      title: 'Shop',
+      links: [
+        { href: '/categories/apparels', label: 'Apparels' },
+        { href: '/categories/footwear', label: 'Footwear' },
+        { href: '/categories/accessories', label: 'Accessories' },
+        { href: '/categories/gift-and-hampers', label: 'Gift & Hampers' },
+        { href: '/categories/hospital-kit', label: 'Hospital Kit' },
+        { href: '/categories/toys', label: 'Toys' },
+      ],
+      extra: { href: '/categories', label: 'View All Collections →' },
+    },
+    {
+      key: 'help',
+      title: 'Help',
+      links: [
+        { href: '/about', label: 'About Us' },
+        { href: '/contact', label: 'Contact' },
+        { href: '/shipping', label: 'Shipping' },
+        { href: '/returns', label: 'Returns' },
+        { href: '/faq', label: 'FAQs' },
+      ],
+    },
+  ];
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
@@ -182,13 +217,13 @@ export function Footer({ settings }: FooterProps) {
 
         </div>
 
-        {/* ── MOBILE/TABLET (< lg): Compact 2-column + contact row ── */}
+        {/* ── MOBILE/TABLET (< lg): Big logo + dropdown menus + contact row ── */}
         <div className="lg:hidden pb-8 sm:pb-10">
-          {/* Logo + Tagline */}
-          <div className="flex items-center gap-3 mb-5 sm:mb-6">
+          {/* Logo + Tagline — centered, bigger */}
+          <div className="flex flex-col items-center text-center mb-6 sm:mb-8">
             <button
               onClick={handleScrollToTop}
-              className="inline-block text-left cursor-pointer group focus:outline-none"
+              className="inline-block cursor-pointer group focus:outline-none"
               title="Click to scroll to top"
               aria-label="Baby Cry.in - Scroll to top"
               suppressHydrationWarning
@@ -196,45 +231,69 @@ export function Footer({ settings }: FooterProps) {
               <Image
                 src="/images/babycry-logo-transparent.png"
                 alt="Baby Cry.in"
-                width={100}
-                height={30}
-                className="h-10 sm:h-12 w-auto object-contain group-hover:opacity-85 transition-opacity"
+                width={180}
+                height={60}
+                className="h-20 sm:h-24 w-auto object-contain group-hover:opacity-85 transition-opacity"
                 priority
                 suppressHydrationWarning
               />
             </button>
-            <p className="text-xs sm:text-sm text-slate-900 font-bold leading-relaxed">
-              Little things<br />for little ones.
+            <p className="mt-2 text-sm sm:text-base text-slate-900 font-bold">
+              Little things for little ones.
             </p>
           </div>
 
-          {/* 2-column Shop + Help grid */}
-          <div className="grid grid-cols-2 gap-6 sm:gap-8 mb-6 sm:mb-8">
-            {/* Shop */}
-            <div className="space-y-2">
-              <h4 className="font-heading font-extrabold text-sm sm:text-base text-slate-950 mb-2">Shop</h4>
-              <ul className="space-y-1.5 text-xs sm:text-sm text-slate-900 font-bold">
-                <li><Link href="/categories/apparels" className="hover:text-emerald-900 transition-colors block">Apparels</Link></li>
-                <li><Link href="/categories/footwear" className="hover:text-emerald-900 transition-colors block">Footwear</Link></li>
-                <li><Link href="/categories/accessories" className="hover:text-emerald-900 transition-colors block">Accessories</Link></li>
-                <li><Link href="/categories/gift-and-hampers" className="hover:text-emerald-900 transition-colors block">Gift & Hampers</Link></li>
-                <li><Link href="/categories/hospital-kit" className="hover:text-emerald-900 transition-colors block">Hospital Kit</Link></li>
-                <li><Link href="/categories/toys" className="hover:text-emerald-900 transition-colors block">Toys</Link></li>
-                <li><Link href="/categories" className="text-[11px] font-extrabold text-emerald-900 hover:underline block pt-0.5">View All →</Link></li>
-              </ul>
-            </div>
+          {/* Shop + Help — tap to open dropdown */}
+          <div className="mb-6 sm:mb-8 border-t border-slate-400/40">
+            {mobileMenus.map((menu) => {
+              const isOpen = openMenu === menu.key;
+              return (
+                <div key={menu.key} className="border-b border-slate-400/40">
+                  <button
+                    type="button"
+                    onClick={() => setOpenMenu(isOpen ? null : menu.key)}
+                    aria-expanded={isOpen}
+                    aria-controls={`footer-menu-${menu.key}`}
+                    className="w-full flex items-center justify-between py-3.5 text-left focus:outline-none"
+                  >
+                    <span className="font-heading font-extrabold text-base sm:text-lg text-slate-950">
+                      {menu.title}
+                    </span>
+                    <ChevronDown
+                      className={`w-5 h-5 text-slate-950 transition-transform duration-300 ${
+                        isOpen ? 'rotate-180' : ''
+                      }`}
+                    />
+                  </button>
 
-            {/* Help */}
-            <div className="space-y-2">
-              <h4 className="font-heading font-extrabold text-sm sm:text-base text-slate-950 mb-2">Help</h4>
-              <ul className="space-y-1.5 text-xs sm:text-sm text-slate-900 font-bold">
-                <li><Link href="/about" className="hover:text-emerald-900 transition-colors block">About Us</Link></li>
-                <li><Link href="/contact" className="hover:text-emerald-900 transition-colors block">Contact</Link></li>
-                <li><Link href="/shipping" className="hover:text-emerald-900 transition-colors block">Shipping</Link></li>
-                <li><Link href="/returns" className="hover:text-emerald-900 transition-colors block">Returns</Link></li>
-                <li><Link href="/faq" className="hover:text-emerald-900 transition-colors block">FAQs</Link></li>
-              </ul>
-            </div>
+                  <div
+                    id={`footer-menu-${menu.key}`}
+                    className={`grid transition-all duration-300 ease-out ${
+                      isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+                    }`}
+                  >
+                    <div className={`overflow-hidden ${isOpen ? '' : 'invisible'}`}>
+                      <ul className="pb-3 space-y-0.5 text-sm sm:text-base text-slate-900 font-bold">
+                        {menu.links.map((link) => (
+                          <li key={link.href}>
+                            <Link href={link.href} className="hover:text-emerald-900 transition-colors block py-1.5">
+                              {link.label}
+                            </Link>
+                          </li>
+                        ))}
+                        {menu.extra && (
+                          <li>
+                            <Link href={menu.extra.href} className="text-xs sm:text-sm font-extrabold text-emerald-900 hover:underline block pt-1.5 pb-1">
+                              {menu.extra.label}
+                            </Link>
+                          </li>
+                        )}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
 
           {/* Contact row — compact icons */}

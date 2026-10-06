@@ -278,9 +278,10 @@ export async function getProducts(options?: {
       if (options?.search) query = query.ilike('name', `%${options.search}%`);
 
       const { data, error } = await query;
+      // Only use Supabase data if it returns results — local store is always the reliable source
       if (!error && data && data.length > 0) return data;
     } catch {
-      // Fallback
+      // Fallback to local store
     }
   }
 
@@ -416,11 +417,21 @@ export async function saveProduct(productData: Partial<Product>): Promise<Produc
     created_at: productData.created_at || now,
   };
 
+  // Always save to local store FIRST — this is the reliable source of truth
+  const existingIdx = store.products.findIndex(p => p.id === id);
+  if (existingIdx >= 0) {
+    store.products[existingIdx] = product;
+  } else {
+    store.products.unshift(product);
+  }
+  saveStorage(store);
+
+  // Attempt Supabase sync (best-effort — local store is already updated)
   if (admin) {
     try {
       const { images, category, ...rest } = product;
-      await admin.from('products').upsert(rest);
-      if (images && images.length > 0) {
+      const { error: upsertError } = await admin.from('products').upsert(rest);
+      if (!upsertError && images && images.length > 0) {
         await admin.from('product_images').delete().eq('product_id', id);
         await admin.from('product_images').insert(
           images.map(img => ({
@@ -433,18 +444,14 @@ export async function saveProduct(productData: Partial<Product>): Promise<Produc
           }))
         );
       }
+      if (upsertError) {
+        console.warn('Supabase product sync skipped (UUID mismatch or RLS):', upsertError.message);
+      }
     } catch (e) {
       console.warn('Supabase product save error:', e);
     }
   }
 
-  const existingIdx = store.products.findIndex(p => p.id === id);
-  if (existingIdx >= 0) {
-    store.products[existingIdx] = product;
-  } else {
-    store.products.unshift(product);
-  }
-  saveStorage(store);
   return product;
 }
 

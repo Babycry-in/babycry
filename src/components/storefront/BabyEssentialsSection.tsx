@@ -63,17 +63,17 @@ export function BabyEssentialsSection({ categories = [] }: BabyEssentialsSection
   }
 
   return (
-    <section className="relative overflow-hidden py-8 sm:py-10 !bg-white">
+    <section className="relative overflow-hidden py-6 sm:py-10 !bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
-        {/* Top row: label + heading left | View All right */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-14 gap-3">
-          <div>
-            <span className="inline-block text-[10px] sm:text-xs font-bold uppercase tracking-widest text-emerald-800/70 mb-2">
+        {/* Top row: centered on mobile, split left/right on desktop */}
+        <div className="flex flex-col items-center text-center sm:items-end sm:text-left sm:flex-row justify-between mb-6 sm:mb-14 gap-3">
+          <div className="flex flex-col items-center sm:items-start">
+            <span className="inline-block text-[10px] sm:text-xs font-bold uppercase tracking-widest text-emerald-800/70 mb-1.5 sm:mb-2 text-center sm:text-left">
               BABY ESSENTIALS
             </span>
 
-            <h2 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-800 leading-tight">
+            <h2 className="font-heading text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-800 leading-tight text-center sm:text-left">
               Made for everyday
               <br className="hidden sm:block" /> little moments.
             </h2>
@@ -88,8 +88,8 @@ export function BabyEssentialsSection({ categories = [] }: BabyEssentialsSection
           </Link>
         </div>
 
-        {/* Mobile Horizontal Auto-Scroll Marquee Track */}
-        <MobileCategoryRow items={essentials} />
+        {/* Mobile Horizontal Auto-Scroll Marquee Track with preserved animation */}
+        <MobileCategoryRow items={essentials} mode="marquee" />
 
         {/* Desktop Items row — unchanged flex wrap on md+ */}
         <div className="hidden md:flex flex-wrap justify-center gap-6 sm:gap-8 lg:gap-10">

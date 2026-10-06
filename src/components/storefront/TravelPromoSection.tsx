@@ -9,31 +9,11 @@ interface TravelPromoSectionProps {
 }
 
 export function TravelPromoSection({ section }: TravelPromoSectionProps) {
-  const sectionLabel = section?.subtitle || 'APPARELS EDIT';
-
-  const rawTitle =
-    section?.title &&
-    !section.title.toLowerCase().includes('adventures')
-      ? section.title
-      : 'The sweetest little details.';
-
-  const description =
-    section?.description &&
-    !section.description.toLowerCase().includes('journeys')
-      ? section.description
-      : 'Adorable styles made for tiny personalities and big little moments.';
-
-  const ctaText =
-    section?.cta_text &&
-    !section.cta_text.toLowerCase().includes('travel')
-      ? section.cta_text
-      : 'Shop Apparels';
-
-  const ctaUrl =
-    section?.cta_url &&
-    !section.cta_url.toLowerCase().includes('baby-gear')
-      ? section.cta_url
-      : '/categories/apparels';
+  const sectionLabel = section?.subtitle || 'BABY GEAR';
+  const rawTitle = section?.title || 'Gear for little adventures.';
+  const description = section?.description || 'Comfortable essentials made for growing, moving and exploring.';
+  const ctaText = section?.cta_text || 'Explore Travel Essentials';
+  const ctaUrl = section?.cta_url || '/categories/baby-gear';
 
   // Admin-managed image — only show section if image is set
   const imageUrl =
@@ -43,8 +23,9 @@ export function TravelPromoSection({ section }: TravelPromoSectionProps) {
 
   if (!imageUrl) return null;
 
+
   return (
-    <section className="py-8 sm:py-10 lg:py-12 ">
+    <section className="py-6 sm:py-10 lg:py-12 ">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* =====================================================
@@ -55,14 +36,14 @@ export function TravelPromoSection({ section }: TravelPromoSectionProps) {
             relative
             w-full
             overflow-hidden
-            rounded-[28px]
+            rounded-[24px]
             sm:rounded-[36px]
             border
             border-emerald-100
             shadow-xs
 
-            min-h-[300px]
-            sm:min-h-[360px]
+            min-h-[220px]
+            sm:min-h-[320px]
             md:min-h-[390px]
             lg:min-h-[420px]
           "
@@ -90,13 +71,18 @@ export function TravelPromoSection({ section }: TravelPromoSectionProps) {
 
           {/* ===================================================
               RIGHT-SIDE READABILITY GRADIENT
-              Keeps image visible while making text readable
+              Keeps image visible while making text readable without solid box
           ==================================================== */}
           <div
             className="
               absolute
               inset-0
-              
+              pointer-events-none
+              bg-gradient-to-l
+              from-[#FAF7F2]/80
+              via-[#FAF7F2]/30
+              to-transparent
+              sm:from-transparent
             "
           />
 
@@ -109,8 +95,8 @@ export function TravelPromoSection({ section }: TravelPromoSectionProps) {
               relative
               z-10
 
-              min-h-[300px]
-              sm:min-h-[360px]
+              min-h-[220px]
+              sm:min-h-[320px]
               md:min-h-[390px]
               lg:min-h-[420px]
 
@@ -119,20 +105,24 @@ export function TravelPromoSection({ section }: TravelPromoSectionProps) {
 
               justify-end
 
-              px-6
+              px-3
+              xs:px-5
               sm:px-10
               md:px-14
               lg:px-16
               xl:px-20
 
-              py-10
+              py-4
+              sm:py-10
             "
           >
 
             <div
               className="
                 w-full
-                max-w-[480px]
+                max-w-[54%]
+                xs:max-w-[52%]
+                sm:max-w-[480px]
                 lg:max-w-[500px]
 
                 flex
@@ -142,11 +132,6 @@ export function TravelPromoSection({ section }: TravelPromoSectionProps) {
                 mr-0
                 lg:px-3
                 xl:px-30
-                bg-white/75 sm:bg-transparent
-                backdrop-blur-[2px] sm:backdrop-blur-none
-                p-4 sm:p-0
-                rounded-2xl sm:rounded-none
-                shadow-xs sm:shadow-none
               "
             >
 
@@ -168,11 +153,12 @@ export function TravelPromoSection({ section }: TravelPromoSectionProps) {
               {/* HEADING */}
               <h2
                 className="
-                  mt-2
+                  mt-1
                   sm:mt-2.5
 
                   font-heading
-                  text-2xl
+                  text-base
+                  xs:text-lg
                   sm:text-3xl
                   md:text-4xl
                   lg:text-[42px]
@@ -180,29 +166,23 @@ export function TravelPromoSection({ section }: TravelPromoSectionProps) {
                   font-bold
                   text-slate-900
 
-                  leading-[1.1]
+                  leading-[1.12]
+                  sm:leading-[1.1]
                   tracking-tight
                 "
               >
-                {rawTitle === 'The sweetest little details.' ? (
-                  <>
-                    The sweetest
-                    <br />
-                    little details.
-                  </>
-                ) : (
-                  rawTitle
-                )}
+                {rawTitle}
               </h2>
 
 
               {/* DESCRIPTION */}
               <p
                 className="
-                  mt-3
+                  mt-1.5
                   sm:mt-4
 
-                  text-xs
+                  text-[10px]
+                  xs:text-[11px]
                   sm:text-sm
                   lg:text-[15px]
 
@@ -210,6 +190,8 @@ export function TravelPromoSection({ section }: TravelPromoSectionProps) {
                   font-medium
 
                   leading-relaxed
+                  line-clamp-3
+                  lg:line-clamp-none
 
                   max-w-[440px]
                 "
@@ -219,7 +201,7 @@ export function TravelPromoSection({ section }: TravelPromoSectionProps) {
 
 
               {/* BUTTON */}
-              <div className="mt-5 sm:mt-6">
+              <div className="mt-3 sm:mt-6">
                 <Link
                   href={ctaUrl}
                   className="
@@ -227,7 +209,8 @@ export function TravelPromoSection({ section }: TravelPromoSectionProps) {
 
                     inline-flex
                     items-center
-                    gap-2.5
+                    gap-2
+                    sm:gap-2.5
 
                     bg-[#A3D2B8]
                     hover:bg-[#8ec2a6]
@@ -237,13 +220,13 @@ export function TravelPromoSection({ section }: TravelPromoSectionProps) {
                     text-slate-800
                     font-medium
 
-                    text-xs
+                    text-[11px]
                     sm:text-sm
 
-                    px-5
+                    px-3.5
                     sm:px-6
 
-                    py-2.5
+                    py-1.5
                     sm:py-3
 
                     rounded-full

@@ -23,7 +23,7 @@ export function UnboxingSection({ section }: UnboxingSectionProps) {
   if (!imageUrl) return null;
 
   return (
-    <section className="py-8 sm:py-12 lg:py-14 bg-[#FAF7F2]">
+    <section className="py-6 sm:py-12 lg:py-14 ">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Full-width Banner with Rounded Corners */}
@@ -41,26 +41,30 @@ export function UnboxingSection({ section }: UnboxingSectionProps) {
             />
           </div>
 
-          {/* Subtle readability gradient (transparent towards right, gentle soft wash on left) */}
+          {/* Readability fade:
+              Mobile  → stronger cream fade from the left so the text is always readable.
+              sm+     → original soft wash (unchanged). */}
           <div 
-            className="absolute inset-0 pointer-events-none bg-gradient-to-r from-[#FAF7F2]/80 via-[#FAF7F2]/30 to-transparent sm:w-2/3"
+            className="absolute inset-0 pointer-events-none bg-gradient-to-r from-[#FAF7F2]/95 via-[#FAF7F2]/85 to-[#FAF7F2]/20 sm:from-[#FAF7F2]/80 sm:via-[#FAF7F2]/30 sm:to-transparent sm:w-2/3"
             aria-hidden="true" 
           />
 
-          {/* Content Overlay on Left Side */}
-          <div className="relative z-10 w-full sm:max-w-md lg:max-w-lg px-6 sm:px-10 lg:px-14 py-8 sm:py-10 flex flex-col justify-center">
-            <h2 className="font-heading text-xl sm:text-3xl lg:text-[38px] font-bold text-slate-900 leading-[1.14] tracking-tight">
+          {/* Content Overlay on Left Side (same alignment as before) */}
+          <div className="relative z-10 w-full max-w-[82%] sm:max-w-md lg:max-w-lg px-6 sm:px-10 lg:px-14 py-8 sm:py-10 flex flex-col justify-center">
+            {/* Title — max 2 lines on mobile, ends with "..." if longer */}
+            <h2 className="font-heading text-[22px] sm:text-3xl lg:text-[38px] font-bold text-slate-900 leading-[1.14] tracking-tight line-clamp-2 sm:line-clamp-none">
               {title}
             </h2>
 
-            <p className="mt-2 sm:mt-3 text-slate-700 text-[10px] sm:text-sm lg:text-[15px] leading-relaxed max-w-[460px] font-medium">
+            {/* Description — readable size, max 3 lines on mobile with "..." */}
+            <p className="mt-2 sm:mt-3 text-slate-800 sm:text-slate-700 text-[13px] sm:text-sm lg:text-[15px] leading-relaxed max-w-[460px] font-medium line-clamp-3 sm:line-clamp-none">
               {description}
             </p>
 
             <div className="mt-4 sm:mt-5 lg:mt-6">
               <Link
                 href={ctaUrl}
-                className="group inline-flex items-center gap-2 sm:gap-2.5 bg-[#A3D2B8] hover:bg-[#8ec2a6] active:scale-95 text-slate-800 font-medium text-xs sm:text-sm px-4 sm:px-6 py-2 sm:py-2.5 rounded-full shadow-xs hover:shadow transition-all"
+                className="group inline-flex items-center gap-2 sm:gap-2.5 bg-[#A3D2B8] hover:bg-[#8ec2a6] active:scale-95 text-slate-800 font-medium text-[13px] sm:text-sm px-4 sm:px-6 py-2 sm:py-2.5 rounded-full shadow-xs hover:shadow transition-all"
               >
                 <span>{ctaText}</span>
                 <span className="w-5 h-5 rounded-full bg-slate-800 text-white flex items-center justify-center group-hover:translate-x-0.5 transition-transform">
