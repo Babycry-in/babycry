@@ -33,7 +33,7 @@ export function CategoryCapsules({ categories }: CategoryCapsulesProps) {
   const displayItems = getTopCategories(categories);
 
   return (
-    <section className="relative py-10 sm:py-20 overflow-hidden ">
+    <section className="relative py-7 sm:py-20 overflow-hidden ">
 
       {/* ── Decorative floating SVG clouds in background ── */}
       <CloudIcon className="absolute -top-3 left-4 w-28 sm:w-36 opacity-80 pointer-events-none select-none" />
@@ -55,8 +55,8 @@ export function CategoryCapsules({ categories }: CategoryCapsulesProps) {
           </p>
         </div>
 
-        {/* Mobile: 3 category items completely visible in one horizontal row */}
-        <MobileCategoryRow items={displayItems} mode="static" />
+        {/* Mobile: Smooth auto-scrolling category carousel */}
+        <MobileCategoryRow items={displayItems} mode="marquee" />
 
         {/* Desktop Category items — unchanged flex wrap on md+ */}
         <div className="hidden md:flex flex-wrap justify-center gap-6 sm:gap-8 lg:gap-10">

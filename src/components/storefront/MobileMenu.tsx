@@ -15,16 +15,40 @@ interface MobileMenuProps {
 }
 
 export function MobileMenu({ categories, isOpen, onClose, phone }: MobileMenuProps) {
-  if (!isOpen) return null;
+  // Lock background scroll when open
+  React.useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden lg:hidden">
+    <div
+      className={`fixed inset-0 z-50 overflow-hidden lg:hidden transition-all duration-300 ${
+        isOpen ? 'pointer-events-auto visible' : 'pointer-events-none invisible'
+      }`}
+      aria-hidden={!isOpen}
+    >
+      {/* Backdrop overlay with smooth fade */}
       <div
-        className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs transition-opacity"
+        className={`fixed inset-0 bg-slate-900/40 backdrop-blur-xs transition-opacity duration-300 ease-in-out ${
+          isOpen ? 'opacity-100' : 'opacity-0'
+        }`}
         onClick={onClose}
       />
-      <div className="fixed inset-y-0 left-0 max-w-full flex">
-        <div className="w-screen max-w-xs sm:max-w-sm bg-[#FAF7F2] shadow-2xl flex flex-col justify-between">
+
+      {/* Drawer anchored to RIGHT edge with smooth slide-in and slide-out */}
+      <div
+        className={`fixed inset-y-0 right-0 max-w-full flex transform transition-transform duration-300 ease-in-out ${
+          isOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
+      >
+        <div className="w-screen max-w-xs sm:max-w-sm bg-[#FAF7F2] shadow-2xl flex flex-col justify-between h-full">
           <div>
             {/* Header */}
             <div className="p-4 border-b border-emerald-100 flex items-center justify-between bg-white">
@@ -58,13 +82,13 @@ export function MobileMenu({ categories, isOpen, onClose, phone }: MobileMenuPro
                   onClick={onClose}
                   className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white text-slate-700 hover:text-emerald-800 text-sm font-medium transition-colors"
                 >
-                  <div className="relative w-7 h-7 rounded-lg overflow-hidden bg-emerald-50 shrink-0">
+                  <div className="relative w-8 h-8 rounded-xl overflow-hidden bg-white border border-emerald-100/70 p-0.5 shrink-0 flex items-center justify-center">
                     <Image
                       src={cat.image_url}
                       alt={cat.name}
                       fill
-                      sizes="28px"
-                      className="object-cover"
+                      sizes="32px"
+                      className="object-contain"
                     />
                   </div>
                   <span className="truncate">{cat.name}</span>
@@ -88,13 +112,6 @@ export function MobileMenu({ categories, isOpen, onClose, phone }: MobileMenuPro
                   className="block px-3 py-2 rounded-xl hover:bg-white text-slate-700 text-sm font-medium"
                 >
                   Contact & Store Location
-                </Link>
-                <Link
-                  href="/admin"
-                  onClick={onClose}
-                  className="block px-3 py-2 rounded-xl hover:bg-white text-emerald-700 text-sm font-semibold"
-                >
-                  Admin Portal ⚙️
                 </Link>
               </div>
             </div>

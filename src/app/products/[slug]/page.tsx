@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import { getProductBySlug, getProducts, getBusinessSettings } from '@/lib/data/db-service';
 import { ProductDetailClient } from '@/components/product/ProductDetailClient';
 import { ProductCard } from '@/components/storefront/ProductCard';
-import { ChevronRight, Home, CheckCircle2, MessageSquareQuote } from 'lucide-react';
+import { ChevronRight, Home, CheckCircle2 } from 'lucide-react';
 import type { Metadata } from 'next';
 
 interface Props {
@@ -189,31 +189,6 @@ export default async function ProductPage({ params }: Props) {
               </div>
             </div>
 
-          </div>
-        </div>
-
-        {/* Customer Reviews Section (Strictly no fake reviews as requested) */}
-        <div className="mt-16 sm:mt-24 pt-12 border-t border-emerald-100">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="font-heading text-2xl font-bold text-slate-900">
-                Customer Reviews
-              </h2>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Authentic feedback from lovely parents
-              </p>
-            </div>
-          </div>
-
-          {/* Genuine Empty State */}
-          <div className="text-center py-12 bg-white rounded-3xl border border-dashed border-emerald-200 p-8 max-w-xl mx-auto">
-            <MessageSquareQuote className="w-10 h-10 text-emerald-400 mx-auto mb-3" />
-            <h3 className="font-heading text-lg font-semibold text-slate-800">
-              No reviews yet
-            </h3>
-            <p className="text-xs text-slate-500 max-w-sm mx-auto mt-1 mb-4">
-              Be the first caring parent to share your experience with {product.name}!
-            </p>
           </div>
         </div>
 
