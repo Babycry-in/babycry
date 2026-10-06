@@ -64,27 +64,27 @@ export function HeroSection({ slide }: HeroSectionProps) {
           />
         </picture>
 
-        {/* Content layer: Left side typography matching the reference graphic */}
+        {/* Content layer: Centered on mobile, Left side on desktop matching reference graphic */}
         <div
-          className="absolute z-10 flex flex-col items-start justify-center left-5 sm:left-[8%] md:left-[9%] lg:left-[18%] top-[28%] sm:top-[48%] -translate-y-1/2 max-w-[280px] sm:max-w-[380px] md:max-w-[460px] lg:max-w-[500px]"
+          className="absolute z-10 flex flex-col items-center text-center sm:items-start sm:text-left left-1/2 -translate-x-1/2 sm:translate-x-0 sm:left-[8%] md:left-[9%] lg:left-[18%] top-[24%] xs:top-[26%] sm:top-[48%] -translate-y-1/2 w-[92%] max-w-[340px] sm:max-w-[380px] md:max-w-[460px] lg:max-w-[500px]"
         >
           {/* Eyebrow: LITTLE THINGS FOR with wide tracking */}
-          <span className="text-[10px] sm:text-xs md:text-sm font-semibold tracking-[0.28em] text-slate-700 uppercase mb-1 sm:mb-2 select-none">
+          <span className="text-[10px] sm:text-xs md:text-sm font-bold sm:font-semibold tracking-[0.28em] text-slate-700 uppercase mb-1 sm:mb-2 select-none">
             {eyebrow}
           </span>
 
-          {/* Main Heading: Rounded Fredoka typography in two lines */}
-          <h1 className="font-heading font-medium text-slate-900 text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl leading-[1.08] tracking-tight">
+          {/* Main Heading: Bold Rounded Fredoka typography in two lines */}
+          <h1 className="font-heading font-bold sm:font-medium text-slate-900 text-3xl xs:text-4xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl leading-[1.12] sm:leading-[1.08] tracking-tight">
             {formatTitle(title)}
           </h1>
 
           {/* Subtitle / Description */}
-          <p className="text-slate-600 text-xs sm:text-sm md:text-base lg:text-lg mt-2.5 sm:mt-3.5 md:mt-4 leading-relaxed max-w-sm sm:max-w-md">
+          <p className="text-slate-600 text-xs sm:text-sm md:text-base lg:text-lg mt-2 sm:mt-3.5 md:mt-4 leading-relaxed max-w-[300px] sm:max-w-md">
             {description}
           </p>
 
           {/* CTA Actions */}
-          <div className="flex flex-wrap items-center gap-3 sm:gap-4 mt-5 sm:mt-6 md:mt-7 lg:mt-8">
+          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 sm:gap-4 mt-4 sm:mt-6 md:mt-7 lg:mt-8">
             {/* Primary Pill Button with dark arrow circle */}
             <Link
               href={primaryCtaUrl}
@@ -102,7 +102,7 @@ export function HeroSection({ slide }: HeroSectionProps) {
             {/* Secondary text link */}
             <Link
               href={secondaryCtaUrl}
-              className="text-slate-700 hover:text-emerald-900 font-medium text-xs sm:text-sm md:text-base transition-colors"
+              className="text-slate-700 hover:text-emerald-900 font-semibold sm:font-medium text-xs sm:text-sm md:text-base transition-colors"
             >
               {secondaryCtaText}
             </Link>

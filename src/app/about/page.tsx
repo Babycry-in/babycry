@@ -1,5 +1,4 @@
 import React from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { Sparkles, Heart, ShieldCheck, Leaf, ArrowRight } from 'lucide-react';
 import { getBusinessSettings } from '@/lib/data/db-service';
@@ -31,36 +30,25 @@ export default async function AboutPage() {
         </div>
 
         {/* Story Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center bg-white p-6 sm:p-12 rounded-[40px] border border-emerald-100 shadow-sm">
-          <div className="relative aspect-square w-full rounded-[30px] overflow-hidden shadow-md">
-            <Image
-              src="/images/packaging-banner.png"
-              alt="Baby Cry Story"
-              fill
-              className="object-cover"
-            />
-          </div>
+        <div className="max-w-3xl mx-auto bg-white p-8 sm:p-12 rounded-[40px] border border-emerald-100 shadow-sm text-center space-y-6">
+          <h2 className="font-heading text-2xl sm:text-3xl font-bold text-slate-900">
+            Made with pure love in Kerala
+          </h2>
+          <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
+            Based in Pandikkad, Kerala, Baby Cry.in offers a curated collection of organic rompers, delicate dresses, sensory playsets, hospital maternity newborn kits, and keepsake baby shower gift hampers.
+          </p>
+          <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
+            Every item is tested for safety, hypoallergenic softness, and practical durability so parents can cherish every everyday milestone.
+          </p>
 
-          <div className="space-y-4">
-            <h2 className="font-heading text-2xl sm:text-3xl font-bold text-slate-900">
-              Made with pure love in Kerala
-            </h2>
-            <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
-              Based in Pandikkad, Kerala, Baby Cry.in offers a curated collection of organic rompers, delicate dresses, sensory playsets, hospital maternity newborn kits, and keepsake baby shower gift hampers.
-            </p>
-            <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
-              Every item is tested for safety, hypoallergenic softness, and practical durability so parents can cherish every everyday milestone.
-            </p>
-
-            <div className="pt-2">
-              <Link
-                href="/categories"
-                className="px-6 py-3 bg-emerald-700 hover:bg-emerald-800 text-white rounded-full font-medium text-sm inline-flex items-center gap-2 transition-all shadow-xs"
-              >
-                <span>Explore the Collections</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
+          <div className="pt-2">
+            <Link
+              href="/categories"
+              className="px-6 py-3 bg-emerald-700 hover:bg-emerald-800 text-white rounded-full font-medium text-sm inline-flex items-center gap-2 transition-all shadow-xs"
+            >
+              <span>Explore the Collections</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
           </div>
         </div>
 

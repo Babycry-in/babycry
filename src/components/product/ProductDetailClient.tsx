@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Product } from '@/types/database';
 import { useCart } from '@/lib/context/cart-context';
 import { useWishlist } from '@/lib/context/wishlist-context';
@@ -22,7 +23,7 @@ interface ProductDetailClientProps {
   whatsappNumber: string;
 }
 
-export function ProductDetailClient({ product, whatsappNumber }: ProductDetailClientProps) {
+export function ProductDetailClient({ product, whatsappNumber: _whatsappNumber }: ProductDetailClientProps) {
   const images = product.images && product.images.length > 0
     ? product.images
     : [{ id: 'placeholder', cloudinary_url: '/images/babycry-logo.png', is_primary: true, sort_order: 0 }];
@@ -35,6 +36,7 @@ export function ProductDetailClient({ product, whatsappNumber }: ProductDetailCl
 
   const { addToCart } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
+  const router = useRouter();
 
   const isFavorited = isInWishlist(product.id);
   const price = product.sale_price || product.price;
@@ -60,12 +62,14 @@ export function ProductDetailClient({ product, whatsappNumber }: ProductDetailCl
     setTimeout(() => setAddedAnimation(false), 2000);
   };
 
-  const handleWhatsAppQuickOrder = () => {
-    const text = `Hello Baby Cry.in! 🛍️\nI would like to order:\n\n*${product.name}*\nSize: ${selectedSize || 'Standard'}\nColor: ${selectedColor || 'Standard'}\nQuantity: ${quantity}\nPrice: ₹${price * quantity}\n\nPlease confirm availability and payment options!`;
-    const cleanPhone = whatsappNumber.replace(/[^0-9]/g, '');
-    const url = `https://wa.me/91${cleanPhone}?text=${encodeURIComponent(text)}`;
-    window.open(url, '_blank');
+  // Navigate to order details page — do NOT open WhatsApp directly
+  const handleOrderViaWhatsApp = () => {
+    const params = new URLSearchParams({ qty: String(quantity) });
+    if (selectedSize) params.set('size', selectedSize);
+    if (selectedColor) params.set('color', selectedColor);
+    router.push(`/order/${product.slug}?${params.toString()}`);
   };
+
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14">
@@ -73,14 +77,14 @@ export function ProductDetailClient({ product, whatsappNumber }: ProductDetailCl
       {/* LEFT: Product Gallery */}
       <div className="lg:col-span-7 space-y-4">
         {/* Main Big View */}
-        <div className="relative aspect-square w-full rounded-[36px] overflow-hidden bg-white shadow-md border border-emerald-50">
+        <div className="relative aspect-square w-full max-h-[75vh] sm:max-h-[580px] mx-auto rounded-[36px] overflow-hidden bg-white shadow-md border border-emerald-50">
           <Image
             src={activeImage}
             alt={product.name}
             fill
             priority
             sizes="(max-width: 1024px) 100vw, 650px"
-            className="object-cover"
+            className="object-contain p-4 sm:p-6"
           />
 
           {/* Badges */}
@@ -105,10 +109,10 @@ export function ProductDetailClient({ product, whatsappNumber }: ProductDetailCl
               <button
                 key={img.id}
                 onClick={() => setActiveImage(img.cloudinary_url)}
-                className={`relative w-20 h-20 rounded-2xl overflow-hidden border-2 transition-all shrink-0 ${
+                className={`relative w-20 h-20 rounded-2xl overflow-hidden border-2 bg-white transition-all shrink-0 ${
                   activeImage === img.cloudinary_url
                     ? 'border-emerald-600 scale-105 shadow-sm'
-                    : 'border-transparent opacity-70 hover:opacity-100'
+                    : 'border-slate-100 opacity-70 hover:opacity-100'
                 }`}
               >
                 <Image
@@ -116,7 +120,7 @@ export function ProductDetailClient({ product, whatsappNumber }: ProductDetailCl
                   alt={img.alt_text || product.name}
                   fill
                   sizes="80px"
-                  className="object-cover"
+                  className="object-contain p-1"
                 />
               </button>
             ))}
@@ -293,13 +297,14 @@ export function ProductDetailClient({ product, whatsappNumber }: ProductDetailCl
             </button>
           </div>
 
-          {/* Quick WhatsApp Order Button */}
+          {/* Order via WhatsApp Button */}
           <button
-            onClick={handleWhatsAppQuickOrder}
-            className="w-full py-3.5 bg-[#25D366] hover:bg-[#20BE5B] text-white font-semibold text-sm rounded-full flex items-center justify-center gap-2 transition-all shadow-xs"
+            onClick={handleOrderViaWhatsApp}
+            disabled={product.stock <= 0}
+            className="w-full py-3.5 bg-[#25D366] hover:bg-[#20BE5B] text-white font-semibold text-sm rounded-full flex items-center justify-center gap-2 transition-all shadow-xs disabled:opacity-50"
           >
             <MessageCircle className="w-5 h-5" />
-            <span>Order Instantly on WhatsApp</span>
+            <span>Order via WhatsApp</span>
           </button>
         </div>
 

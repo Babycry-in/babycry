@@ -26,7 +26,7 @@ export function TrustPillars() {
   ];
 
   return (
-    <section className="py-12 bg-[#FAF7F2] border-t border-emerald-50">
+    <section className="py-8 sm:py-12 border-t border-emerald-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 text-center">
           {pillars.map((item, index) => {

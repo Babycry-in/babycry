@@ -43,7 +43,7 @@ export function PolaroidGallery({ section }: PolaroidGalleryProps) {
   }
 
   return (
-    <section className="relative w-full py-12 sm:py-16 lg:py-16 overflow-hidden">
+    <section className="relative w-full py-7 sm:py-16 lg:py-16 overflow-hidden">
       {/* Background Image: Dreamy-bg (2).png */}
       <div className="absolute inset-0 w-full h-full -z-10 pointer-events-none">
         <Image
@@ -149,14 +149,14 @@ export function PolaroidGallery({ section }: PolaroidGalleryProps) {
                     {/* Polaroid frame */}
                     <div className="bg-white rounded-[4px] p-2 xs:p-2.5 pb-5 xs:pb-6 border border-black/[0.06] shadow-[0_8px_20px_rgba(0,0,0,0.08)] flex flex-col items-center">
                       <div
-                        className="relative w-full aspect-[4/5] overflow-hidden bg-slate-100 rounded-[2px]"
+                        className="relative w-full aspect-[4/5] overflow-hidden bg-white rounded-[2px]"
                       >
                         <Image
                           src={item.image}
                           alt={item.alt}
                           fill
                           sizes="(max-width: 640px) 45vw, 200px"
-                          className="object-cover object-center select-none"
+                          className="object-contain object-center p-1 select-none"
                         />
                       </div>
                       {item.caption && (

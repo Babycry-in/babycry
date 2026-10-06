@@ -1,5 +1,4 @@
 import React from 'react';
-import Image from 'next/image';
 import { getBusinessSettings } from '@/lib/data/db-service';
 import { Phone, Mail, MapPin, MessageCircle } from 'lucide-react';
 import { InstagramIcon } from '@/components/ui/SocialIcons';
@@ -15,7 +14,7 @@ export default async function ContactPage() {
 
   return (
     <div className="bg-[#FAF7F2] min-h-screen py-12 sm:py-20">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto">
@@ -27,10 +26,10 @@ export default async function ContactPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div className="max-w-2xl mx-auto">
           
           {/* Contact Details Card */}
-          <div className="lg:col-span-6 bg-white p-6 sm:p-10 rounded-[36px] border border-emerald-100 shadow-sm space-y-6">
+          <div className="bg-white p-6 sm:p-10 rounded-[36px] border border-emerald-100 shadow-sm space-y-6">
             <h2 className="font-heading text-xl font-bold text-slate-900 border-b border-slate-100 pb-3">
               Direct Contact
             </h2>
@@ -131,24 +130,6 @@ export default async function ContactPage() {
                 <span>Chat with us on WhatsApp</span>
               </a>
             </div>
-          </div>
-
-          {/* Official Business Card Visual */}
-          <div className="lg:col-span-6 bg-white p-6 rounded-[36px] border border-emerald-100 shadow-sm space-y-4">
-            <h2 className="font-heading text-lg font-bold text-slate-900">
-              Official Store Card
-            </h2>
-            <div className="relative aspect-[16/8.5] w-full rounded-2xl overflow-hidden shadow-md border-2 border-emerald-50">
-              <Image
-                src="/images/business-card.png"
-                alt="Baby Cry.in Store Business Card"
-                fill
-                className="object-cover"
-              />
-            </div>
-            <p className="text-xs text-slate-500 text-center">
-              Scan QR code on card or connect directly via WhatsApp anytime.
-            </p>
           </div>
 
         </div>

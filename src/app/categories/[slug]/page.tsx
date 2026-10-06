@@ -49,7 +49,7 @@ export default async function CategoryPage({ params }: Props) {
   }
 
   const [products, allCategories] = await Promise.all([
-    getProducts({ categoryId: category.id, onlyActive: true }),
+    getProducts({ onlyActive: true }),
     getCategories(true),
   ]);
 
@@ -133,9 +133,11 @@ export default async function CategoryPage({ params }: Props) {
 
       {/* Main Products List Area */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
-        <CategoryProductGrid products={products} />
-
-        {/* Related Categories Row */}
+        <CategoryProductGrid
+          products={products}
+          categories={allCategories}
+          initialCategoryId={category.id}
+        />
         {otherCategories.length > 0 && (
           <div className="mt-20 pt-12 border-t border-emerald-100">
             <div className="flex items-center justify-between mb-6">

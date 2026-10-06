@@ -37,7 +37,7 @@ export function MobileCategoryRow({ items, mode }: MobileCategoryRowProps) {
     if (prefersReducedMotion) return;
 
     let animationFrameId: number;
-    const speed = 0.55; // Pixels per frame for smooth, subtle auto-scroll
+    const speed = 0.6; // Pixels per frame for smooth, subtle auto-scroll
 
     const step = () => {
       if (!isInteractingRef.current && el) {
@@ -45,8 +45,12 @@ export function MobileCategoryRow({ items, mode }: MobileCategoryRowProps) {
 
         // Reset scroll seamlessly when reaching the midpoint of duplicated track
         const maxScroll = el.scrollWidth / 2;
-        if (el.scrollLeft >= maxScroll) {
-          el.scrollLeft -= maxScroll;
+        if (maxScroll > 0) {
+          if (el.scrollLeft >= maxScroll) {
+            el.scrollLeft -= maxScroll;
+          } else if (el.scrollLeft <= 0) {
+            el.scrollLeft += maxScroll;
+          }
         }
       }
       animationFrameId = requestAnimationFrame(step);
@@ -132,9 +136,10 @@ export function MobileCategoryRow({ items, mode }: MobileCategoryRowProps) {
     );
   }
 
-  // 2. MARQUEE AUTO-SCROLL (for "Made for everyday little moments")
+  // 2. MARQUEE AUTO-SCROLL
   // Duplicate items visually for infinite continuous loop
-  const visualTrack = [...items, ...items];
+  const baseTrack = items.length < 5 ? [...items, ...items] : items;
+  const visualTrack = [...baseTrack, ...baseTrack];
 
   return (
     <div
@@ -143,7 +148,9 @@ export function MobileCategoryRow({ items, mode }: MobileCategoryRowProps) {
       onMouseLeave={handleMouseLeave}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
-      className="flex md:hidden overflow-x-auto no-scrollbar gap-4 sm:gap-5 py-2 px-4 touch-pan-x select-none"
+      onPointerDown={handleTouchStart}
+      onPointerUp={handleTouchEnd}
+      className="flex md:hidden overflow-x-auto no-scrollbar gap-4 sm:gap-5 py-2 px-4 touch-pan-x select-none cursor-grab active:cursor-grabbing"
       style={{
         scrollbarWidth: 'none',
         msOverflowStyle: 'none',

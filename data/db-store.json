@@ -265,10 +265,10 @@
     {
       "id": "sec-sweetest-details",
       "section_key": "sweetest_details",
-      "title": "The sweetest little details.",
-      "subtitle": "GIRLS EDIT",
-      "description": "Adorable styles made for tiny personalities and big little moments.",
-      "cta_text": "Shop Girlswear",
+      "title": "Little styles for big little personalities.",
+      "subtitle": "APPARELS EDIT",
+      "description": "Soft, comfortable and effortlessly adorable pieces designed for every playtime, outing and special little moment.",
+      "cta_text": "Shop Apparels ",
       "cta_url": "/categories/apparels",
       "image_url": "https://res.cloudinary.com/hjkjyndc/image/upload/v1791197627/babycry/ratygnh2e1tjluxvt0je.webp",
       "is_active": true,
@@ -277,11 +277,11 @@
     {
       "id": "sec-little-looks",
       "section_key": "little_looks",
-      "title": "Little looks worth saving.",
+      "title": "The little extras that complete every look.",
       "subtitle": "CUTE & DREAMY",
       "description": "Cute, dreamy and effortlessly stylish.",
       "cta_text": "Explore Looks",
-      "cta_url": "/categories/apparels",
+      "cta_url": "/categories/accessories",
       "image_url": "",
       "is_active": true,
       "display_order": 2,
@@ -325,24 +325,26 @@
     {
       "id": "sec-tiny-teeth",
       "section_key": "tiny_teeth",
-      "title": "Tiny teeth. Tiny discoveries.",
-      "description": "A little extra comfort for those teething days.",
-      "cta_text": "Shop Baby Essentials",
-      "cta_url": "/categories/toys",
+      "title": "Gentle care for delicate little moments.",
+      "description": "Thoughtfully selected bath and skincare essentials made to keep little ones feeling fresh",
+      "cta_text": "Explore Bath & Care",
+      "cta_url": "/categories/bath-and-skin-care",
       "image_url": "https://res.cloudinary.com/hjkjyndc/image/upload/v1791211309/babycry/b7kfmxbigp1grpwsswuu.webp",
       "is_active": true,
-      "display_order": 4
+      "display_order": 4,
+      "subtitle": "BATH & SKIN CARE"
     },
     {
       "id": "sec-travel",
       "section_key": "travel",
-      "title": "Little adventures begin here.",
-      "description": "Thoughtful essentials for everyday journeys with your little one.",
+      "title": "Gear for little adventures.",
+      "description": "Comfortable essentials made for growing, moving and exploring.",
       "cta_text": "Explore Travel Essentials",
       "cta_url": "/categories/baby-gear",
       "image_url": "https://res.cloudinary.com/hjkjyndc/image/upload/v1791211223/babycry/lvecqtqhyjogxzfxpng9.webp",
       "is_active": true,
-      "display_order": 5
+      "display_order": 5,
+      "subtitle": "BABY GEAR"
     },
     {
       "id": "sec-gift-box",
@@ -358,13 +360,14 @@
     {
       "id": "sec-unboxing",
       "section_key": "unboxing",
-      "title": "Unbox the cuteness.",
-      "description": "A little love packed into every order. Eco-friendly kraft boxes with custom baby tissue and heartfelt notes.",
-      "cta_text": "Our Packaging ♥",
+      "title": "Little moments, made with love.",
+      "description": "Thoughtfully chosen essentials, adorable styles, and everyday comforts made to bring a little more joy to growing families.",
+      "cta_text": "Discover Our Story",
       "cta_url": "/about",
       "image_url": "/uploads/ChatGPT Image Oct 3, 2026, 02_18_19 PM-1791017309151-452341399.webp",
       "is_active": true,
-      "display_order": 7
+      "display_order": 7,
+      "subtitle": "ABOUT BABY CRY.IN"
     },
     {
       "id": "sec-instagram",
@@ -382,7 +385,38 @@
       }
     }
   ],
-  "orders": [],
+  "orders": [
+    {
+      "id": "order-1791281165764",
+      "order_number": "BC-477410",
+      "customer_name": "vyshnav Vyshnav",
+      "customer_phone": "8137094195",
+      "customer_email": "8137094195@babycry.in",
+      "address": "Malappuram\npullanchal keerankun",
+      "city": "Pandikkad",
+      "state": "Kerala",
+      "pincode": "676521",
+      "subtotal": 33,
+      "delivery_charge": 99,
+      "discount": 0,
+      "total": 132,
+      "payment_status": "Pending",
+      "order_status": "Pending",
+      "whatsapp_status": "Sent",
+      "created_at": "2026-10-06T10:06:05.764Z",
+      "items": [
+        {
+          "product_id": "prod-1791207149888",
+          "product_name_snapshot": "ibfisefi gsfius",
+          "product_image_snapshot": "https://res.cloudinary.com/hjkjyndc/image/upload/v1791207141/babycry/ijkazupyndek7kcbgdil.webp",
+          "variant_snapshot": "0-6M / Soft Mint",
+          "quantity": 1,
+          "unit_price": 33,
+          "total_price": 33
+        }
+      ]
+    }
+  ],
   "media": [
     {
       "file_name": "Joyful Baby’s Mealtime Moment.webp",

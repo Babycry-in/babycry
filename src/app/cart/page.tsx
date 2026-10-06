@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/lib/context/cart-context';
-import { Plus, Minus, Trash2, ShoppingBag, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Plus, Minus, Trash2, ShoppingBag, ArrowRight, ShieldCheck, MessageCircle } from 'lucide-react';
 
 export default function CartPage() {
   const { items, removeFromCart, updateQuantity, subtotal, itemCount } = useCart();
@@ -172,11 +172,11 @@ export default function CartPage() {
 
               <div className="pt-2">
                 <Link
-                  href="/checkout"
-                  className="w-full py-4 bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-sm rounded-full text-center flex items-center justify-center gap-2 transition-all shadow-md"
+                  href="/order/cart?source=cart"
+                  className="w-full py-4 bg-[#25D366] hover:bg-[#20BE5B] text-white font-semibold text-sm rounded-full text-center flex items-center justify-center gap-2 transition-all shadow-md"
                 >
-                  <span>Proceed to Checkout</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <MessageCircle className="w-4 h-4" />
+                  <span>Order via WhatsApp</span>
                 </Link>
               </div>
 

@@ -13,7 +13,6 @@ import { useWishlist } from '@/lib/context/wishlist-context';
 import { Category, BusinessSettings } from '@/types/database';
 import {
   Search,
-  User,
   Heart,
   ShoppingBag,
   Menu,
@@ -57,10 +56,17 @@ export function Header({ categories, settings }: HeaderProps) {
               >
                 <button
                   type="button"
-                  className="flex items-center gap-1.5 text-sm font-medium text-slate-800 hover:text-emerald-700 py-3 transition-colors"
+                  onClick={() => setIsMegaMenuOpen((prev) => !prev)}
+                  className={`flex items-center gap-1.5 text-sm font-medium py-3 transition-colors cursor-pointer ${
+                    isMegaMenuOpen ? 'text-emerald-700 font-semibold' : 'text-slate-800 hover:text-emerald-700'
+                  }`}
                 >
                   <span>Shop All</span>
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 transition-transform duration-300 ${
+                      isMegaMenuOpen ? 'rotate-180 text-emerald-700' : 'text-slate-400'
+                    }`}
+                  />
                 </button>
               </div>
 
@@ -101,16 +107,6 @@ export function Header({ categories, settings }: HeaderProps) {
                     {wishlistCount}
                   </span>
                 )}
-              </Link>
-
-              {/* Account / Admin Link */}
-              <Link
-                href="/admin"
-                className="p-2.5 text-slate-600 hover:text-emerald-700 rounded-full hover:bg-emerald-50/80 transition-colors hidden sm:flex items-center"
-                aria-label="Admin Dashboard"
-                title="Admin Dashboard"
-              >
-                <User className="w-5 h-5" />
               </Link>
 
               {/* Cart Drawer Trigger */}
