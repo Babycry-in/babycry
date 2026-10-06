@@ -9,3 +9,4 @@ export * from './ImageUploader';
 export * from './MediaLibraryClient';
 export * from './OrderStatusUpdater';
 export * from './ProductForm';
+export * from './OrdersRefreshButton';

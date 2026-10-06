@@ -195,6 +195,8 @@ export default function OrderDetailsClient({
             pincode: form.pincode.trim() || '676521',
             items: orderItems.map((item) => ({
               productId: item.productId,
+              name: item.name,
+              price: item.price,
               variant: item.variant,
               quantity: item.quantity,
             })),
@@ -206,9 +208,16 @@ export default function OrderDetailsClient({
           if (resData.order?.order_number) {
             orderNumber = resData.order.order_number;
           }
+        } else {
+          const errData = await orderRes.json().catch(() => ({}));
+          console.error('Backend order recording error:', errData);
+          throw new Error(errData.error || 'Failed to place order. Please check details and try again.');
         }
-      } catch (err) {
-        console.warn('Backend order recording error (proceeding to WhatsApp):', err);
+      } catch (err: any) {
+        console.error('Order creation error:', err);
+        setSubmitError(err.message || 'Failed to place order. Please try again.');
+        setIsSubmitting(false);
+        return;
       }
 
       // 4. Save last WhatsApp URL in session storage and open WhatsApp
