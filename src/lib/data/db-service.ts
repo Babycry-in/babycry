@@ -171,6 +171,44 @@ export async function updateBusinessSettings(settings: Partial<BusinessSettings>
 }
 
 // -------------------------------------------------------------
+// UUID HELPERS & SUPABASE SEEDING
+// -------------------------------------------------------------
+function isUUID(str: any): boolean {
+  if (typeof str !== 'string') return false;
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+}
+
+async function resolveCategoryId(rawId?: string | null): Promise<string | null> {
+  if (!rawId) return null;
+  if (isUUID(rawId)) return rawId;
+  const categories = await getCategories(false);
+  const found = categories.find(c => c.id === rawId || c.slug === rawId);
+  if (found && isUUID(found.id)) return found.id;
+  return null;
+}
+
+async function autoSeedCategories(admin: any) {
+  try {
+    const formattedCategories = INITIAL_CATEGORIES.map(c => ({
+      id: c.id,
+      name: c.name,
+      slug: c.slug,
+      short_description: c.short_description || null,
+      image_url: c.image_url || null,
+      banner_url: c.banner_url || null,
+      mobile_banner_url: c.mobile_banner_url || null,
+      display_order: c.display_order,
+      is_active: c.is_active,
+      seo_title: c.seo_title || null,
+      seo_description: c.seo_description || null,
+    }));
+    await admin.from('categories').upsert(formattedCategories);
+  } catch (err) {
+    console.error('Failed to auto-seed categories to Supabase:', err);
+  }
+}
+
+// -------------------------------------------------------------
 // CATEGORIES
 // -------------------------------------------------------------
 export async function getCategories(onlyActive = true): Promise<Category[]> {
@@ -180,9 +218,19 @@ export async function getCategories(onlyActive = true): Promise<Category[]> {
       let query = admin.from('categories').select('*').order('display_order', { ascending: true });
       if (onlyActive) query = query.eq('is_active', true);
       const { data, error } = await query;
-      if (!error && data && data.length > 0) return data;
-    } catch {
-      // Fallback
+      if (!error && Array.isArray(data) && data.length > 0) {
+        return data;
+      }
+      if (!error && Array.isArray(data) && data.length === 0) {
+        await autoSeedCategories(admin);
+        const { data: seeded } = await query;
+        if (seeded && seeded.length > 0) return seeded;
+      }
+      if (error) {
+        console.warn('Supabase getCategories warning:', error.message);
+      }
+    } catch (err) {
+      console.warn('Supabase getCategories error:', err);
     }
   }
 
@@ -201,7 +249,7 @@ export async function saveCategory(categoryData: Partial<Category>): Promise<Cat
   const admin = getSupabaseAdmin();
   const store = ensureStorage();
 
-  const id = categoryData.id || `cat-${Date.now()}`;
+  const id = (categoryData.id && isUUID(categoryData.id)) ? categoryData.id : randomUUID();
   const now = new Date().toISOString();
   const category: Category = {
     id,
@@ -221,9 +269,28 @@ export async function saveCategory(categoryData: Partial<Category>): Promise<Cat
 
   if (admin) {
     try {
-      await admin.from('categories').upsert(category);
-    } catch (e) {
+      const { error } = await admin.from('categories').upsert({
+        id,
+        name: category.name,
+        slug: category.slug,
+        short_description: category.short_description || null,
+        image_url: category.image_url || null,
+        banner_url: category.banner_url || null,
+        mobile_banner_url: category.mobile_banner_url || null,
+        display_order: category.display_order,
+        is_active: category.is_active,
+        seo_title: category.seo_title || null,
+        seo_description: category.seo_description || null,
+        updated_at: now,
+        created_at: category.created_at,
+      });
+      if (error) {
+        console.error('Supabase category save error:', error);
+        throw new Error(`Failed to save category in Supabase: ${error.message}`);
+      }
+    } catch (e: any) {
       console.warn('Supabase category save error:', e);
+      if (isServerSupabaseConfigured) throw e;
     }
   }
 
@@ -239,10 +306,12 @@ export async function saveCategory(categoryData: Partial<Category>): Promise<Cat
 
 export async function deleteCategory(id: string): Promise<boolean> {
   const admin = getSupabaseAdmin();
-  if (admin) {
+  if (admin && isUUID(id)) {
     try {
       await admin.from('categories').delete().eq('id', id);
-    } catch {}
+    } catch (err) {
+      console.error('Supabase deleteCategory error:', err);
+    }
   }
   const store = ensureStorage();
   store.categories = store.categories.filter(c => c.id !== id);
@@ -272,17 +341,37 @@ export async function getProducts(options?: {
       `).order('created_at', { ascending: false });
 
       if (options?.onlyActive !== false) query = query.eq('is_active', true);
-      if (options?.categoryId) query = query.eq('category_id', options.categoryId);
+      if (options?.categoryId) {
+        const catId = isUUID(options.categoryId) 
+          ? options.categoryId 
+          : (await resolveCategoryId(options.categoryId));
+        if (catId) query = query.eq('category_id', catId);
+      }
+      if (options?.categorySlug) {
+        const cat = await getCategoryBySlug(options.categorySlug);
+        if (cat && isUUID(cat.id)) {
+          query = query.eq('category_id', cat.id);
+        }
+      }
       if (options?.isFeatured) query = query.eq('is_featured', true);
       if (options?.isNew) query = query.eq('is_new', true);
       if (options?.isBestSeller) query = query.eq('is_best_seller', true);
       if (options?.search) query = query.ilike('name', `%${options.search}%`);
 
       const { data, error } = await query;
-      // Only use Supabase data if it returns results — local store is always the reliable source
-      if (!error && data && data.length > 0) return data;
-    } catch {
-      // Fallback to local store
+      if (!error && Array.isArray(data)) {
+        return data.map((p: any) => ({
+          ...p,
+          images: Array.isArray(p.images)
+            ? p.images.sort((a: any, b: any) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+            : [],
+        }));
+      }
+      if (error) {
+        console.warn('Supabase getProducts error:', error.message);
+      }
+    } catch (err) {
+      console.warn('Supabase getProducts exception:', err);
     }
   }
 
@@ -338,7 +427,14 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
         `)
         .eq('slug', slug)
         .maybeSingle();
-      if (!error && data) return data;
+      if (!error && data) {
+        return {
+          ...data,
+          images: Array.isArray(data.images)
+            ? data.images.sort((a: any, b: any) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+            : [],
+        };
+      }
     } catch (err) {
       console.warn('Supabase getProductBySlug error:', err);
     }
@@ -355,7 +451,7 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
 
 export async function getProductById(id: string): Promise<Product | null> {
   const admin = getSupabaseAdmin();
-  if (admin) {
+  if (admin && isUUID(id)) {
     try {
       const { data, error } = await admin
         .from('products')
@@ -366,7 +462,14 @@ export async function getProductById(id: string): Promise<Product | null> {
         `)
         .eq('id', id)
         .maybeSingle();
-      if (!error && data) return data;
+      if (!error && data) {
+        return {
+          ...data,
+          images: Array.isArray(data.images)
+            ? data.images.sort((a: any, b: any) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+            : [],
+        };
+      }
     } catch (err) {
       console.warn('Supabase getProductById error:', err);
     }
@@ -385,8 +488,13 @@ export async function saveProduct(productData: Partial<Product>): Promise<Produc
   const admin = getSupabaseAdmin();
   const store = ensureStorage();
 
-  const id = productData.id || `prod-${Date.now()}`;
+  const id = (productData.id && isUUID(productData.id)) ? productData.id : randomUUID();
   const now = new Date().toISOString();
+
+  // Resolve category_id to valid UUID if possible
+  const resolvedCatId = await resolveCategoryId(productData.category_id);
+  const fallbackCatId = store.categories[0]?.id && isUUID(store.categories[0]?.id) ? store.categories[0].id : null;
+  const finalCategoryId = resolvedCatId || fallbackCatId;
 
   const product: Product = {
     id,
@@ -395,22 +503,22 @@ export async function saveProduct(productData: Partial<Product>): Promise<Produc
     description: productData.description || '',
     short_description: productData.short_description || '',
     price: Number(productData.price || 0),
-    sale_price: productData.sale_price ? Number(productData.sale_price) : null,
+    sale_price: productData.sale_price !== null && productData.sale_price !== undefined && !isNaN(Number(productData.sale_price)) ? Number(productData.sale_price) : null,
     sku: productData.sku || `BC-${Date.now().toString().slice(-4)}`,
     stock: Number(productData.stock ?? 10),
-    category_id: productData.category_id || store.categories[0]?.id || '',
+    category_id: finalCategoryId || '',
     brand: productData.brand || 'Baby Cry',
     age_group: productData.age_group || '0-24M',
     gender: productData.gender || 'Unisex',
-    sizes: productData.sizes || ['0-6M', '6-12M'],
-    colors: productData.colors || ['Natural Cream'],
+    sizes: Array.isArray(productData.sizes) ? productData.sizes : ['0-6M', '6-12M'],
+    colors: Array.isArray(productData.colors) ? productData.colors : ['Natural Cream'],
     material: productData.material || '100% Organic Cotton',
-    features: productData.features || ['Soft & Breathable'],
+    features: Array.isArray(productData.features) ? productData.features : ['Soft & Breathable'],
     care_instructions: productData.care_instructions || 'Gentle wash',
-    is_featured: productData.is_featured ?? false,
-    is_new: productData.is_new ?? false,
-    is_best_seller: productData.is_best_seller ?? false,
-    is_active: productData.is_active ?? true,
+    is_featured: Boolean(productData.is_featured),
+    is_new: Boolean(productData.is_new),
+    is_best_seller: Boolean(productData.is_best_seller),
+    is_active: Boolean(productData.is_active ?? true),
     seo_title: productData.seo_title,
     seo_description: productData.seo_description,
     images: productData.images || [],
@@ -418,39 +526,73 @@ export async function saveProduct(productData: Partial<Product>): Promise<Produc
     created_at: productData.created_at || now,
   };
 
-  // Always save to local store FIRST — this is the reliable source of truth
-  const existingIdx = store.products.findIndex(p => p.id === id);
-  if (existingIdx >= 0) {
-    store.products[existingIdx] = product;
-  } else {
-    store.products.unshift(product);
-  }
-  saveStorage(store);
-
-  // Attempt Supabase sync (best-effort — local store is already updated)
+  // 1. If Supabase is configured, save directly to Supabase as primary persistent database
   if (admin) {
-    try {
-      const { images, category, ...rest } = product;
-      const { error: upsertError } = await admin.from('products').upsert(rest);
-      if (!upsertError && images && images.length > 0) {
-        await admin.from('product_images').delete().eq('product_id', id);
-        await admin.from('product_images').insert(
-          images.map(img => ({
-            product_id: id,
-            cloudinary_url: img.cloudinary_url,
-            cloudinary_public_id: img.cloudinary_public_id,
-            alt_text: img.alt_text,
-            sort_order: img.sort_order,
-            is_primary: img.is_primary,
-          }))
-        );
-      }
-      if (upsertError) {
-        console.warn('Supabase product sync skipped (UUID mismatch or RLS):', upsertError.message);
-      }
-    } catch (e) {
-      console.warn('Supabase product save error:', e);
+    const dbProduct = {
+      id,
+      name: product.name,
+      slug: product.slug,
+      description: product.description || '',
+      short_description: product.short_description || '',
+      price: product.price,
+      sale_price: product.sale_price,
+      sku: product.sku || null,
+      stock: product.stock,
+      category_id: finalCategoryId,
+      brand: product.brand || 'Baby Cry',
+      age_group: product.age_group || '0-24M',
+      gender: product.gender || 'Unisex',
+      sizes: product.sizes,
+      colors: product.colors,
+      material: product.material,
+      features: product.features,
+      care_instructions: product.care_instructions,
+      is_featured: product.is_featured,
+      is_new: product.is_new,
+      is_best_seller: product.is_best_seller,
+      is_active: product.is_active,
+      seo_title: product.seo_title || null,
+      seo_description: product.seo_description || null,
+      updated_at: now,
+      created_at: product.created_at,
+    };
+
+    const { error: upsertError } = await admin.from('products').upsert(dbProduct);
+    if (upsertError) {
+      console.error('Supabase product save error:', upsertError);
+      throw new Error(`Failed to save product in database: ${upsertError.message}`);
     }
+
+    if (product.images && product.images.length > 0) {
+      const dbImages = product.images.map((img, idx) => ({
+        id: isUUID(img.id) ? img.id : randomUUID(),
+        product_id: id,
+        cloudinary_url: img.cloudinary_url,
+        cloudinary_public_id: img.cloudinary_public_id || null,
+        alt_text: img.alt_text || null,
+        sort_order: Number(img.sort_order ?? idx),
+        is_primary: Boolean(img.is_primary ?? (idx === 0)),
+      }));
+
+      await admin.from('product_images').delete().eq('product_id', id);
+      const { error: imgError } = await admin.from('product_images').insert(dbImages);
+      if (imgError) {
+        console.warn('Supabase product_images insert warning:', imgError.message);
+      }
+    }
+  }
+
+  // 2. Also keep local store synced if filesystem allows
+  try {
+    const existingIdx = store.products.findIndex(p => p.id === id);
+    if (existingIdx >= 0) {
+      store.products[existingIdx] = product;
+    } else {
+      store.products.unshift(product);
+    }
+    saveStorage(store);
+  } catch {
+    // Normal in serverless environments like Vercel with read-only filesystems
   }
 
   return product;
@@ -458,14 +600,28 @@ export async function saveProduct(productData: Partial<Product>): Promise<Produc
 
 export async function deleteProduct(id: string): Promise<boolean> {
   const admin = getSupabaseAdmin();
-  if (admin) {
+  if (admin && isUUID(id)) {
     try {
-      await admin.from('products').delete().eq('id', id);
-    } catch {}
+      await admin.from('product_images').delete().eq('product_id', id);
+      const { error } = await admin.from('products').delete().eq('id', id);
+      if (error) {
+        console.error('Supabase deleteProduct error:', error);
+        throw new Error(`Failed to delete product: ${error.message}`);
+      }
+    } catch (err: any) {
+      console.error('Supabase delete error:', err);
+      throw err;
+    }
   }
-  const store = ensureStorage();
-  store.products = store.products.filter(p => p.id !== id);
-  saveStorage(store);
+
+  try {
+    const store = ensureStorage();
+    store.products = store.products.filter(p => p.id !== id);
+    saveStorage(store);
+  } catch {
+    // Read-only filesystem in Vercel
+  }
+
   return true;
 }
 

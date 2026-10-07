@@ -6,6 +6,7 @@ import { Product, Category } from '@/types/database';
 import { ImageUploader } from './ImageUploader';
 import { Loader2, ArrowLeft, Trash2, Check, Star } from 'lucide-react';
 import Link from 'next/link';
+import { DeleteProductButton } from './DeleteProductButton';
 
 interface ProductFormProps {
   initialProduct?: Product;
@@ -163,7 +164,7 @@ export function ProductForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8 max-w-4xl">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <Link
           href="/admin/products"
           className="text-xs font-semibold text-slate-500 hover:text-slate-800 flex items-center gap-1.5"
@@ -171,20 +172,30 @@ export function ProductForm({
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Product Listing</span>
         </Link>
-        <button
-          type="submit"
-          disabled={loading}
-          className="px-6 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-xs transition-colors disabled:opacity-50"
-        >
-          {loading ? (
-            <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              <span>Saving Product...</span>
-            </>
-          ) : (
-            <span>Save Product</span>
+        <div className="flex items-center gap-2.5">
+          {isEditing && initialProduct && (
+            <DeleteProductButton
+              productId={initialProduct.id}
+              productName={initialProduct.name}
+              variant="button"
+              redirectOnDelete="/admin/products"
+            />
           )}
-        </button>
+          <button
+            type="submit"
+            disabled={loading}
+            className="px-6 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-xs transition-colors disabled:opacity-50"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Saving Product...</span>
+              </>
+            ) : (
+              <span>Save Product</span>
+            )}
+          </button>
+        </div>
       </div>
 
       {successMessage && (
@@ -518,6 +529,40 @@ export function ProductForm({
             />
             <span className="text-xs font-semibold text-slate-700">Active (Public)</span>
           </label>
+        </div>
+      </div>
+
+      <div className="flex flex-wrap items-center justify-between gap-3 pt-6 border-t border-slate-200">
+        <Link
+          href="/admin/products"
+          className="text-xs font-semibold text-slate-500 hover:text-slate-800 flex items-center gap-1.5"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Cancel & Back</span>
+        </Link>
+        <div className="flex items-center gap-2.5">
+          {isEditing && initialProduct && (
+            <DeleteProductButton
+              productId={initialProduct.id}
+              productName={initialProduct.name}
+              variant="button"
+              redirectOnDelete="/admin/products"
+            />
+          )}
+          <button
+            type="submit"
+            disabled={loading}
+            className="px-6 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-xs transition-colors disabled:opacity-50"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Saving Product...</span>
+              </>
+            ) : (
+              <span>Save Product</span>
+            )}
+          </button>
         </div>
       </div>
     </form>
