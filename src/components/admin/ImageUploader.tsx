@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { compressImageClient } from '@/lib/cloudinary/client-compress';
 import { UploadCloud, CheckCircle2, AlertCircle, Loader2, X } from 'lucide-react';
@@ -19,6 +19,11 @@ export function ImageUploader({
   className = '',
 }: ImageUploaderProps) {
   const [preview, setPreview] = useState<string>(currentImageUrl || '');
+
+  useEffect(() => {
+    setPreview(currentImageUrl || '');
+  }, [currentImageUrl]);
+
   const [status, setStatus] = useState<'idle' | 'compressing' | 'uploading' | 'processing' | 'done' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);

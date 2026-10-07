@@ -61,19 +61,26 @@ export function ProductCard({ product }: ProductCardProps) {
   };
 
   return (
-    <div className="group relative flex flex-col bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-      {/* Image area — no border, no padding, full-width fill */}
+    <div
+      style={{ backgroundColor: '#ffffff' }}
+      className="group relative flex flex-col rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+    >
+      {/* Image area — white background, full-width fill */}
       <Link
         href={`/products/${product.slug}`}
-        className="relative block w-full bg-[#FAF7F2]"
-        style={{ paddingBottom: '110%' }}
+        className="relative block w-full"
+        style={{ paddingBottom: '110%', backgroundColor: '#ffffff' }}
       >
+        {/* mix-blend-multiply + brightness-110 turns white / very light gray
+            image backgrounds (like #E8E8E8) into pure white.
+            Remove `brightness-110` if product colors look too bright. */}
         <Image
           src={primaryImage}
           alt={product.name}
           fill
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          className="object-contain object-center p-3 sm:p-4 group-hover:scale-105 transition-transform duration-500"
+          style={{ backgroundColor: '#ffffff' }}
+          className="object-contain object-center p-3 sm:p-4 mix-blend-multiply brightness-110 group-hover:scale-105 transition-transform duration-500"
         />
 
         {/* NEW badge — top left */}
@@ -98,7 +105,7 @@ export function ProductCard({ product }: ProductCardProps) {
       </Link>
 
       {/* Text area — category label, name, price, add to cart */}
-      <div className="px-3 pt-3 pb-4 flex flex-col gap-1">
+      <div className="px-3 pt-3 pb-4 flex flex-col gap-1 bg-white">
         <span className="text-[10px] sm:text-[11px] font-semibold text-emerald-700/80 tracking-wide uppercase">
           {product.category?.name || product.brand || 'Baby Cry'}
         </span>
