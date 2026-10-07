@@ -84,7 +84,14 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // 2. Safe local upload fallback if Cloudinary credentials are not populated yet
+    // 2. Safe local upload fallback if Cloudinary credentials are not populated yet (local dev only)
+    if (process.env.VERCEL === '1') {
+      return NextResponse.json(
+        { error: 'Cloudinary credentials (CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET) must be set in your Vercel Project Environment Variables to store images permanently in production.' },
+        { status: 500 }
+      );
+    }
+
     const uploadDir = path.join(process.cwd(), 'public', 'uploads');
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
