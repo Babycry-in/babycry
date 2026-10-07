@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { getProducts, getCategories } from '@/lib/data/db-service';
 import { Plus, Edit, Package, Eye } from 'lucide-react';
+import { DeleteProductButton } from '@/components/admin';
 
 export const revalidate = 0;
 
@@ -134,22 +135,26 @@ export default async function AdminProductsPage() {
                         </span>
                       </td>
 
-                      <td className="py-3.5 px-4 text-right space-x-2">
+                      <td className="py-3.5 px-4 text-right space-x-1.5 whitespace-nowrap">
                         <Link
                           href={`/products/${p.slug}`}
                           target="_blank"
-                          className="p-1.5 text-slate-400 hover:text-emerald-700 rounded-lg hover:bg-slate-100 inline-block"
+                          className="p-1.5 text-slate-400 hover:text-emerald-700 rounded-lg hover:bg-slate-100 inline-block align-middle"
                           title="View on store"
                         >
                           <Eye className="w-4 h-4" />
                         </Link>
                         <Link
                           href={`/admin/products/${p.id}/edit`}
-                          className="px-3 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-lg text-xs font-semibold inline-flex items-center gap-1 transition-colors"
+                          className="px-3 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-lg text-xs font-semibold inline-flex items-center gap-1 transition-colors align-middle"
                         >
                           <Edit className="w-3.5 h-3.5" />
                           <span>Edit</span>
                         </Link>
+                        <DeleteProductButton
+                          productId={p.id}
+                          productName={p.name}
+                        />
                       </td>
                     </tr>
                   );
