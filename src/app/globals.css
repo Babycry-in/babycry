@@ -12,9 +12,10 @@
   --color-mint-primary: #98D4BC;
   --color-mint-dark: #376F59;
   
-  --color-cream-light: #FFFDF9;
-  --color-cream-base: #FAF7F2;
-  --color-cream-dark: #F0EADF;
+  /* Cream colors replaced with pure white */
+  --color-cream-light: #ffffff;
+  --color-cream-base: #ffffff;
+  --color-cream-dark: #ffffff;
   
   --color-baby-orange: #F58220;
   --color-baby-green: #1FA353;
@@ -23,8 +24,13 @@
   --color-baby-yellow: #FEF3C7;
 }
 
+html,
 body {
-  background-color:#ffffff;
+  background-color: #ffffff;
+}
+
+body {
+  background-color: #ffffff;
   color: var(--foreground);
   font-family: var(--font-body), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   overflow-x: hidden;
@@ -37,13 +43,13 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 /* Custom Cloud & Organic Wave Shapes */
 .cloud-pill {
   border-radius: 9999px;
-  background: white;
+  background: #ffffff;
   box-shadow: 0 4px 20px -2px rgba(90, 150, 130, 0.08);
 }
 
 .cloud-bubble {
   border-radius: 40px 40px 36px 36px;
-  background: white;
+  background: #ffffff;
   box-shadow: 0 8px 30px -4px rgba(78, 140, 120, 0.09);
   transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
@@ -54,7 +60,7 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 }
 
 .polaroid-card {
-  background: #FFFFFF;
+  background: #ffffff;
   padding: 12px 12px 28px 12px;
   box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.08);
   border-radius: 14px;
@@ -86,7 +92,7 @@ h1, h2, h3, h4, h5, h6, .font-heading {
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #FAF7F2;
+  background: #ffffff;
 }
 ::-webkit-scrollbar-thumb {
   background: #C4E2D5;

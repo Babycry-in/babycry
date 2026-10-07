@@ -82,7 +82,7 @@ export default async function CategoryPage({ params }: Props) {
   };
 
   return (
-    <div className="bg-[#FAF7F2] min-h-screen pb-20">
+    <div className=" min-h-screen pb-20">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
