@@ -1,7 +1,7 @@
 import { BusinessSettings, Category, HeroSlide, HomepageSection, Product } from '@/types/database';
 
 export const INITIAL_BUSINESS_SETTINGS: BusinessSettings = {
-  id: 'b8c8-business-main',
+  id: 'b8c80000-0000-4000-8000-000000000001',
   business_name: 'Baby Cry.in',
   tagline: 'Little things for brighter little days',
   phone: '8136 819192',
@@ -41,7 +41,7 @@ export const INITIAL_BUSINESS_SETTINGS: BusinessSettings = {
 
 export const INITIAL_CATEGORIES: Category[] = [
   {
-    id: 'cat-apparels',
+    id: 'c0000001-0000-4000-8000-000000000001',
     name: 'Apparels',
     slug: 'apparels',
     short_description: 'Soft organic cotton rompers, dresses, and comfy daily wear',
@@ -54,7 +54,7 @@ export const INITIAL_CATEGORIES: Category[] = [
     seo_description: 'Discover super-soft organic baby clothes, rompers, and dresses for little ones.'
   },
   {
-    id: 'cat-footwear',
+    id: 'c0000001-0000-4000-8000-000000000002',
     name: 'Footwear',
     slug: 'footwear',
     short_description: 'Gentle pre-walkers, cozy booties, and comfy shoes',
@@ -65,7 +65,7 @@ export const INITIAL_CATEGORIES: Category[] = [
     is_active: true,
   },
   {
-    id: 'cat-accessories',
+    id: 'c0000001-0000-4000-8000-000000000003',
     name: 'Accessories',
     slug: 'accessories',
     short_description: 'Cute beanies, bibs, mittens, and headbands',
@@ -76,7 +76,7 @@ export const INITIAL_CATEGORIES: Category[] = [
     is_active: true,
   },
   {
-    id: 'cat-gift-and-hampers',
+    id: 'c0000001-0000-4000-8000-000000000004',
     name: 'Gift & Hampers',
     slug: 'gift-and-hampers',
     short_description: 'Beautifully boxed gift bundles for baby showers & celebrations',
@@ -87,7 +87,7 @@ export const INITIAL_CATEGORIES: Category[] = [
     is_active: true,
   },
   {
-    id: 'cat-hospital-kit',
+    id: 'c0000001-0000-4000-8000-000000000005',
     name: 'Hospital Kit',
     slug: 'hospital-kit',
     short_description: 'Essential newborn arrival kits with sterilized maternity care',
@@ -98,7 +98,7 @@ export const INITIAL_CATEGORIES: Category[] = [
     is_active: true,
   },
   {
-    id: 'cat-toys',
+    id: 'c0000001-0000-4000-8000-000000000006',
     name: 'Toys',
     slug: 'toys',
     short_description: 'Sensory plushies, wooden rattles, and developmental playsets',
@@ -109,7 +109,7 @@ export const INITIAL_CATEGORIES: Category[] = [
     is_active: true,
   },
   {
-    id: 'cat-diapering',
+    id: 'c0000001-0000-4000-8000-000000000007',
     name: 'Diapering',
     slug: 'diapering',
     short_description: 'Breathable cloth diapers, changing mats, and wet wipes',
@@ -120,7 +120,7 @@ export const INITIAL_CATEGORIES: Category[] = [
     is_active: true,
   },
   {
-    id: 'cat-bath-and-skin-care',
+    id: 'c0000001-0000-4000-8000-000000000008',
     name: 'Bath & Skin Care',
     slug: 'bath-and-skin-care',
     short_description: 'Gentle tear-free cleansers, soft towels, and nourishing oils',
@@ -131,7 +131,7 @@ export const INITIAL_CATEGORIES: Category[] = [
     is_active: true,
   },
   {
-    id: 'cat-baby-gear',
+    id: 'c0000001-0000-4000-8000-000000000009',
     name: 'Baby Gear',
     slug: 'baby-gear',
     short_description: 'Compact strollers, ergonomic carriers, and travel bags',
@@ -142,7 +142,7 @@ export const INITIAL_CATEGORIES: Category[] = [
     is_active: true,
   },
   {
-    id: 'cat-feeding',
+    id: 'c0000001-0000-4000-8000-000000000010',
     name: 'Feeding',
     slug: 'feeding',
     short_description: 'BPA-free suction bowls, training cups, silicone spoons & highchairs',
@@ -153,7 +153,7 @@ export const INITIAL_CATEGORIES: Category[] = [
     is_active: true,
   },
   {
-    id: 'cat-nursery',
+    id: 'c0000001-0000-4000-8000-000000000011',
     name: 'Nursery',
     slug: 'nursery',
     short_description: 'Soft crib bedding, calming night lights, and storage baskets',
@@ -164,7 +164,7 @@ export const INITIAL_CATEGORIES: Category[] = [
     is_active: true,
   },
   {
-    id: 'cat-health-and-safety',
+    id: 'c0000001-0000-4000-8000-000000000012',
     name: 'Health & Safety',
     slug: 'health-and-safety',
     short_description: 'Nail trimmers, nasal aspirators, safety locks & monitors',
@@ -178,7 +178,7 @@ export const INITIAL_CATEGORIES: Category[] = [
 
 export const INITIAL_HERO_SLIDES: HeroSlide[] = [
   {
-    id: 'hero-1',
+    id: 'h0000001-0000-4000-8000-000000000001',
     eyebrow: 'LITTLE THINGS FOR',
     title: 'Brighter Little Days',
     description: 'Cute outfits, thoughtful essentials and little toys for your little one.',
@@ -198,7 +198,7 @@ export const INITIAL_PRODUCTS: Product[] = [];
 
 export const INITIAL_HOMEPAGE_SECTIONS: HomepageSection[] = [
   {
-    id: 'sec-sweetest-details',
+    id: 's0000001-0000-4000-8000-000000000001',
     section_key: 'sweetest_details',
     title: 'The sweetest little details.',
     subtitle: 'GIRLS EDIT',
@@ -210,7 +210,7 @@ export const INITIAL_HOMEPAGE_SECTIONS: HomepageSection[] = [
     display_order: 1
   },
   {
-    id: 'sec-little-looks',
+    id: 's0000001-0000-4000-8000-000000000002',
     section_key: 'little_looks',
     title: 'Little looks worth saving.',
     subtitle: 'CUTE & DREAMY',
@@ -225,7 +225,7 @@ export const INITIAL_HOMEPAGE_SECTIONS: HomepageSection[] = [
     }
   },
   {
-    id: 'sec-mealtime',
+    id: 's0000001-0000-4000-8000-000000000003',
     section_key: 'mealtime',
     title: 'Mealtime made a little happier.',
     description: 'Give your little one a comfortable space to enjoy every bite with our ergonomic highchairs & silicone dining sets.',
@@ -241,7 +241,7 @@ export const INITIAL_HOMEPAGE_SECTIONS: HomepageSection[] = [
     }
   },
   {
-    id: 'sec-tiny-teeth',
+    id: 's0000001-0000-4000-8000-000000000004',
     section_key: 'tiny_teeth',
     title: 'Tiny teeth. Tiny discoveries.',
     description: 'A little extra comfort for those teething days.',
@@ -252,7 +252,7 @@ export const INITIAL_HOMEPAGE_SECTIONS: HomepageSection[] = [
     display_order: 4
   },
   {
-    id: 'sec-travel',
+    id: 's0000001-0000-4000-8000-000000000005',
     section_key: 'travel',
     title: 'The sweetest little details.',
     subtitle: 'APPARELS EDIT',
@@ -264,7 +264,7 @@ export const INITIAL_HOMEPAGE_SECTIONS: HomepageSection[] = [
     display_order: 5
   },
   {
-    id: 'sec-gift-box',
+    id: 's0000001-0000-4000-8000-000000000006',
     section_key: 'gift_box',
     title: 'A little love, packed with care.',
     description: 'Beautifully curated newborn essentials for baby showers, newborn welcomes and special occasions.',
@@ -275,7 +275,7 @@ export const INITIAL_HOMEPAGE_SECTIONS: HomepageSection[] = [
     display_order: 6
   },
   {
-    id: 'sec-unboxing',
+    id: 's0000001-0000-4000-8000-000000000007',
     section_key: 'unboxing',
     title: 'Unbox the cuteness.',
     description: 'A little love packed into every order.',
@@ -286,7 +286,7 @@ export const INITIAL_HOMEPAGE_SECTIONS: HomepageSection[] = [
     display_order: 7
   },
   {
-    id: 'sec-instagram',
+    id: 's0000001-0000-4000-8000-000000000008',
     section_key: 'instagram',
     title: 'Little moments @Baby_cry.in',
     subtitle: 'INSTAGRAM COMMUNITY',

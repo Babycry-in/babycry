@@ -17,7 +17,7 @@
   },
   "categories": [
     {
-      "id": "cat-apparels",
+      "id": "c0000001-0000-4000-8000-000000000001",
       "name": "Apparels",
       "slug": "apparels",
       "short_description": "Soft organic cotton rompers, dresses, and comfy daily wear",
@@ -32,7 +32,7 @@
       "created_at": "2026-10-03T10:37:45.011Z"
     },
     {
-      "id": "cat-footwear",
+      "id": "c0000001-0000-4000-8000-000000000002",
       "name": "Footwear",
       "slug": "footwear",
       "short_description": "Gentle pre-walkers, cozy booties, and comfy shoes",
@@ -47,7 +47,7 @@
       "created_at": "2026-10-05T09:43:41.800Z"
     },
     {
-      "id": "cat-accessories",
+      "id": "c0000001-0000-4000-8000-000000000003",
       "name": "Accessories",
       "slug": "accessories",
       "short_description": "Cute beanies, bibs, mittens, and headbands",
@@ -62,7 +62,7 @@
       "created_at": "2026-10-05T09:45:12.497Z"
     },
     {
-      "id": "cat-gift-and-hampers",
+      "id": "c0000001-0000-4000-8000-000000000004",
       "name": "Gift & Hampers",
       "slug": "gift-and-hampers",
       "short_description": "Beautifully boxed gift bundles for baby showers & celebrations",
@@ -77,7 +77,7 @@
       "created_at": "2026-10-05T09:45:35.972Z"
     },
     {
-      "id": "cat-hospital-kit",
+      "id": "c0000001-0000-4000-8000-000000000005",
       "name": "Hospital Kit",
       "slug": "hospital-kit",
       "short_description": "Essential newborn arrival kits with sterilized maternity care",
@@ -92,7 +92,7 @@
       "created_at": "2026-10-05T10:02:35.770Z"
     },
     {
-      "id": "cat-toys",
+      "id": "c0000001-0000-4000-8000-000000000006",
       "name": "Toys",
       "slug": "toys",
       "short_description": "Sensory plushies, wooden rattles, and developmental playsets",
@@ -107,7 +107,7 @@
       "created_at": "2026-10-05T10:01:19.563Z"
     },
     {
-      "id": "cat-diapering",
+      "id": "c0000001-0000-4000-8000-000000000007",
       "name": "Diapering",
       "slug": "diapering",
       "short_description": "Breathable cloth diapers, changing mats, and wet wipes",
@@ -122,7 +122,7 @@
       "created_at": "2026-10-05T11:10:47.054Z"
     },
     {
-      "id": "cat-bath-and-skin-care",
+      "id": "c0000001-0000-4000-8000-000000000008",
       "name": "Bath & Skin Care",
       "slug": "bath-and-skin-care",
       "short_description": "Gentle tear-free cleansers, soft towels, and nourishing oils",
@@ -137,7 +137,7 @@
       "created_at": "2026-10-05T12:00:28.844Z"
     },
     {
-      "id": "cat-baby-gear",
+      "id": "c0000001-0000-4000-8000-000000000009",
       "name": "Baby Gear",
       "slug": "baby-gear",
       "short_description": "Compact strollers, ergonomic carriers, and travel bags",
@@ -152,7 +152,7 @@
       "created_at": "2026-10-05T12:17:03.035Z"
     },
     {
-      "id": "cat-feeding",
+      "id": "c0000001-0000-4000-8000-000000000010",
       "name": "Feeding",
       "slug": "feeding",
       "short_description": "BPA-free suction bowls, training cups, silicone spoons & highchairs",
@@ -167,7 +167,7 @@
       "created_at": "2026-10-05T12:18:59.685Z"
     },
     {
-      "id": "cat-nursery",
+      "id": "c0000001-0000-4000-8000-000000000011",
       "name": "Nursery",
       "slug": "nursery",
       "short_description": "Soft crib bedding, calming night lights, and storage baskets",
@@ -182,7 +182,7 @@
       "created_at": "2026-10-05T12:01:52.248Z"
     },
     {
-      "id": "cat-health-and-safety",
+      "id": "c0000001-0000-4000-8000-000000000012",
       "name": "Health & Safety",
       "slug": "health-and-safety",
       "short_description": "Nail trimmers, nasal aspirators, safety locks & monitors",
@@ -199,7 +199,7 @@
   ],
   "products": [
     {
-      "id": "prod-1791207149888",
+      "id": "e0000001-0000-4000-8000-000000000001",
       "name": "ibfisefi gsfius",
       "slug": "ibfisefi-gsfius",
       "description": "asd daf efwf WFwf WE",
@@ -208,7 +208,7 @@
       "sale_price": 33,
       "sku": "BC-9888",
       "stock": 15,
-      "category_id": "cat-apparels",
+      "category_id": "c0000001-0000-4000-8000-000000000001",
       "brand": "Baby Cry",
       "age_group": "0-24M",
       "gender": "Unisex",
@@ -234,7 +234,7 @@
       "is_active": true,
       "images": [
         {
-          "id": "img-1791207142034",
+          "id": "d0000001-0000-4000-8000-000000000001",
           "cloudinary_url": "https://res.cloudinary.com/hjkjyndc/image/upload/v1791207141/babycry/ijkazupyndek7kcbgdil.webp",
           "cloudinary_public_id": "babycry/ijkazupyndek7kcbgdil",
           "sort_order": 0,
