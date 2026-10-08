@@ -20,9 +20,20 @@ export function MobileCategoryRow({ items, mode }: MobileCategoryRowProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const isInteractingRef = useRef(false);
   const resumeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const scrollPosRef = useRef(0);
+  const rafIdRef = useRef<number | null>(null);
+  const lastTimeRef = useRef<number>(0);
 
   // If mode is explicitly 'static' or items <= 3 (and mode is not forced marquee)
   const isStatic = mode === 'static' || (mode !== 'marquee' && items.length <= 3);
+
+  // Stable dependency key so effect doesn't re-run on parent re-renders with identical items
+  const itemsKey = items?.map((i) => i.id || i.slug).join(',') ?? '';
+
+  // Duplicate items visually for infinite continuous loop
+  const baseTrack = items.length < 5 ? [...items, ...items] : items;
+  const visualTrack = [...baseTrack, ...baseTrack];
+  const halfCount = baseTrack.length;
 
   useEffect(() => {
     if (isStatic) return;
@@ -36,63 +47,137 @@ export function MobileCategoryRow({ items, mode }: MobileCategoryRowProps) {
     ).matches;
     if (prefersReducedMotion) return;
 
-    let animationFrameId: number;
-    const speed = 0.6; // Pixels per frame for smooth, subtle auto-scroll
+    // Speed in pixels per second: ~28px/s provides a gentle, slow, smooth, consistent crawl
+    // across both 60Hz and 120Hz (ProMotion iOS) screens
+    const SPEED_PIXELS_PER_SEC = 28;
+    lastTimeRef.current = performance.now();
+    scrollPosRef.current = el.scrollLeft;
 
-    const step = () => {
-      if (!isInteractingRef.current && el) {
-        el.scrollLeft += speed;
+    let isMounted = true;
 
-        // Reset scroll seamlessly when reaching the midpoint of duplicated track
-        const maxScroll = el.scrollWidth / 2;
-        if (maxScroll > 0) {
-          if (el.scrollLeft >= maxScroll) {
-            el.scrollLeft -= maxScroll;
-          } else if (el.scrollLeft <= 0) {
-            el.scrollLeft += maxScroll;
-          }
+    // Measure exact repetition distance between first item and its duplicate clone
+    const getLoopWidth = (): number => {
+      if (!el) return 0;
+      const children = el.children;
+      if (children.length > halfCount) {
+        const first = children[0] as HTMLElement;
+        const clone = children[halfCount] as HTMLElement;
+        if (first && clone) {
+          const dist = clone.offsetLeft - first.offsetLeft;
+          if (dist > 0) return dist;
         }
       }
-      animationFrameId = requestAnimationFrame(step);
+      return el.scrollWidth / 2;
     };
 
-    animationFrameId = requestAnimationFrame(step);
+    const step = (currentTime: number) => {
+      if (!isMounted) return;
 
-    return () => {
-      cancelAnimationFrame(animationFrameId);
-      if (resumeTimeoutRef.current) {
-        clearTimeout(resumeTimeoutRef.current);
+      if (!isInteractingRef.current && el) {
+        // Delta time in seconds, clamped to max 50ms (0.05s) to avoid jumps after tab switch / sleep
+        const dt = Math.min((currentTime - lastTimeRef.current) / 1000, 0.05);
+        scrollPosRef.current += SPEED_PIXELS_PER_SEC * dt;
+
+        const loopWidth = getLoopWidth();
+        if (loopWidth > 0) {
+          // Seamless infinite reset: subtract loopWidth when reaching the second set
+          if (scrollPosRef.current >= loopWidth) {
+            scrollPosRef.current -= loopWidth;
+          }
+        }
+
+        // Apply position to DOM scroll
+        el.scrollLeft = scrollPosRef.current;
+      }
+
+      lastTimeRef.current = currentTime;
+      rafIdRef.current = requestAnimationFrame(step);
+    };
+
+    // Pause autoplay when browser tab is inactive, resume cleanly without sudden jumps
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        isInteractingRef.current = true;
+      } else {
+        lastTimeRef.current = performance.now();
+        if (el) {
+          scrollPosRef.current = el.scrollLeft;
+        }
+        isInteractingRef.current = false;
       }
     };
-  }, [items, isStatic]);
 
-  // Pause on hover
-  const handleMouseEnter = () => {
-    isInteractingRef.current = true;
-  };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    rafIdRef.current = requestAnimationFrame(step);
 
-  const handleMouseLeave = () => {
-    isInteractingRef.current = false;
-  };
+    return () => {
+      isMounted = false;
+      if (rafIdRef.current !== null) {
+        cancelAnimationFrame(rafIdRef.current);
+        rafIdRef.current = null;
+      }
+      if (resumeTimeoutRef.current) {
+        clearTimeout(resumeTimeoutRef.current);
+        resumeTimeoutRef.current = null;
+      }
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [itemsKey, isStatic, halfCount, items.length]);
 
-  // Pause on touch so user can swipe naturally without fighting auto-scroll
-  const handleTouchStart = () => {
+  // Pause autoplay immediately on user touch / hover / pointer interaction
+  const handleInteractionStart = () => {
     isInteractingRef.current = true;
     if (resumeTimeoutRef.current) {
       clearTimeout(resumeTimeoutRef.current);
+      resumeTimeoutRef.current = null;
     }
   };
 
-  const handleTouchEnd = () => {
-    // Resume auto-scrolling 1.5s after touch ends to respect swipe momentum
+  // Resume autoplay cleanly 1.2s after user interaction ends
+  const handleInteractionEnd = () => {
+    if (resumeTimeoutRef.current) {
+      clearTimeout(resumeTimeoutRef.current);
+    }
     resumeTimeoutRef.current = setTimeout(() => {
+      const el = scrollRef.current;
+      if (el) {
+        scrollPosRef.current = el.scrollLeft;
+      }
+      lastTimeRef.current = performance.now();
       isInteractingRef.current = false;
-    }, 1500);
+    }, 1200);
+  };
+
+  // Sync scroll position during manual swipe / momentum scrolling
+  const handleScroll = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    if (isInteractingRef.current) {
+      scrollPosRef.current = el.scrollLeft;
+      // Wrap if swiped backwards past start
+      if (el.children.length > halfCount) {
+        const first = el.children[0] as HTMLElement;
+        const clone = el.children[halfCount] as HTMLElement;
+        const loopWidth = first && clone ? clone.offsetLeft - first.offsetLeft : el.scrollWidth / 2;
+        if (loopWidth > 0) {
+          if (scrollPosRef.current < 0) {
+            scrollPosRef.current += loopWidth;
+            el.scrollLeft = scrollPosRef.current;
+          } else if (scrollPosRef.current >= loopWidth * 1.8) {
+            scrollPosRef.current -= loopWidth;
+            el.scrollLeft = scrollPosRef.current;
+          }
+        }
+      }
+      // Reset resume timer while user is still scrolling or momentum is rolling
+      handleInteractionEnd();
+    }
   };
 
   if (!items || items.length === 0) return null;
 
-  // 1. STATIC 3-COLUMN ROW (for "Shop the little world")
+  // 1. STATIC 3-COLUMN ROW (for "Shop the little world" when static mode requested)
   // All 3 items are completely visible within ONE mobile screen/row without scrolling or cropping
   if (isStatic) {
     const display3 = items.slice(0, 3);
@@ -137,31 +222,30 @@ export function MobileCategoryRow({ items, mode }: MobileCategoryRowProps) {
   }
 
   // 2. MARQUEE AUTO-SCROLL
-  // Duplicate items visually for infinite continuous loop
-  const baseTrack = items.length < 5 ? [...items, ...items] : items;
-  const visualTrack = [...baseTrack, ...baseTrack];
-
   return (
     <div
       ref={scrollRef}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
-      onPointerDown={handleTouchStart}
-      onPointerUp={handleTouchEnd}
-      className="flex md:hidden overflow-x-auto no-scrollbar gap-4 sm:gap-5 py-2 px-4 touch-pan-x select-none cursor-grab active:cursor-grabbing"
+      onScroll={handleScroll}
+      onMouseEnter={handleInteractionStart}
+      onMouseLeave={handleInteractionEnd}
+      onTouchStart={handleInteractionStart}
+      onTouchEnd={handleInteractionEnd}
+      onTouchCancel={handleInteractionEnd}
+      onPointerDown={handleInteractionStart}
+      onPointerUp={handleInteractionEnd}
+      onPointerCancel={handleInteractionEnd}
+      className="flex md:hidden overflow-x-auto no-scrollbar gap-4 sm:gap-5 py-2 px-4 touch-pan-x select-none cursor-grab active:cursor-grabbing w-full"
       style={{
         scrollbarWidth: 'none',
         msOverflowStyle: 'none',
-        WebkitOverflowScrolling: 'touch',
+        overscrollBehaviorX: 'contain',
       }}
     >
       {visualTrack.map((item, index) => (
         <Link
           key={`${item.id || item.slug}-${index}`}
           href={`/categories/${item.slug}`}
-          className="group shrink-0 flex flex-col items-center text-center transition-transform active:scale-95"
+          className="group shrink-0 flex flex-col items-center text-center transition-transform"
         >
           {/* Cloud platform */}
           <div
