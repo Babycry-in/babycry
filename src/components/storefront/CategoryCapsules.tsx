@@ -30,7 +30,7 @@ function CloudIcon({ className }: { className?: string }) {
 }
 
 export function CategoryCapsules({ categories }: CategoryCapsulesProps) {
-  const displayItems = getTopCategories(categories);
+  const displayItems = React.useMemo(() => getTopCategories(categories), [categories]);
 
   return (
     <section className="relative py-7 sm:py-20 overflow-hidden ">

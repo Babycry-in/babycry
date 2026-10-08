@@ -12,7 +12,7 @@ export default async function CategoriesPage() {
   const categories = await getCategories(true);
 
   return (
-    <div className="py-12 sm:py-16 bg-[#FAF7F2] min-h-screen">
+    <div className="py-12 sm:py-16  min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
