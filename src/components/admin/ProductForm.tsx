@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Product, Category } from '@/types/database';
+import { Product, Category, Subcategory } from '@/types/database';
 import { ImageUploader } from './ImageUploader';
 import { Loader2, ArrowLeft, Trash2, Check, Star } from 'lucide-react';
 import Link from 'next/link';
@@ -11,12 +11,14 @@ import { DeleteProductButton } from './DeleteProductButton';
 interface ProductFormProps {
   initialProduct?: Product;
   categories: Category[];
+  subcategories?: Subcategory[];
   isEditing?: boolean;
 }
 
 export function ProductForm({
   initialProduct,
   categories,
+  subcategories = [],
   isEditing = false,
 }: ProductFormProps) {
   const router = useRouter();
@@ -28,6 +30,7 @@ export function ProductForm({
     name: initialProduct?.name || '',
     slug: initialProduct?.slug || '',
     category_id: initialProduct?.category_id || categories[0]?.id || '',
+    subcategory_id: initialProduct?.subcategory_id || '',
     price: initialProduct?.price || '',
     sale_price: initialProduct?.sale_price || '',
     sku: initialProduct?.sku || '',
@@ -114,6 +117,7 @@ export function ProductForm({
         name: formData.name,
         slug: formData.slug || formData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
         category_id: formData.category_id,
+        subcategory_id: formData.subcategory_id || null,
         price: Number(formData.price),
         sale_price: formData.sale_price ? Number(formData.sale_price) : null,
         sku: formData.sku,
@@ -231,7 +235,7 @@ export function ProductForm({
           />
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
             <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
               URL Slug *
@@ -251,7 +255,7 @@ export function ProductForm({
             </label>
             <select
               value={formData.category_id}
-              onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
+              onChange={(e) => setFormData({ ...formData, category_id: e.target.value, subcategory_id: '' })}
               className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-slate-900 text-sm bg-white focus:outline-none focus:border-emerald-600"
             >
               {categories.map((c) => (
@@ -259,6 +263,26 @@ export function ProductForm({
                   {c.name}
                 </option>
               ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+              Subcategory (Optional)
+            </label>
+            <select
+              value={formData.subcategory_id}
+              onChange={(e) => setFormData({ ...formData, subcategory_id: e.target.value })}
+              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-slate-900 text-sm bg-white focus:outline-none focus:border-emerald-600"
+            >
+              <option value="">None / All Category</option>
+              {subcategories
+                .filter((s) => s.category_id === formData.category_id)
+                .map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name}
+                  </option>
+                ))}
             </select>
           </div>
         </div>

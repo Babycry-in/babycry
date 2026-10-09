@@ -1,9 +1,12 @@
 import React from 'react';
-import { getCategories } from '@/lib/data/db-service';
+import { getCategories, getSubcategories } from '@/lib/data/db-service';
 import { ProductForm } from '@/components/admin/ProductForm';
 
 export default async function AdminNewProductPage() {
-  const categories = await getCategories(false);
+  const [categories, subcategories] = await Promise.all([
+    getCategories(false),
+    getSubcategories(false),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -16,7 +19,11 @@ export default async function AdminNewProductPage() {
         </p>
       </div>
 
-      <ProductForm categories={categories} isEditing={false} />
+      <ProductForm
+        categories={categories}
+        subcategories={subcategories}
+        isEditing={false}
+      />
     </div>
   );
 }

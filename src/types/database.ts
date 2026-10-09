@@ -37,8 +37,10 @@ export interface Subcategory {
   category_id: string;
   name: string;
   slug: string;
+  description?: string;
   display_order: number;
   is_active: boolean;
+  created_at?: string;
 }
 
 export interface ProductImage {
