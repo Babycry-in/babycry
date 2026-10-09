@@ -884,5 +884,127 @@
       "used_by": "Contact Info Reference",
       "created_at": "2026-10-02T10:14:18.982Z"
     }
+  ],
+  "subcategories": [
+    {
+      "id": "1b454a0e-5671-4179-9116-3acc957bc36e",
+      "category_id": "c0000001-0000-4000-8000-000000000001",
+      "name": "Tops & T-Shirts",
+      "slug": "dresses",
+      "description": "",
+      "display_order": 1,
+      "is_active": true,
+      "created_at": "2026-10-09T11:24:04.258Z"
+    },
+    {
+      "id": "e24c4473-07f6-440a-999c-5dc1d2b882ac",
+      "category_id": "c0000001-0000-4000-8000-000000000001",
+      "name": "Pants & Leggings",
+      "slug": "pants-leggings",
+      "description": "",
+      "display_order": 1,
+      "is_active": true,
+      "created_at": "2026-10-09T12:03:19.653Z"
+    },
+    {
+      "id": "68950edb-f6ee-4dc7-9ee8-1cdee7aa2549",
+      "category_id": "c0000001-0000-4000-8000-000000000002",
+      "name": "Sneakers",
+      "slug": "sneakers",
+      "description": "",
+      "display_order": 1,
+      "is_active": true,
+      "created_at": "2026-10-09T12:03:35.732Z"
+    },
+    {
+      "id": "c188818b-9f1a-4c2f-8f19-ba4a924d1f75",
+      "category_id": "c0000001-0000-4000-8000-000000000002",
+      "name": "Sandals",
+      "slug": "sandals",
+      "description": "",
+      "display_order": 1,
+      "is_active": true,
+      "created_at": "2026-10-09T12:04:01.202Z"
+    },
+    {
+      "id": "3486cbe5-2310-43c7-a048-4aa6efec868e",
+      "category_id": "c0000001-0000-4000-8000-000000000003",
+      "name": "Caps & Hats",
+      "slug": "caps-hats",
+      "description": "",
+      "display_order": 1,
+      "is_active": true,
+      "created_at": "2026-10-09T12:04:13.218Z"
+    },
+    {
+      "id": "b9d1879c-6eed-4428-b396-3b741e251e76",
+      "category_id": "c0000001-0000-4000-8000-000000000003",
+      "name": "Socks",
+      "slug": "socks",
+      "description": "",
+      "display_order": 1,
+      "is_active": true,
+      "created_at": "2026-10-09T12:04:28.112Z"
+    },
+    {
+      "id": "60f1e4be-8ea5-4810-8054-6a02234ac92d",
+      "category_id": "c0000001-0000-4000-8000-000000000004",
+      "name": "Baby Shower Gifts",
+      "slug": "baby-shower-gifts",
+      "description": "",
+      "display_order": 1,
+      "is_active": true,
+      "created_at": "2026-10-09T12:04:42.273Z"
+    },
+    {
+      "id": "d1667375-15c6-4045-8f21-5e9354c90edf",
+      "category_id": "c0000001-0000-4000-8000-000000000004",
+      "name": "Birthday Gift Sets",
+      "slug": "birthday-gift-sets",
+      "description": "",
+      "display_order": 1,
+      "is_active": true,
+      "created_at": "2026-10-09T12:04:58.610Z"
+    },
+    {
+      "id": "6d5518fc-2723-49ad-b430-b51a35d8c782",
+      "category_id": "c0000001-0000-4000-8000-000000000005",
+      "name": "Newborn Hospital Kits",
+      "slug": "newborn-hospital-kits",
+      "description": "",
+      "display_order": 1,
+      "is_active": true,
+      "created_at": "2026-10-09T12:07:07.518Z"
+    },
+    {
+      "id": "058fda6a-00fd-4e59-967f-7f1c924a3e41",
+      "category_id": "c0000001-0000-4000-8000-000000000005",
+      "name": "Baby Toiletry Kits",
+      "slug": "baby-toiletry-kits",
+      "description": "",
+      "display_order": 1,
+      "is_active": true,
+      "created_at": "2026-10-09T12:07:20.413Z"
+    },
+    {
+      "id": "9253cbd1-cf1b-4cbd-b63e-b6692ae3e253",
+      "category_id": "c0000001-0000-4000-8000-000000000006",
+      "name": "Soft Toys & Plushies",
+      "slug": "soft-toys-plushies",
+      "description": "",
+      "display_order": 1,
+      "is_active": true,
+      "created_at": "2026-10-09T12:08:53.384Z"
+    },
+    {
+      "id": "8be4c841-73ab-42f9-bc22-8d0dc6f4816f",
+      "category_id": "c0000001-0000-4000-8000-000000000006",
+      "name": "Musical Toys",
+      "slug": "musical-toys",
+      "description": "",
+      "display_order": 1,
+      "is_active": true,
+      "created_at": "2026-10-09T12:09:07.925Z"
+    }
   ]
 }

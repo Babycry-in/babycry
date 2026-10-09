@@ -4,6 +4,7 @@ import { randomUUID } from 'crypto';
 import { 
   BusinessSettings, 
   Category, 
+  Subcategory,
   HeroSlide, 
   HomepageSection, 
   Order, 
@@ -24,6 +25,7 @@ import { getSupabaseAdmin, isServerSupabaseConfigured } from '@/lib/supabase/adm
 interface StoreData {
   settings: BusinessSettings;
   categories: Category[];
+  subcategories: Subcategory[];
   products: Product[];
   heroSlides: HeroSlide[];
   sections: HomepageSection[];
@@ -60,6 +62,10 @@ function ensureStorage(): StoreData {
         data.categories = INITIAL_CATEGORIES;
         needsSave = true;
       }
+      if (!data.subcategories || !Array.isArray(data.subcategories)) {
+        data.subcategories = [];
+        needsSave = true;
+      }
       if (!data.products || !Array.isArray(data.products)) {
         data.products = INITIAL_PRODUCTS;
         needsSave = true;
@@ -88,6 +94,7 @@ function ensureStorage(): StoreData {
   const initialData: StoreData = {
     settings: INITIAL_BUSINESS_SETTINGS,
     categories: INITIAL_CATEGORIES,
+    subcategories: [],
     products: INITIAL_PRODUCTS,
     heroSlides: INITIAL_HERO_SLIDES,
     sections: INITIAL_HOMEPAGE_SECTIONS,
@@ -325,6 +332,8 @@ export async function deleteCategory(id: string): Promise<boolean> {
 export async function getProducts(options?: {
   categoryId?: string;
   categorySlug?: string;
+  subcategoryId?: string;
+  subcategorySlug?: string;
   isFeatured?: boolean;
   isNew?: boolean;
   isBestSeller?: boolean;
@@ -351,6 +360,15 @@ export async function getProducts(options?: {
         const cat = await getCategoryBySlug(options.categorySlug);
         if (cat && isUUID(cat.id)) {
           query = query.eq('category_id', cat.id);
+        }
+      }
+      if (options?.subcategoryId) {
+        query = query.eq('subcategory_id', options.subcategoryId);
+      }
+      if (options?.subcategorySlug) {
+        const sub = (await getSubcategories(false)).find(s => s.slug === options.subcategorySlug);
+        if (sub && isUUID(sub.id)) {
+          query = query.eq('subcategory_id', sub.id);
         }
       }
       if (options?.isFeatured) query = query.eq('is_featured', true);
@@ -388,6 +406,15 @@ export async function getProducts(options?: {
     const cat = store.categories.find(c => c.slug === options.categorySlug);
     if (cat) {
       list = list.filter(p => p.category_id === cat.id);
+    }
+  }
+  if (options?.subcategoryId) {
+    list = list.filter(p => p.subcategory_id === options.subcategoryId);
+  }
+  if (options?.subcategorySlug) {
+    const sub = store.subcategories?.find(s => s.slug === options.subcategorySlug);
+    if (sub) {
+      list = list.filter(p => p.subcategory_id === sub.id);
     }
   }
   if (options?.isFeatured) {
@@ -507,6 +534,7 @@ export async function saveProduct(productData: Partial<Product>): Promise<Produc
     sku: productData.sku || `BC-${Date.now().toString().slice(-4)}`,
     stock: Number(productData.stock ?? 10),
     category_id: finalCategoryId || '',
+    subcategory_id: productData.subcategory_id || undefined,
     brand: productData.brand || 'Baby Cry',
     age_group: productData.age_group || '0-24M',
     gender: productData.gender || 'Unisex',
@@ -539,6 +567,7 @@ export async function saveProduct(productData: Partial<Product>): Promise<Produc
       sku: product.sku || null,
       stock: product.stock,
       category_id: finalCategoryId,
+      subcategory_id: product.subcategory_id || null,
       brand: product.brand || 'Baby Cry',
       age_group: product.age_group || '0-24M',
       gender: product.gender || 'Unisex',
@@ -1041,6 +1070,129 @@ export async function addMediaItem(item: Omit<MediaItem, 'id' | 'created_at'>): 
 export async function deleteMediaItem(id: string): Promise<boolean> {
   const store = ensureStorage();
   store.media = store.media.filter(m => m.id !== id);
+  saveStorage(store);
+  return true;
+}
+
+// -------------------------------------------------------------
+// SUBCATEGORIES
+// -------------------------------------------------------------
+export async function getSubcategories(onlyActive = true): Promise<Subcategory[]> {
+  const admin = getSupabaseAdmin();
+  if (admin) {
+    try {
+      let query = admin.from('subcategories').select('*').order('display_order', { ascending: true });
+      if (onlyActive) query = query.eq('is_active', true);
+      const { data, error } = await query;
+      if (!error && Array.isArray(data)) return data;
+    } catch (err) {
+      console.warn('Supabase getSubcategories error:', err);
+    }
+  }
+  const store = ensureStorage();
+  const list = store.subcategories || [];
+  return list
+    .filter(s => !onlyActive || s.is_active)
+    .sort((a, b) => a.display_order - b.display_order);
+}
+
+export async function getSubcategoriesByCategoryId(categoryId: string, onlyActive = true): Promise<Subcategory[]> {
+  const all = await getSubcategories(onlyActive);
+  return all.filter(s => s.category_id === categoryId);
+}
+
+export async function getCategoriesWithSubcategories(onlyActive = true): Promise<(Category & { subcategories: Subcategory[] })[]> {
+  const [categories, subcategories] = await Promise.all([
+    getCategories(onlyActive),
+    getSubcategories(onlyActive),
+  ]);
+  return categories.map(cat => ({
+    ...cat,
+    subcategories: subcategories.filter(s => s.category_id === cat.id),
+  }));
+}
+
+export async function saveSubcategory(data: Partial<Subcategory>): Promise<Subcategory> {
+  const admin = getSupabaseAdmin();
+  const store = ensureStorage();
+  if (!store.subcategories) store.subcategories = [];
+
+  const id = (data.id && isUUID(data.id)) ? data.id : randomUUID();
+  const now = new Date().toISOString();
+
+  let existingItem = store.subcategories.find(s => s.id === id);
+  if (!existingItem && admin && isUUID(id)) {
+    try {
+      const { data: dbItem } = await admin.from('subcategories').select('*').eq('id', id).maybeSingle();
+      if (dbItem) existingItem = dbItem;
+    } catch {}
+  }
+
+  const category_id = data.category_id || existingItem?.category_id;
+  const name = data.name || existingItem?.name;
+  const slug = data.slug || existingItem?.slug;
+
+  if (!category_id) throw new Error('category_id is required for a subcategory');
+  if (!name) throw new Error('Subcategory name is required');
+  if (!slug) throw new Error('Subcategory slug is required');
+
+  // Validate slug uniqueness (excluding self when editing)
+  const slugConflict = store.subcategories.find(s => s.slug === slug && s.id !== id);
+  if (slugConflict) throw new Error(`Slug "${slug}" is already used by another subcategory`);
+
+  const resolvedCatId = (await resolveCategoryId(category_id)) || category_id;
+
+  const subcategory: Subcategory = {
+    id,
+    category_id: resolvedCatId,
+    name,
+    slug,
+    description: data.description !== undefined ? data.description : (existingItem?.description || ''),
+    display_order: data.display_order ?? (existingItem?.display_order ?? (store.subcategories.length + 1)),
+    is_active: data.is_active !== undefined ? data.is_active : (existingItem?.is_active ?? true),
+    created_at: existingItem?.created_at || data.created_at || now,
+  } as Subcategory;
+
+  if (admin && isUUID(id) && isUUID(resolvedCatId)) {
+    try {
+      const { error } = await admin.from('subcategories').upsert({
+        id,
+        category_id: resolvedCatId,
+        name: subcategory.name,
+        slug: subcategory.slug,
+        display_order: subcategory.display_order,
+        is_active: subcategory.is_active,
+        created_at: subcategory.created_at,
+      });
+      if (error) throw new Error(`Failed to save subcategory in Supabase: ${error.message}`);
+    } catch (e: any) {
+      if (isServerSupabaseConfigured) throw e;
+      console.warn('Supabase subcategory save error (falling back to local):', e);
+    }
+  }
+
+  const idx = store.subcategories.findIndex(s => s.id === id);
+  if (idx >= 0) {
+    store.subcategories[idx] = subcategory;
+  } else {
+    store.subcategories.push(subcategory);
+  }
+  saveStorage(store);
+  return subcategory;
+}
+
+export async function deleteSubcategory(id: string): Promise<boolean> {
+  const admin = getSupabaseAdmin();
+  if (admin && isUUID(id)) {
+    try {
+      await admin.from('subcategories').delete().eq('id', id);
+    } catch (err) {
+      console.error('Supabase deleteSubcategory error:', err);
+    }
+  }
+  const store = ensureStorage();
+  if (!store.subcategories) store.subcategories = [];
+  store.subcategories = store.subcategories.filter(s => s.id !== id);
   saveStorage(store);
   return true;
 }

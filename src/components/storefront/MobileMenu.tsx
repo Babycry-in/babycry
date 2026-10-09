@@ -1,20 +1,26 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Category } from '@/types/database';
-import { X, MessageCircle, Phone, Heart, ShoppingBag, ArrowRight } from 'lucide-react';
+import { Category, Subcategory } from '@/types/database';
+import { X, MessageCircle, ChevronDown, ArrowRight } from 'lucide-react';
 import { Logo } from '@/components/ui/Logo';
 
+interface CategoryWithSubs extends Category {
+  subcategories: Subcategory[];
+}
+
 interface MobileMenuProps {
-  categories: Category[];
+  categories: CategoryWithSubs[];
   isOpen: boolean;
   onClose: () => void;
   phone: string;
 }
 
 export function MobileMenu({ categories, isOpen, onClose, phone }: MobileMenuProps) {
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
   // Lock background scroll when open
   React.useEffect(() => {
     if (isOpen) {
@@ -26,6 +32,10 @@ export function MobileMenu({ categories, isOpen, onClose, phone }: MobileMenuPro
       document.body.style.overflow = '';
     };
   }, [isOpen]);
+
+  const toggleExpand = (id: string) => {
+    setExpandedId((prev) => (prev === id ? null : id));
+  };
 
   return (
     <div
@@ -63,8 +73,8 @@ export function MobileMenu({ categories, isOpen, onClose, phone }: MobileMenuPro
             </div>
 
             {/* Category Navigation */}
-            <div className="p-4 overflow-y-auto max-h-[calc(100vh-210px)] space-y-1">
-              <p className="text-xs font-bold uppercase tracking-wider text-emerald-800/80 px-2 py-1">
+            <div className="p-4 overflow-y-auto max-h-[calc(100vh-210px)] space-y-0.5">
+              <p className="text-xs font-bold uppercase tracking-wider text-emerald-800/80 px-2 py-2">
                 Shop By Category
               </p>
               <Link
@@ -75,25 +85,74 @@ export function MobileMenu({ categories, isOpen, onClose, phone }: MobileMenuPro
                 <span>Shop All Collection</span>
                 <ArrowRight className="w-4 h-4 text-emerald-600" />
               </Link>
-              {categories.map((cat) => (
-                <Link
-                  key={cat.id}
-                  href={`/categories/${cat.slug}`}
-                  onClick={onClose}
-                  className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white text-slate-700 hover:text-emerald-800 text-sm font-medium transition-colors"
-                >
-                  <div className="relative w-8 h-8 rounded-xl overflow-hidden bg-white border border-emerald-100/70 p-0.5 shrink-0 flex items-center justify-center">
-                    <Image
-                      src={cat.image_url}
-                      alt={cat.name}
-                      fill
-                      sizes="32px"
-                      className="object-contain"
-                    />
+
+              {categories.map((cat) => {
+                const hasSubs = cat.subcategories && cat.subcategories.length > 0;
+                const isExpanded = expandedId === cat.id;
+
+                return (
+                  <div key={cat.id}>
+                    <div className="flex items-center gap-1">
+                      <Link
+                        href={`/categories/${cat.slug}`}
+                        onClick={onClose}
+                        className="flex-1 flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white text-slate-700 hover:text-emerald-800 text-sm font-medium transition-colors"
+                      >
+                        <div className="relative w-8 h-8 rounded-xl overflow-hidden bg-white border border-emerald-100/70 p-0.5 shrink-0 flex items-center justify-center">
+                          {cat.image_url ? (
+                            <Image
+                              src={cat.image_url}
+                              alt={cat.name}
+                              fill
+                              sizes="32px"
+                              className="object-contain"
+                            />
+                          ) : (
+                            <span className="text-emerald-400 text-sm">🧸</span>
+                          )}
+                        </div>
+                        <span className="truncate">{cat.name}</span>
+                      </Link>
+                      {hasSubs && (
+                        <button
+                          onClick={() => toggleExpand(cat.id)}
+                          className="p-2 text-slate-400 hover:text-emerald-700 rounded-lg transition-colors"
+                          aria-label={`${isExpanded ? 'Collapse' : 'Expand'} ${cat.name} subcategories`}
+                          aria-expanded={isExpanded}
+                        >
+                          <ChevronDown
+                            className={`w-4 h-4 transition-transform duration-200 ${
+                              isExpanded ? 'rotate-180 text-emerald-700' : ''
+                            }`}
+                          />
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Subcategories */}
+                    {hasSubs && (
+                      <div
+                        className={`overflow-hidden transition-all duration-200 ${
+                          isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                        }`}
+                      >
+                        <div className="ml-12 mr-2 mt-0.5 mb-1 space-y-0.5">
+                          {cat.subcategories.map((sub) => (
+                            <Link
+                              key={sub.id}
+                              href={`/categories/${cat.slug}?sub=${sub.slug}`}
+                              onClick={onClose}
+                              className="block px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-emerald-50 hover:text-emerald-800 transition-colors"
+                            >
+                              {sub.name}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
-                  <span className="truncate">{cat.name}</span>
-                </Link>
-              ))}
+                );
+              })}
 
               <div className="border-t border-emerald-100/80 my-3 pt-3 space-y-1">
                 <p className="text-xs font-bold uppercase tracking-wider text-emerald-800/80 px-2 py-1">

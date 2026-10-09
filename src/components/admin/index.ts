@@ -3,6 +3,7 @@ export * from './WhatsAppSettingsClient';
 export * from './AdminSidebar';
 export * from './BusinessSettingsEditor';
 export * from './CategoryForm';
+export * from './SubcategoryForm';
 export * from './HeroSlideEditor';
 export * from './HomepageSectionsEditor';
 export * from './ImageUploader';

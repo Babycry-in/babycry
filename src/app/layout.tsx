@@ -5,7 +5,7 @@ import { CartProvider } from '@/lib/context/cart-context';
 import { WishlistProvider } from '@/lib/context/wishlist-context';
 import { Header } from '@/components/storefront/Header';
 import { Footer } from '@/components/storefront/Footer';
-import { getBusinessSettings, getCategories } from '@/lib/data/db-service';
+import { getBusinessSettings, getCategoriesWithSubcategories } from '@/lib/data/db-service';
 
 const fredoka = Fredoka({
   subsets: ['latin'],
@@ -67,7 +67,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const categories = await getCategories();
+  const categories = await getCategoriesWithSubcategories();
   const settings = await getBusinessSettings();
 
   return (

@@ -26,6 +26,7 @@ export function AdminSidebar() {
     { label: 'Dashboard', href: '/admin', icon: LayoutDashboard },
     { label: 'Products', href: '/admin/products', icon: Package },
     { label: 'Categories', href: '/admin/categories', icon: Layers },
+    { label: 'Subcategories', href: '/admin/subcategories', icon: Layers },
     { label: 'Orders', href: '/admin/orders', icon: ShoppingBag },
     { label: 'Customers', href: '/admin/customers', icon: Users },
     { label: 'Homepage Builder', href: '/admin/homepage', icon: Sparkles },
