@@ -1,6 +1,6 @@
 import React from 'react';
 import { notFound } from 'next/navigation';
-import { getProductById, getCategories } from '@/lib/data/db-service';
+import { getProductById, getCategories, getSubcategories } from '@/lib/data/db-service';
 import { ProductForm } from '@/components/admin/ProductForm';
 
 interface Props {
@@ -9,9 +9,10 @@ interface Props {
 
 export default async function AdminEditProductPage({ params }: Props) {
   const { id } = await params;
-  const [product, categories] = await Promise.all([
+  const [product, categories, subcategories] = await Promise.all([
     getProductById(id),
     getCategories(false),
+    getSubcategories(false),
   ]);
 
   if (!product) {
@@ -32,6 +33,7 @@ export default async function AdminEditProductPage({ params }: Props) {
       <ProductForm
         initialProduct={product}
         categories={categories}
+        subcategories={subcategories}
         isEditing={true}
       />
     </div>

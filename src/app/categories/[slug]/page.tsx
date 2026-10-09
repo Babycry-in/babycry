@@ -1,17 +1,21 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { getCategories, getCategoryBySlug, getProducts } from '@/lib/data/db-service';
+import { getCategories, getCategoryBySlug, getProducts, getCategoriesWithSubcategories } from '@/lib/data/db-service';
 import { CategoryProductGrid } from '@/components/category/CategoryProductGrid';
-import { ChevronRight, Home, ArrowRight } from 'lucide-react';
+import { ChevronRight, Home, ArrowRight, Loader2 } from 'lucide-react';
 import type { Metadata } from 'next';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 interface Props {
   params: Promise<{ slug: string }>;
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const { slug } = await params;
   const category = await getCategoryBySlug(slug);
 
@@ -19,28 +23,39 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return { title: 'Category Not Found' };
   }
 
+  const search = searchParams ? await searchParams : {};
+  const subSlug = typeof search.sub === 'string' ? search.sub : undefined;
+  const subcategories = await getCategoriesWithSubcategories(true);
+  const currentCatWithSubs = subcategories.find(c => c.id === category.id);
+  const currentSub = subSlug ? currentCatWithSubs?.subcategories?.find(s => s.slug === subSlug) : null;
+
+  const title = currentSub 
+    ? `${currentSub.name} - ${category.name} | Baby Cry.in`
+    : (category.seo_title || `${category.name} | Baby Cry.in`);
+
   return {
-    title: category.seo_title || `${category.name} | Baby Cry.in`,
+    title,
     description:
+      currentSub?.description ||
       category.seo_description ||
       category.short_description ||
-      `Shop ${category.name} online at Baby Cry.in.`,
+      `Shop ${currentSub ? currentSub.name : category.name} online at Baby Cry.in.`,
     openGraph: {
-      title: `${category.name} | Baby Cry.in`,
+      title,
       description: category.short_description,
       images: [
         {
           url: category.banner_url || category.image_url,
           width: 1200,
           height: 630,
-          alt: category.name,
+          alt: currentSub ? currentSub.name : category.name,
         },
       ],
     },
   };
 }
 
-export default async function CategoryPage({ params }: Props) {
+export default async function CategoryPage({ params, searchParams }: Props) {
   const { slug } = await params;
   const category = await getCategoryBySlug(slug);
 
@@ -50,35 +65,51 @@ export default async function CategoryPage({ params }: Props) {
 
   const [products, allCategories] = await Promise.all([
     getProducts({ onlyActive: true }),
-    getCategories(true),
+    getCategoriesWithSubcategories(true),
   ]);
+
+  const search = searchParams ? await searchParams : {};
+  const subSlug = typeof search.sub === 'string' ? search.sub : undefined;
+  const currentCatWithSubs = allCategories.find((c) => c.id === category.id);
+  const currentSub = subSlug ? currentCatWithSubs?.subcategories?.find((s) => s.slug === subSlug) : null;
 
   const otherCategories = allCategories.filter((c) => c.id !== category.id).slice(0, 4);
 
   // JSON-LD structured breadcrumb
+  const breadcrumbElements = [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Home',
+      item: 'https://babycry.in',
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: 'Categories',
+      item: 'https://babycry.in/categories',
+    },
+    {
+      '@type': 'ListItem',
+      position: 3,
+      name: category.name,
+      item: `https://babycry.in/categories/${category.slug}`,
+    },
+  ];
+
+  if (currentSub) {
+    breadcrumbElements.push({
+      '@type': 'ListItem',
+      position: 4,
+      name: currentSub.name,
+      item: `https://babycry.in/categories/${category.slug}?sub=${currentSub.slug}`,
+    });
+  }
+
   const breadcrumbJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
-    itemListElement: [
-      {
-        '@type': 'ListItem',
-        position: 1,
-        name: 'Home',
-        item: 'https://babycry.in',
-      },
-      {
-        '@type': 'ListItem',
-        position: 2,
-        name: 'Categories',
-        item: 'https://babycry.in/categories',
-      },
-      {
-        '@type': 'ListItem',
-        position: 3,
-        name: category.name,
-        item: `https://babycry.in/categories/${category.slug}`,
-      },
-    ],
+    itemListElement: breadcrumbElements,
   };
 
   return (
@@ -103,15 +134,26 @@ export default async function CategoryPage({ params }: Props) {
               Categories
             </Link>
             <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-            <span className="font-semibold text-emerald-900">{category.name}</span>
+            {currentSub ? (
+              <>
+                <Link href={`/categories/${category.slug}`} className="hover:text-emerald-800">
+                  {category.name}
+                </Link>
+                <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
+                <span className="font-semibold text-emerald-900">{currentSub.name}</span>
+              </>
+            ) : (
+              <span className="font-semibold text-emerald-900">{category.name}</span>
+            )}
           </nav>
 
           <div className="max-w-2xl">
             <h1 className="font-heading text-3xl sm:text-5xl font-bold text-slate-900 tracking-tight">
-              {category.name}
+              {currentSub ? `${category.name} — ${currentSub.name}` : category.name}
             </h1>
             <p className="text-slate-600 text-sm sm:text-base mt-3 leading-relaxed">
-              {category.short_description ||
+              {currentSub?.description ||
+                category.short_description ||
                 'Thoughtfully designed essentials and clothing made for comfortable every day baby moments.'}
             </p>
           </div>
@@ -133,11 +175,20 @@ export default async function CategoryPage({ params }: Props) {
 
       {/* Main Products List Area */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
-        <CategoryProductGrid
-          products={products}
-          categories={allCategories}
-          initialCategoryId={category.id}
-        />
+        <Suspense
+          fallback={
+            <div className="min-h-[400px] flex items-center justify-center">
+              <Loader2 className="w-8 h-8 animate-spin text-emerald-700" />
+            </div>
+          }
+        >
+          <CategoryProductGrid
+            products={products}
+            categories={allCategories}
+            initialCategoryId={category.id}
+            initialSubSlug={currentSub?.slug || ''}
+          />
+        </Suspense>
         {otherCategories.length > 0 && (
           <div className="mt-20 pt-12 border-t border-emerald-100">
             <div className="flex items-center justify-between mb-6">

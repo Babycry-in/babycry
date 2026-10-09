@@ -3,23 +3,38 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Category } from '@/types/database';
+import { Category, Subcategory } from '@/types/database';
 import { Sparkles, ArrowRight } from 'lucide-react';
 
-interface MegaMenuProps {
-  categories: Category[];
-  isOpen: boolean;
-  onClose: () => void;
+interface CategoryWithSubs extends Category {
+  subcategories?: Subcategory[];
 }
 
-export function MegaMenu({ categories, isOpen, onClose }: MegaMenuProps) {
+interface MegaMenuProps {
+  categories: CategoryWithSubs[];
+  isOpen: boolean;
+  onClose: () => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
+}
+
+export function MegaMenu({
+  categories,
+  isOpen,
+  onClose,
+  onMouseEnter,
+  onMouseLeave,
+}: MegaMenuProps) {
+  const [hoveredCatId, setHoveredCatId] = React.useState<string | null>(null);
+
   return (
     <div
-      onMouseLeave={onClose}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       className={`absolute top-full left-0 w-full bg-white/98 backdrop-blur-xl border-b border-emerald-100 shadow-2xl py-8 px-6 lg:px-12 z-50 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] transform origin-top ${
         isOpen
           ? 'opacity-100 translate-y-0 scale-y-100 visible pointer-events-auto'
-          : 'opacity-0 -translate-y-3 scale-y-95 invisible pointer-events-none'
+          : 'opacity-0 -translate-y-2 scale-y-95 invisible pointer-events-none'
       }`}
       aria-hidden={!isOpen}
     >
@@ -27,37 +42,70 @@ export function MegaMenu({ categories, isOpen, onClose }: MegaMenuProps) {
         
         {/* Categories columns (8 cols) — Uncropped original images */}
         <div className="col-span-8 grid grid-cols-3 gap-x-6 gap-y-4">
-          {categories.slice(0, 12).map((cat) => (
-            <Link
-              key={cat.id}
-              href={`/categories/${cat.slug}`}
-              onClick={onClose}
-              className="group flex items-center gap-3.5 p-2 rounded-2xl hover:bg-[#EBF7F1]/70 transition-all"
-            >
-              {/* Category Thumbnail — object-contain so original image is never cropped */}
-              <div className="relative w-12 h-12 rounded-2xl overflow-hidden bg-white border border-emerald-100/70 p-1 shrink-0 flex items-center justify-center shadow-2xs group-hover:border-emerald-300 transition-colors">
-                {cat.image_url ? (
-                  <Image
-                    src={cat.image_url}
-                    alt={cat.name}
-                    fill
-                    sizes="48px"
-                    className="object-contain group-hover:scale-105 transition-transform duration-300"
-                  />
-                ) : (
-                  <span className="text-emerald-400 text-xl select-none">🧸</span>
+          {categories.slice(0, 12).map((cat) => {
+            const hasSubs = cat.subcategories && cat.subcategories.length > 0;
+            const isHovered = hoveredCatId === cat.id;
+
+            return (
+              <div
+                key={cat.id}
+                onMouseEnter={() => setHoveredCatId(cat.id)}
+                onMouseLeave={() => setHoveredCatId(null)}
+                className="group p-2 rounded-2xl hover:bg-[#EBF7F1]/70 transition-all flex flex-col justify-start"
+              >
+                <Link
+                  href={`/categories/${cat.slug}`}
+                  onClick={onClose}
+                  className="flex items-center gap-3.5"
+                >
+                  {/* Category Thumbnail — object-contain so original image is never cropped */}
+                  <div className="relative w-12 h-12 rounded-2xl overflow-hidden bg-white border border-emerald-100/70 p-1 shrink-0 flex items-center justify-center shadow-2xs group-hover:border-emerald-300 transition-colors">
+                    {cat.image_url ? (
+                      <Image
+                        src={cat.image_url}
+                        alt={cat.name}
+                        fill
+                        sizes="48px"
+                        className="object-contain group-hover:scale-105 transition-transform duration-300"
+                      />
+                    ) : (
+                      <span className="text-emerald-400 text-xl select-none">🧸</span>
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-heading font-semibold text-sm text-slate-800 group-hover:text-emerald-800 transition-colors truncate">
+                      {cat.name}
+                    </p>
+                    <p className="text-xs text-slate-500 line-clamp-1 mt-0.5">
+                      {cat.short_description || 'Shop adorable little picks'}
+                    </p>
+                  </div>
+                </Link>
+
+                {/* Subcategories directly beneath category on hover */}
+                {hasSubs && (
+                  <div
+                    className={`mt-2 pt-1.5 border-t border-emerald-200/50 flex flex-wrap gap-1 transition-all duration-200 ${
+                      isHovered
+                        ? 'opacity-100 max-h-36'
+                        : 'opacity-0 max-h-0 overflow-hidden pointer-events-none'
+                    }`}
+                  >
+                    {cat.subcategories!.map((sub) => (
+                      <Link
+                        key={sub.id}
+                        href={`/categories/${cat.slug}?sub=${sub.slug}`}
+                        onClick={onClose}
+                        className="text-[11px] font-medium text-emerald-800 hover:text-emerald-950 bg-emerald-100/70 hover:bg-emerald-200/90 px-2 py-0.5 rounded-md transition-colors"
+                      >
+                        {sub.name}
+                      </Link>
+                    ))}
+                  </div>
                 )}
               </div>
-              <div className="min-w-0">
-                <p className="font-heading font-semibold text-sm text-slate-800 group-hover:text-emerald-800 transition-colors truncate">
-                  {cat.name}
-                </p>
-                <p className="text-xs text-slate-500 line-clamp-1 mt-0.5">
-                  {cat.short_description || 'Shop adorable little picks'}
-                </p>
-              </div>
-            </Link>
-          ))}
+            );
+          })}
         </div>
 
         {/* Featured Box on right side (4 cols) — Background image from /images/navbar-bgimage.png */}

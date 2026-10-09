@@ -7,6 +7,8 @@ export async function GET(req: NextRequest) {
     const search = searchParams.get('search') || undefined;
     const categoryId = searchParams.get('categoryId') || undefined;
     const categorySlug = searchParams.get('categorySlug') || undefined;
+    const subcategoryId = searchParams.get('subcategoryId') || undefined;
+    const subcategorySlug = searchParams.get('subcategorySlug') || undefined;
     const isFeatured = searchParams.get('isFeatured') === 'true' ? true : undefined;
     const onlyActive = searchParams.get('onlyActive') !== 'false';
 
@@ -14,6 +16,8 @@ export async function GET(req: NextRequest) {
       search,
       categoryId,
       categorySlug,
+      subcategoryId,
+      subcategorySlug,
       isFeatured,
       onlyActive,
     });
