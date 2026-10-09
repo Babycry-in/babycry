@@ -21,12 +21,14 @@ interface CategoryProductGridProps {
   products: Product[];
   categories?: CategoryWithSubs[];
   initialCategoryId?: string;
+  initialSubSlug?: string;
 }
 
 export function CategoryProductGrid({
   products,
   categories = [],
   initialCategoryId,
+  initialSubSlug: propSubSlug = '',
 }: CategoryProductGridProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -74,8 +76,15 @@ export function CategoryProductGrid({
     initialCategoryId || 'all'
   );
   // Sub = selected subcategory slug (from URL ?sub= or state)
-  const initialSubSlug = searchParams.get('sub') || '';
-  const [selectedSubSlug, setSelectedSubSlug] = useState<string>(initialSubSlug);
+  const [selectedSubSlug, setSelectedSubSlug] = useState<string>(
+    propSubSlug || (searchParams?.get('sub') || '')
+  );
+
+  useEffect(() => {
+    if (propSubSlug !== undefined) {
+      setSelectedSubSlug(propSubSlug);
+    }
+  }, [propSubSlug]);
 
   // Track which category sections are expanded in the filter
   const [expandedCategoryIds, setExpandedCategoryIds] = useState<Set<string>>(() => {

@@ -4,6 +4,7 @@ export * from './AdminSidebar';
 export * from './BusinessSettingsEditor';
 export * from './CategoryForm';
 export * from './SubcategoryForm';
+export * from './SubcategoriesClient';
 export * from './HeroSlideEditor';
 export * from './HomepageSectionsEditor';
 export * from './ImageUploader';

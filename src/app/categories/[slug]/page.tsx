@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { getCategories, getCategoryBySlug, getProducts, getCategoriesWithSubcategories } from '@/lib/data/db-service';
 import { CategoryProductGrid } from '@/components/category/CategoryProductGrid';
-import { ChevronRight, Home, ArrowRight } from 'lucide-react';
+import { ChevronRight, Home, ArrowRight, Loader2 } from 'lucide-react';
 import type { Metadata } from 'next';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -172,11 +175,20 @@ export default async function CategoryPage({ params, searchParams }: Props) {
 
       {/* Main Products List Area */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
-        <CategoryProductGrid
-          products={products}
-          categories={allCategories}
-          initialCategoryId={category.id}
-        />
+        <Suspense
+          fallback={
+            <div className="min-h-[400px] flex items-center justify-center">
+              <Loader2 className="w-8 h-8 animate-spin text-emerald-700" />
+            </div>
+          }
+        >
+          <CategoryProductGrid
+            products={products}
+            categories={allCategories}
+            initialCategoryId={category.id}
+            initialSubSlug={currentSub?.slug || ''}
+          />
+        </Suspense>
         {otherCategories.length > 0 && (
           <div className="mt-20 pt-12 border-t border-emerald-100">
             <div className="flex items-center justify-between mb-6">

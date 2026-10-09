@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { getCategories, getSubcategories } from '@/lib/data/db-service';
 import { SubcategoryForm } from '@/components/admin/SubcategoryForm';
 
+export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 interface Props {
