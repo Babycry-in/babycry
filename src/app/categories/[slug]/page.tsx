@@ -1,8 +1,8 @@
 import React, { Suspense } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { notFound } from 'next/navigation';
-import { getCategories, getCategoryBySlug, getProducts, getCategoriesWithSubcategories } from '@/lib/data/db-service';
+import { notFound, permanentRedirect } from 'next/navigation';
+import { getCategoryBySlug, getProducts, getCategoriesWithSubcategories } from '@/lib/data/db-service';
 import { CategoryProductGrid } from '@/components/category/CategoryProductGrid';
 import { ChevronRight, Home, ArrowRight, Loader2 } from 'lucide-react';
 import type { Metadata } from 'next';
@@ -23,32 +23,57 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
     return { title: 'Category Not Found' };
   }
 
+  const siteUrl = 'https://www.babycry.in';
+
   const search = searchParams ? await searchParams : {};
   const subSlug = typeof search.sub === 'string' ? search.sub : undefined;
-  const subcategories = await getCategoriesWithSubcategories(true);
-  const currentCatWithSubs = subcategories.find(c => c.id === category.id);
-  const currentSub = subSlug ? currentCatWithSubs?.subcategories?.find(s => s.slug === subSlug) : null;
 
-  const title = currentSub 
-    ? `${currentSub.name} - ${category.name} | Baby Cry.in`
-    : (category.seo_title || `${category.name} | Baby Cry.in`);
+  if (subSlug) {
+    const subcategories = await getCategoriesWithSubcategories(true);
+    const currentCatWithSubs = subcategories.find(c => c.id === category.id);
+    const matchingSub = currentCatWithSubs?.subcategories?.find(
+      s => s.slug === subSlug && s.is_active !== false
+    );
+
+    if (matchingSub) {
+      const title = `${matchingSub.name} - ${category.name}`;
+      const canonicalUrl = `${siteUrl}/categories/${category.slug}/${matchingSub.slug}`;
+      return {
+        title,
+        description:
+          matchingSub.description ||
+          category.seo_description ||
+          category.short_description ||
+          `Shop ${matchingSub.name} in ${category.name} online at Baby Cry.in.`,
+        alternates: {
+          canonical: canonicalUrl,
+        },
+      };
+    }
+  }
+
+  const title = category.seo_title || category.name;
+  const canonicalUrl = `${siteUrl}/categories/${category.slug}`;
 
   return {
     title,
     description:
-      currentSub?.description ||
       category.seo_description ||
       category.short_description ||
-      `Shop ${currentSub ? currentSub.name : category.name} online at Baby Cry.in.`,
+      `Shop ${category.name} online at Baby Cry.in.`,
+    alternates: {
+      canonical: canonicalUrl,
+    },
     openGraph: {
-      title,
+      title: `${category.name} | Baby Cry.in`,
       description: category.short_description,
+      url: canonicalUrl,
       images: [
         {
           url: category.banner_url || category.image_url,
           width: 1200,
           height: 630,
-          alt: currentSub ? currentSub.name : category.name,
+          alt: category.name,
         },
       ],
     },
@@ -70,10 +95,34 @@ export default async function CategoryPage({ params, searchParams }: Props) {
 
   const search = searchParams ? await searchParams : {};
   const subSlug = typeof search.sub === 'string' ? search.sub : undefined;
-  const currentCatWithSubs = allCategories.find((c) => c.id === category.id);
-  const currentSub = subSlug ? currentCatWithSubs?.subcategories?.find((s) => s.slug === subSlug) : null;
+
+  // Server-side permanent redirect from legacy query ?sub= to clean subcategory URL
+  if (subSlug) {
+    const currentCatWithSubs = allCategories.find((c) => c.id === category.id);
+    const matchingSub = currentCatWithSubs?.subcategories?.find(
+      (s) => s.slug === subSlug && s.is_active !== false
+    );
+
+    if (matchingSub) {
+      const otherParams = new URLSearchParams();
+      for (const [key, value] of Object.entries(search)) {
+        if (key !== 'sub' && value !== undefined) {
+          if (Array.isArray(value)) {
+            value.forEach((v) => otherParams.append(key, v));
+          } else {
+            otherParams.set(key, value);
+          }
+        }
+      }
+      const qs = otherParams.toString();
+      const redirectTarget = `/categories/${category.slug}/${matchingSub.slug}${qs ? `?${qs}` : ''}`;
+      permanentRedirect(redirectTarget);
+    }
+  }
 
   const otherCategories = allCategories.filter((c) => c.id !== category.id).slice(0, 4);
+
+  const siteUrl = 'https://www.babycry.in';
 
   // JSON-LD structured breadcrumb
   const breadcrumbElements = [
@@ -81,30 +130,21 @@ export default async function CategoryPage({ params, searchParams }: Props) {
       '@type': 'ListItem',
       position: 1,
       name: 'Home',
-      item: 'https://babycry.in',
+      item: siteUrl,
     },
     {
       '@type': 'ListItem',
       position: 2,
       name: 'Categories',
-      item: 'https://babycry.in/categories',
+      item: `${siteUrl}/categories`,
     },
     {
       '@type': 'ListItem',
       position: 3,
       name: category.name,
-      item: `https://babycry.in/categories/${category.slug}`,
+      item: `${siteUrl}/categories/${category.slug}`,
     },
   ];
-
-  if (currentSub) {
-    breadcrumbElements.push({
-      '@type': 'ListItem',
-      position: 4,
-      name: currentSub.name,
-      item: `https://babycry.in/categories/${category.slug}?sub=${currentSub.slug}`,
-    });
-  }
 
   const breadcrumbJsonLd = {
     '@context': 'https://schema.org',
@@ -123,37 +163,28 @@ export default async function CategoryPage({ params, searchParams }: Props) {
       <div className="relative bg-gradient-to-r from-[#D8EFE4] to-[#FAF7F2] py-12 sm:py-16 overflow-hidden border-b border-emerald-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           
-          {/* Breadcrumb */}
-          <nav className="flex items-center gap-1.5 text-xs text-slate-500 mb-4">
-            <Link href="/" className="hover:text-emerald-800 flex items-center gap-1">
+          {/* Breadcrumb Navigation */}
+          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-slate-500 mb-4 overflow-x-auto pb-1">
+            <Link href="/" className="hover:text-emerald-800 flex items-center gap-1 shrink-0">
               <Home className="w-3.5 h-3.5" />
               <span>Home</span>
             </Link>
-            <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-            <Link href="/categories" className="hover:text-emerald-800">
+            <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+            <Link href="/categories" className="hover:text-emerald-800 shrink-0">
               Categories
             </Link>
-            <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-            {currentSub ? (
-              <>
-                <Link href={`/categories/${category.slug}`} className="hover:text-emerald-800">
-                  {category.name}
-                </Link>
-                <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-                <span className="font-semibold text-emerald-900">{currentSub.name}</span>
-              </>
-            ) : (
-              <span className="font-semibold text-emerald-900">{category.name}</span>
-            )}
+            <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+            <span className="font-semibold text-emerald-900 shrink-0" aria-current="page">
+              {category.name}
+            </span>
           </nav>
 
           <div className="max-w-2xl">
             <h1 className="font-heading text-3xl sm:text-5xl font-bold text-slate-900 tracking-tight">
-              {currentSub ? `${category.name} — ${currentSub.name}` : category.name}
+              {category.name}
             </h1>
             <p className="text-slate-600 text-sm sm:text-base mt-3 leading-relaxed">
-              {currentSub?.description ||
-                category.short_description ||
+              {category.short_description ||
                 'Thoughtfully designed essentials and clothing made for comfortable every day baby moments.'}
             </p>
           </div>
@@ -186,7 +217,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
             products={products}
             categories={allCategories}
             initialCategoryId={category.id}
-            initialSubSlug={currentSub?.slug || ''}
+            initialSubSlug=""
           />
         </Suspense>
         {otherCategories.length > 0 && (

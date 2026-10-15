@@ -18,8 +18,44 @@ import { GiftBoxSection } from '@/components/storefront/GiftBoxSection';
 import { UnboxingSection } from '@/components/storefront/UnboxingSection';
 import { TrustPillars } from '@/components/storefront/TrustPillars';
 import { InstagramGallery } from '@/components/storefront/InstagramGallery';
+import type { Metadata } from 'next';
 
 export const revalidate = 0; // Ensure fresh content on updates
+
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getBusinessSettings();
+  const siteUrl = 'https://www.babycry.in';
+  return {
+    title: `${settings.business_name} | Little Things for Brighter Little Days`,
+    description:
+      'Baby & Kids Fashion, Footwear, Accessories, Hospital Kits, Toys, Diapering & Gift Hampers in Kerala, India.',
+    alternates: {
+      canonical: `${siteUrl}/`,
+    },
+    openGraph: {
+      title: `${settings.business_name} | Little Things for Brighter Little Days`,
+      description: 'Cute outfits, thoughtful essentials and little toys for your little one.',
+      url: `${siteUrl}/`,
+      siteName: 'BabyCry.in',
+      locale: 'en_IN',
+      type: 'website',
+      images: [
+        {
+          url: `${siteUrl}/images/babycry-logo.png`,
+          width: 1200,
+          height: 630,
+          alt: settings.business_name,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${settings.business_name} | Little Things for Brighter Little Days`,
+      description: 'Cute outfits, thoughtful essentials and little toys for your little one.',
+      images: [`${siteUrl}/images/babycry-logo.png`],
+    },
+  };
+}
 
 export default async function HomePage() {
   const [heroSlides, categories, products, sections, settings] = await Promise.all([
