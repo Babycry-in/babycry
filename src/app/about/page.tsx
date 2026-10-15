@@ -2,10 +2,20 @@ import React from 'react';
 import Link from 'next/link';
 import { Sparkles, Heart, ShieldCheck, Leaf, ArrowRight } from 'lucide-react';
 import { getBusinessSettings } from '@/lib/data/db-service';
+import type { Metadata } from 'next';
 
-export const metadata = {
+export const metadata: Metadata = {
   title: 'About Us | Baby Cry.in',
-  description: 'Learn more about Baby Cry.in - Little things for brighter little days.',
+  description: 'Learn more about Baby Cry.in in Pandikkad, Kerala. Gentle organic fabrics, thoughtful newborn essentials and curated baby hampers.',
+  alternates: {
+    canonical: 'https://www.babycry.in/about',
+  },
+  openGraph: {
+    title: 'About Us | Baby Cry.in',
+    description: 'Learn more about Baby Cry.in - Little things for brighter little days.',
+    url: 'https://www.babycry.in/about',
+    type: 'website',
+  },
 };
 
 export default async function AboutPage() {

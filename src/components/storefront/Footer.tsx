@@ -58,9 +58,7 @@ export function Footer({ settings }: FooterProps) {
       links: [
         { href: '/about', label: 'About Us' },
         { href: '/contact', label: 'Contact' },
-        { href: '/shipping', label: 'Shipping' },
-        { href: '/returns', label: 'Returns' },
-        { href: '/faq', label: 'FAQs' },
+        { href: '/shipping', label: 'Shipping & Delivery' },
       ],
     },
   ];
@@ -188,9 +186,7 @@ export function Footer({ settings }: FooterProps) {
             <ul className="space-y-2 text-sm lg:text-base text-slate-900 font-bold">
               <li><Link href="/about" className="hover:text-emerald-900 transition-colors block py-0.5">About Us</Link></li>
               <li><Link href="/contact" className="hover:text-emerald-900 transition-colors block py-0.5">Contact</Link></li>
-              <li><Link href="/shipping" className="hover:text-emerald-900 transition-colors block py-0.5">Shipping</Link></li>
-              <li><Link href="/returns" className="hover:text-emerald-900 transition-colors block py-0.5">Returns</Link></li>
-              <li><Link href="/faq" className="hover:text-emerald-900 transition-colors block py-0.5">FAQs</Link></li>
+              <li><Link href="/shipping" className="hover:text-emerald-900 transition-colors block py-0.5">Shipping & Delivery</Link></li>
             </ul>
           </div>
 

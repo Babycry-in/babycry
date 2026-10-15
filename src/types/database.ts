@@ -77,6 +77,7 @@ export interface Product {
   category_id: string;
   subcategory_id?: string;
   category?: Category;
+  subcategory?: Subcategory;
   brand: string;
   age_group?: string;
   gender?: 'Unisex' | 'Girls' | 'Boys' | 'Baby';

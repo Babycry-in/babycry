@@ -3,16 +3,50 @@ import { getCategories } from '@/lib/data/db-service';
 import { CategoriesList } from '@/components/category/CategoriesList';
 import { Sparkles } from 'lucide-react';
 
-export const metadata = {
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
   title: 'Shop All Categories | Baby Cry.in',
-  description: 'Explore all 12 baby & kids categories: Apparels, Footwear, Accessories, Hospital Kits, Toys, Diapering & Gift Hampers.',
+  description: 'Explore all baby & kids categories: Apparels, Footwear, Accessories, Hospital Kits, Toys, Diapering & Gift Hampers.',
+  alternates: {
+    canonical: 'https://www.babycry.in/categories',
+  },
+  openGraph: {
+    title: 'Shop All Categories | Baby Cry.in',
+    description: 'Explore our complete collection of organic cotton wear, newborn kits, baby accessories, and gift hampers.',
+    url: 'https://www.babycry.in/categories',
+    type: 'website',
+  },
 };
 
 export default async function CategoriesPage() {
   const categories = await getCategories(true);
 
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://www.babycry.in',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Categories',
+        item: 'https://www.babycry.in/categories',
+      },
+    ],
+  };
+
   return (
-    <div className="py-12 sm:py-16  min-h-screen">
+    <div className="py-12 sm:py-16 min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}

@@ -455,8 +455,14 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
         .eq('slug', slug)
         .maybeSingle();
       if (!error && data) {
+        let subcategory = undefined;
+        if (data.subcategory_id) {
+          const subs = await getSubcategories(false);
+          subcategory = subs.find(s => s.id === data.subcategory_id);
+        }
         return {
           ...data,
+          subcategory,
           images: Array.isArray(data.images)
             ? data.images.sort((a: any, b: any) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
             : [],
@@ -472,7 +478,8 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
   if (!prod) return null;
   return {
     ...prod,
-    category: store.categories.find(c => c.id === prod.category_id)
+    category: store.categories.find(c => c.id === prod.category_id),
+    subcategory: store.subcategories?.find(s => s.id === prod.subcategory_id),
   };
 }
 

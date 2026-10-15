@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
+import Link from 'next/link';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { Product, Category, Subcategory } from '@/types/database';
 import { ProductCard } from '@/components/storefront/ProductCard';
@@ -147,19 +148,34 @@ export function CategoryProductGrid({
     setIsNewOnly(false);
     setIsBestSellerOnly(false);
     setPriceRange('all');
-    syncSubParam('');
+    const targetCat = categories.find((c) => c.id === (initialCategoryId || selectedCategoryId));
+    if (targetCat) {
+      router.push(`/categories/${targetCat.slug}`);
+    } else {
+      router.push('/categories');
+    }
   };
 
   const handleSelectCategory = (catId: string) => {
     setSelectedCategoryId(catId);
     setSelectedSubSlug('');
-    syncSubParam('');
+    const targetCat = categories.find((c) => c.id === catId);
+    if (targetCat) {
+      router.push(`/categories/${targetCat.slug}`);
+    } else {
+      router.push('/categories');
+    }
   };
 
   const handleSelectSub = (catId: string, subSlug: string) => {
     setSelectedCategoryId(catId);
     setSelectedSubSlug(subSlug);
-    syncSubParam(subSlug);
+    const targetCat = categories.find((c) => c.id === catId);
+    if (targetCat && subSlug) {
+      router.push(`/categories/${targetCat.slug}/${subSlug}`);
+    } else if (targetCat) {
+      router.push(`/categories/${targetCat.slug}`);
+    }
   };
 
   // Filter and Sort Pipeline
@@ -242,18 +258,21 @@ export function CategoryProductGrid({
             Categories
           </h3>
 
-          {/* All collections button */}
-          <button
-            type="button"
-            onClick={() => handleSelectCategory('all')}
-            className={`w-full text-left px-3.5 py-2.5 rounded-xl text-xs sm:text-[13px] font-medium border transition-all cursor-pointer mb-1.5 ${
+          {/* All collections link */}
+          <Link
+            href="/categories"
+            onClick={() => {
+              handleSelectCategory('all');
+              setIsFilterOpen(false);
+            }}
+            className={`block w-full text-left px-3.5 py-2.5 rounded-xl text-xs sm:text-[13px] font-medium border transition-all cursor-pointer mb-1.5 ${
               selectedCategoryId === 'all' && !selectedSubSlug
                 ? 'bg-emerald-800 text-white border-emerald-800 font-semibold shadow-xs'
                 : 'bg-white text-slate-700 border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/50'
             }`}
           >
             All Collections
-          </button>
+          </Link>
 
           {categories.map((cat) => {
             const isSelectedCat = selectedCategoryId === cat.id;
@@ -263,13 +282,14 @@ export function CategoryProductGrid({
             return (
               <div key={cat.id} className="mb-1.5">
                 <div className="flex items-center gap-1.5">
-                  <button
-                    type="button"
+                  <Link
+                    href={`/categories/${cat.slug}`}
                     onClick={() => {
                       handleSelectCategory(cat.id);
                       if (hasSubs && !isExpanded) {
                         toggleCategoryExpand(cat.id);
                       }
+                      setIsFilterOpen(false);
                     }}
                     className={`flex-1 text-left px-3.5 py-2.5 rounded-xl text-xs sm:text-[13px] font-medium border transition-all cursor-pointer truncate ${
                       isSelectedCat && !selectedSubSlug
@@ -278,7 +298,7 @@ export function CategoryProductGrid({
                     }`}
                   >
                     {cat.name}
-                  </button>
+                  </Link>
                   {hasSubs && (
                     <button
                       type="button"
@@ -310,18 +330,21 @@ export function CategoryProductGrid({
                       {cat.subcategories.map((sub) => {
                         const isSelectedSub = selectedSubSlug === sub.slug && selectedCategoryId === cat.id;
                         return (
-                          <button
+                          <Link
                             key={sub.id}
-                            type="button"
-                            onClick={() => handleSelectSub(cat.id, sub.slug)}
-                            className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition-all cursor-pointer ${
+                            href={`/categories/${cat.slug}/${sub.slug}`}
+                            onClick={() => {
+                              handleSelectSub(cat.id, sub.slug);
+                              setIsFilterOpen(false);
+                            }}
+                            className={`block w-full text-left px-3 py-2 rounded-xl text-xs font-medium transition-all cursor-pointer ${
                               isSelectedSub
                                 ? 'bg-emerald-100/90 text-emerald-950 font-bold border border-emerald-200 shadow-2xs'
                                 : 'text-slate-600 hover:bg-emerald-50 hover:text-emerald-900'
                             }`}
                           >
                             {sub.name}
-                          </button>
+                          </Link>
                         );
                       })}
                     </div>
@@ -535,7 +558,14 @@ export function CategoryProductGrid({
               {selectedCategoryObj?.name} › {selectedSubObj.name}
               <button
                 type="button"
-                onClick={() => { setSelectedSubSlug(''); syncSubParam(''); }}
+                onClick={() => {
+                  setSelectedSubSlug('');
+                  if (selectedCategoryObj) {
+                    router.push(`/categories/${selectedCategoryObj.slug}`);
+                  } else {
+                    syncSubParam('');
+                  }
+                }}
                 className="hover:text-emerald-950 p-0.5 cursor-pointer"
                 aria-label="Remove subcategory filter"
               >
