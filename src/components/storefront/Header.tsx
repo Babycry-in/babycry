@@ -149,7 +149,7 @@ export function Header({ categories, settings }: HeaderProps) {
                       href={`/categories/${cat.slug}`}
                       onFocus={() => (hasSubs ? handleCatEnter(cat.id) : undefined)}
                       className={`flex items-center gap-1 text-sm font-medium px-3 py-3 transition-colors ${
-                        pathname === `/categories/${cat.slug}`
+                        pathname === `/categories/${cat.slug}` || pathname?.startsWith(`/categories/${cat.slug}/`)
                           ? 'text-emerald-700 font-semibold'
                           : 'text-slate-700 hover:text-emerald-700'
                       }`}
@@ -190,7 +190,7 @@ export function Header({ categories, settings }: HeaderProps) {
                           {cat.subcategories.map((sub) => (
                             <Link
                               key={sub.id}
-                              href={`/categories/${cat.slug}?sub=${sub.slug}`}
+                              href={`/categories/${cat.slug}/${sub.slug}`}
                               onClick={() => setOpenDropdown(null)}
                               className="block px-4 py-2 text-xs text-slate-700 hover:bg-emerald-50/80 hover:text-emerald-800 transition-colors"
                               role="menuitem"

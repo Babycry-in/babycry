@@ -140,7 +140,7 @@ export function MobileMenu({ categories, isOpen, onClose, phone }: MobileMenuPro
                           {cat.subcategories.map((sub) => (
                             <Link
                               key={sub.id}
-                              href={`/categories/${cat.slug}?sub=${sub.slug}`}
+                              href={`/categories/${cat.slug}/${sub.slug}`}
                               onClick={onClose}
                               className="block px-3 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:bg-emerald-50 hover:text-emerald-800 transition-colors"
                             >

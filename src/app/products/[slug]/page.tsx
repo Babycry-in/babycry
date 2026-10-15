@@ -23,16 +23,30 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     product.images?.find((i) => i.is_primary)?.cloudinary_url ||
     product.images?.[0]?.cloudinary_url;
 
+  const siteUrl = 'https://www.babycry.in';
+  const canonicalUrl = `${siteUrl}/products/${product.slug}`;
+
   return {
-    title: product.seo_title || `${product.name} | Baby Cry.in`,
+    title: product.seo_title || product.name,
     description:
       product.seo_description ||
       product.short_description ||
       `Buy ${product.name} online at Baby Cry.in.`,
+    alternates: {
+      canonical: canonicalUrl,
+    },
     openGraph: {
       title: `${product.name} | Baby Cry.in`,
-      description: product.short_description,
+      description: product.short_description || product.description,
+      url: canonicalUrl,
+      type: 'website',
       images: primaryImg ? [{ url: primaryImg, alt: product.name }] : [],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${product.name} | Baby Cry.in`,
+      description: product.short_description || product.description,
+      images: primaryImg ? [primaryImg] : [],
     },
   };
 }
@@ -57,30 +71,82 @@ export default async function ProductPage({ params }: Props) {
   const primaryImg =
     product.images?.find((i) => i.is_primary)?.cloudinary_url ||
     product.images?.[0]?.cloudinary_url ||
-    'https://babycry.in/images/babycry-logo.png';
+    'https://www.babycry.in/images/babycry-logo.png';
+
+  const siteUrl = 'https://www.babycry.in';
 
   // Product Structured Data JSON-LD
-  const productJsonLd = {
+  const productJsonLd: Record<string, any> = {
     '@context': 'https://schema.org/',
     '@type': 'Product',
     name: product.name,
     image: primaryImg,
-    description: product.description || product.short_description,
-    sku: product.sku || product.id,
+    description: product.description || product.short_description || `Buy ${product.name} online at Baby Cry.in.`,
     brand: {
       '@type': 'Brand',
       name: product.brand || 'Baby Cry',
     },
     offers: {
       '@type': 'Offer',
-      url: `https://babycry.in/products/${product.slug}`,
+      url: `${siteUrl}/products/${product.slug}`,
       priceCurrency: 'INR',
       price: product.sale_price || product.price,
+      priceValidUntil: '2027-12-31',
+      itemCondition: 'https://schema.org/NewCondition',
       availability:
         product.stock > 0
           ? 'https://schema.org/InStock'
           : 'https://schema.org/OutOfStock',
+      seller: {
+        '@type': 'Organization',
+        name: settings.business_name || 'Baby Cry.in',
+      },
     },
+  };
+
+  if (product.sku) {
+    productJsonLd.sku = product.sku;
+  }
+
+  const breadcrumbElements: any[] = [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Home',
+      item: siteUrl,
+    },
+  ];
+
+  let bPos = 2;
+  if (product.category) {
+    breadcrumbElements.push({
+      '@type': 'ListItem',
+      position: bPos++,
+      name: product.category.name,
+      item: `${siteUrl}/categories/${product.category.slug}`,
+    });
+  }
+
+  if (product.category && product.subcategory) {
+    breadcrumbElements.push({
+      '@type': 'ListItem',
+      position: bPos++,
+      name: product.subcategory.name,
+      item: `${siteUrl}/categories/${product.category.slug}/${product.subcategory.slug}`,
+    });
+  }
+
+  breadcrumbElements.push({
+    '@type': 'ListItem',
+    position: bPos,
+    name: product.name,
+    item: `${siteUrl}/products/${product.slug}`,
+  });
+
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbElements,
   };
 
   return (
@@ -89,11 +155,15 @@ export default async function ProductPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Breadcrumb Navigation */}
-        <nav className="flex items-center gap-1.5 text-xs text-slate-500 mb-8 overflow-x-auto pb-1">
+        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-slate-500 mb-8 overflow-x-auto pb-1">
           <Link href="/" className="hover:text-emerald-800 flex items-center gap-1 shrink-0">
             <Home className="w-3.5 h-3.5" />
             <span>Home</span>
@@ -110,7 +180,18 @@ export default async function ProductPage({ params }: Props) {
               <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
             </>
           )}
-          <span className="font-semibold text-emerald-900 truncate">
+          {product.category && product.subcategory && (
+            <>
+              <Link
+                href={`/categories/${product.category.slug}/${product.subcategory.slug}`}
+                className="hover:text-emerald-800 shrink-0"
+              >
+                {product.subcategory.name}
+              </Link>
+              <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+            </>
+          )}
+          <span className="font-semibold text-emerald-900 truncate" aria-current="page">
             {product.name}
           </span>
         </nav>

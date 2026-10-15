@@ -94,7 +94,7 @@ export function MegaMenu({
                     {cat.subcategories!.map((sub) => (
                       <Link
                         key={sub.id}
-                        href={`/categories/${cat.slug}?sub=${sub.slug}`}
+                        href={`/categories/${cat.slug}/${sub.slug}`}
                         onClick={onClose}
                         className="text-[11px] font-medium text-emerald-800 hover:text-emerald-950 bg-emerald-100/70 hover:bg-emerald-200/90 px-2 py-0.5 rounded-md transition-colors"
                       >

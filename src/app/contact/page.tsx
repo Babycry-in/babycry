@@ -2,10 +2,20 @@ import React from 'react';
 import { getBusinessSettings } from '@/lib/data/db-service';
 import { Phone, Mail, MapPin, MessageCircle } from 'lucide-react';
 import { InstagramIcon } from '@/components/ui/SocialIcons';
+import type { Metadata } from 'next';
 
-export const metadata = {
+export const metadata: Metadata = {
   title: 'Contact Us | Baby Cry.in',
-  description: 'Get in touch with Baby Cry.in in Pandikkad, Kerala. Phone: 8136 819192.',
+  description: 'Get in touch with Baby Cry.in in Pandikkad, Kerala. Call: 8136 819192 or message on WhatsApp for custom baby hampers and hospital kit orders.',
+  alternates: {
+    canonical: 'https://www.babycry.in/contact',
+  },
+  openGraph: {
+    title: 'Contact Us | Baby Cry.in',
+    description: 'Get in touch with Baby Cry.in in Pandikkad, Kerala. Phone: 8136 819192.',
+    url: 'https://www.babycry.in/contact',
+    type: 'website',
+  },
 };
 
 export default async function ContactPage() {

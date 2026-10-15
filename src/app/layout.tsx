@@ -21,10 +21,12 @@ const quicksand = Quicksand({
   display: 'swap',
 });
 
+const SITE_URL = 'https://www.babycry.in';
+
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getBusinessSettings();
   return {
-    metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
+    metadataBase: new URL(SITE_URL),
     title: {
       default: `${settings.business_name} | Little Things for Brighter Little Days`,
       template: `%s | ${settings.business_name}`,
@@ -41,23 +43,41 @@ export async function generateMetadata(): Promise<Metadata> {
       'Organic cotton baby wear',
       'Kerala baby store',
     ],
+    alternates: {
+      canonical: '/',
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
+    },
     openGraph: {
+      type: 'website',
+      locale: 'en_IN',
+      url: SITE_URL,
+      siteName: 'BabyCry.in',
       title: `${settings.business_name} | Little Things for Brighter Little Days`,
       description: 'Cute outfits, thoughtful essentials and little toys for your little one.',
       images: [
         {
-          url: settings.logo_url || '/images/babycry-logo.png',
-          width: 800,
-          height: 300,
+          url: `${SITE_URL}/images/babycry-logo.png`,
+          width: 1200,
+          height: 630,
           alt: settings.business_name,
         },
       ],
-      type: 'website',
     },
     twitter: {
       card: 'summary_large_image',
       title: settings.business_name,
       description: 'Little things for brighter little days.',
+      images: [`${SITE_URL}/images/babycry-logo.png`],
     },
   };
 }
@@ -70,8 +90,53 @@ export default async function RootLayout({
   const categories = await getCategoriesWithSubcategories();
   const settings = await getBusinessSettings();
 
+  const organizationJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': ['Organization', 'OnlineStore'],
+    '@id': `${SITE_URL}/#organization`,
+    name: settings.business_name || 'Baby Cry.in',
+    url: SITE_URL,
+    logo: `${SITE_URL}/images/babycry-logo.png`,
+    description: 'Baby & Kids Fashion, Footwear, Accessories, Hospital Kits, Toys, Diapering & Gift Hampers in Kerala, India.',
+    telephone: settings.phone ? `+91${settings.phone.replace(/[^0-9]/g, '')}` : undefined,
+    email: settings.email || undefined,
+    address: settings.address ? {
+      '@type': 'PostalAddress',
+      streetAddress: 'Wandoor Road, Kanjirapadi',
+      addressLocality: 'Pandikkad',
+      addressRegion: 'Kerala',
+      addressCountry: 'IN',
+    } : undefined,
+    sameAs: [
+      settings.instagram_handle ? `https://instagram.com/${settings.instagram_handle}` : null,
+      settings.facebook_url || null,
+      settings.youtube_url || null,
+    ].filter(Boolean),
+  };
+
+  const websiteJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': `${SITE_URL}/#website`,
+    url: SITE_URL,
+    name: 'BabyCry.in',
+    publisher: {
+      '@id': `${SITE_URL}/#organization`,
+    },
+  };
+
   return (
     <html lang="en" className={`${fredoka.variable} ${quicksand.variable}`}>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
+      </head>
       <body className="min-h-screen flex flex-col antialiased selection:bg-emerald-200 selection:text-emerald-900">
         <CartProvider>
           <WishlistProvider>
