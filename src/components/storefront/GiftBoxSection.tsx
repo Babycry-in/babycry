@@ -60,7 +60,7 @@ export function GiftBoxSection({ section }: GiftBoxSectionProps) {
   const desktopImage =
     section?.image_url && !section.image_url.includes('unsplash.com')
       ? section.image_url
-      : '/images/Dreamy-bg(1)copy.png';
+      : '/images/Dreamy-bg-123.png';
 
   const mobileImage =
     section?.mobile_image_url && !section.mobile_image_url.includes('unsplash.com')

@@ -120,8 +120,8 @@ export function TravelPromoSection({ section }: TravelPromoSectionProps) {
             <div
               className="
                 w-full
-                max-w-[54%]
-                xs:max-w-[52%]
+                max-w-[64%]
+                xs:max-w-[58%]
                 sm:max-w-[480px]
                 lg:max-w-[500px]
 
@@ -132,6 +132,7 @@ export function TravelPromoSection({ section }: TravelPromoSectionProps) {
                 mr-0
                 lg:px-3
                 xl:px-30
+                min-w-0
               "
             >
 
@@ -201,7 +202,7 @@ export function TravelPromoSection({ section }: TravelPromoSectionProps) {
 
 
               {/* BUTTON */}
-              <div className="mt-3 sm:mt-6">
+              <div className="mt-3 sm:mt-6 min-w-0 max-w-full">
                 <Link
                   href={ctaUrl}
                   className="
@@ -209,7 +210,7 @@ export function TravelPromoSection({ section }: TravelPromoSectionProps) {
 
                     inline-flex
                     items-center
-                    gap-2
+                    gap-1.5
                     sm:gap-2.5
 
                     bg-[#A3D2B8]
@@ -220,10 +221,12 @@ export function TravelPromoSection({ section }: TravelPromoSectionProps) {
                     text-slate-800
                     font-medium
 
-                    text-[11px]
+                    text-[9.5px]
+                    xs:text-[10.5px]
                     sm:text-sm
 
-                    px-3.5
+                    px-2.5
+                    xs:px-3
                     sm:px-6
 
                     py-1.5
@@ -235,14 +238,20 @@ export function TravelPromoSection({ section }: TravelPromoSectionProps) {
                     hover:shadow
 
                     transition-all
+                    whitespace-nowrap
+                    shrink-0
                   "
                 >
-                  <span>{ctaText}</span>
+                  <span className="whitespace-nowrap">{ctaText}</span>
 
                   <span
                     className="
-                      w-5
-                      h-5
+                      w-4
+                      h-4
+                      xs:w-4.5
+                      xs:h-4.5
+                      sm:w-5
+                      sm:h-5
 
                       rounded-full
 
@@ -252,6 +261,7 @@ export function TravelPromoSection({ section }: TravelPromoSectionProps) {
                       flex
                       items-center
                       justify-center
+                      shrink-0
 
                       group-hover:translate-x-0.5
                       transition-transform

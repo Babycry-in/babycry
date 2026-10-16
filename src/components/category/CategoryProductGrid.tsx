@@ -451,36 +451,36 @@ export function CategoryProductGrid({
           </span>
         </div>
 
-        {/* Right side controls: Filter Trigger (mobile) & Custom Sort Select */}
-        <div className="flex items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
+        {/* Right side controls: Filter Trigger (mobile) & Custom Sort Select in one row */}
+        <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:flex lg:items-center w-full lg:w-auto">
           
           {/* Filter Button — visible on mobile only */}
           <button
             type="button"
             onClick={() => setIsFilterOpen(true)}
-            className="lg:hidden flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-slate-200 hover:border-emerald-600 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 transition-all shadow-2xs hover:shadow-xs cursor-pointer active:scale-95"
+            className="lg:hidden w-full h-10 inline-flex items-center justify-center gap-1.5 px-3 bg-white border border-slate-200 hover:border-emerald-600 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 transition-all shadow-2xs hover:shadow-xs cursor-pointer active:scale-95 min-w-0"
             aria-label="Open filter options"
           >
-            <SlidersHorizontal className="w-4 h-4 text-emerald-700 shrink-0" />
-            <span>Filter</span>
+            <SlidersHorizontal className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
+            <span className="truncate">Filter</span>
             {activeFilterCount > 0 && (
-              <span className="w-5 h-5 rounded-full bg-emerald-700 text-white text-[11px] font-bold flex items-center justify-center shrink-0">
+              <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-emerald-700 text-white text-[10px] sm:text-[11px] font-bold flex items-center justify-center shrink-0">
                 {activeFilterCount}
               </span>
             )}
           </button>
 
           {/* Custom Sort Dropdown */}
-          <div className="relative flex-1 sm:flex-none" ref={sortDropdownRef}>
+          <div className="relative w-full lg:w-auto min-w-0" ref={sortDropdownRef}>
             <button
               type="button"
               onClick={() => setIsSortOpen((prev) => !prev)}
-              className="w-full sm:w-auto inline-flex items-center justify-between sm:justify-center gap-2 px-3.5 sm:px-4 py-2.5 bg-white border border-slate-200 hover:border-emerald-600 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 shadow-2xs hover:shadow-xs transition-all cursor-pointer select-none"
+              className="w-full h-10 inline-flex items-center justify-between gap-1.5 px-3 bg-white border border-slate-200 hover:border-emerald-600 rounded-xl text-xs sm:text-sm font-semibold text-slate-800 shadow-2xs hover:shadow-xs transition-all cursor-pointer select-none min-w-0"
               aria-haspopup="listbox"
               aria-expanded={isSortOpen}
             >
-              <div className="flex items-center gap-1.5 truncate">
-                <ArrowUpDown className="w-3.5 h-3.5 text-slate-400 shrink-0 hidden sm:inline" />
+              <div className="flex items-center gap-1.5 min-w-0 truncate">
+                <ArrowUpDown className="w-3.5 h-3.5 text-slate-500 shrink-0 inline" />
                 <span className="truncate">
                   {sortBy === 'price-low'
                     ? 'Price: Low to High'
