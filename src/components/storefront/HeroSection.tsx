@@ -19,7 +19,9 @@ export function HeroSection({ slide }: HeroSectionProps) {
     slide.description ||
     'Cute outfits, thoughtful essentials and little joys for your little one.';
   const primaryCtaText = slide.primary_cta_text || 'Shop the Collection';
-  const primaryCtaUrl = slide.primary_cta_url || '/categories/apparels';
+  const primaryCtaUrl = (slide.primary_cta_url && slide.primary_cta_url !== '/categories/apparels')
+    ? slide.primary_cta_url
+    : '/categories';
   const secondaryCtaText = slide.secondary_cta_text || 'Explore New Arrivals';
   const secondaryCtaUrl = slide.secondary_cta_url || '/categories';
 

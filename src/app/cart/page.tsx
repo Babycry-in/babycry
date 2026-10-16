@@ -9,14 +9,11 @@ import { Plus, Minus, Trash2, ShoppingBag, ArrowRight, ShieldCheck, MessageCircl
 export default function CartPage() {
   const { items, removeFromCart, updateQuantity, subtotal, itemCount } = useCart();
 
-  const freeShippingThreshold = 999;
-  const progressPercent = Math.min(100, Math.round((subtotal / freeShippingThreshold) * 100));
-  const amountToFreeShipping = Math.max(0, freeShippingThreshold - subtotal);
-  const deliveryFee = subtotal >= freeShippingThreshold ? 0 : 99;
+  const deliveryFee = subtotal >= 999 ? 0 : 99;
   const grandTotal = subtotal + deliveryFee;
 
   return (
-    <div className="bg-[#FAF7F2] min-h-screen py-10 sm:py-16">
+    <div className="bg-white min-h-screen py-10 sm:py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <h1 className="font-heading text-3xl sm:text-4xl font-bold text-slate-900 mb-8">
@@ -47,24 +44,6 @@ export default function CartPage() {
             
             {/* Left: Cart Items List */}
             <div className="lg:col-span-8 space-y-4">
-              {/* Free delivery prompt banner */}
-              <div className="p-4 bg-[#EBF7F1] rounded-2xl border border-emerald-200/60">
-                <div className="text-xs font-medium text-emerald-800 mb-1.5 flex justify-between">
-                  <span>
-                    {amountToFreeShipping > 0
-                      ? `Add ₹${amountToFreeShipping} more to enjoy FREE Delivery!`
-                      : '🎉 You have unlocked FREE Delivery!'}
-                  </span>
-                  <span>{progressPercent}%</span>
-                </div>
-                <div className="w-full bg-emerald-200 rounded-full h-2 overflow-hidden">
-                  <div
-                    className="bg-emerald-700 h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${progressPercent}%` }}
-                  />
-                </div>
-              </div>
-
               {items.map((item) => {
                 const unitPrice = item.salePrice || item.price;
                 return (

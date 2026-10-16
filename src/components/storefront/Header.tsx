@@ -9,11 +9,9 @@ import { MobileMenu } from './MobileMenu';
 import { SearchModal } from './SearchModal';
 import { CartDrawer } from '@/components/ui/CartDrawer';
 import { useCart } from '@/lib/context/cart-context';
-import { useWishlist } from '@/lib/context/wishlist-context';
 import { Category, Subcategory, BusinessSettings } from '@/types/database';
 import {
   Search,
-  Heart,
   ShoppingBag,
   Menu,
   ChevronDown,
@@ -36,7 +34,6 @@ export function Header({ categories, settings }: HeaderProps) {
   const dropdownTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const megaMenuTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { itemCount, setIsCartDrawerOpen } = useCart();
-  const { itemCount: wishlistCount } = useWishlist();
   const pathname = usePathname();
 
   // Close menus on route change
@@ -216,20 +213,6 @@ export function Header({ categories, settings }: HeaderProps) {
               >
                 <Search className="w-5 h-5" />
               </button>
-
-              {/* Wishlist */}
-              <Link
-                href="/wishlist"
-                className="relative p-2.5 text-slate-600 hover:text-emerald-700 rounded-full hover:bg-emerald-50/80 transition-colors"
-                aria-label="Wishlist"
-              >
-                <Heart className="w-5 h-5" />
-                {wishlistCount > 0 && (
-                  <span className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-rose-500 text-white text-[10px] font-bold flex items-center justify-center">
-                    {wishlistCount}
-                  </span>
-                )}
-              </Link>
 
               {/* Cart Drawer Trigger */}
               <button

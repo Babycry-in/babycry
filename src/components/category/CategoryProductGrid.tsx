@@ -133,28 +133,34 @@ export function CategoryProductGrid({
   const activeFilterCount = useMemo(() => {
     let count = 0;
     if (selectedCategoryId && selectedCategoryId !== (initialCategoryId || 'all')) count++;
-    if (selectedSubSlug) count++;
+    if (selectedSubSlug && selectedSubSlug !== (propSubSlug || '')) count++;
     if (inStockOnly) count++;
     if (isNewOnly) count++;
     if (isBestSellerOnly) count++;
     if (priceRange !== 'all') count++;
     return count;
-  }, [selectedCategoryId, initialCategoryId, selectedSubSlug, inStockOnly, isNewOnly, isBestSellerOnly, priceRange]);
+  }, [selectedCategoryId, initialCategoryId, selectedSubSlug, propSubSlug, inStockOnly, isNewOnly, isBestSellerOnly, priceRange]);
 
-  const handleResetFilters = () => {
-    setSelectedCategoryId(initialCategoryId || 'all');
+  const handleResetFilters = useCallback(() => {
+    setSelectedCategoryId('all');
     setSelectedSubSlug('');
     setInStockOnly(false);
     setIsNewOnly(false);
     setIsBestSellerOnly(false);
     setPriceRange('all');
-    const targetCat = categories.find((c) => c.id === (initialCategoryId || selectedCategoryId));
-    if (targetCat) {
-      router.push(`/categories/${targetCat.slug}`);
+    setSortBy('featured');
+    setIsFilterOpen(false);
+    setIsSortOpen(false);
+    document.body.style.overflow = '';
+
+    // Clear filter query parameters and navigate to dedicated All Products page
+    if (pathname !== '/products') {
+      router.push('/products');
     } else {
-      router.push('/categories');
+      router.replace('/products', { scroll: false });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  };
+  }, [pathname, router]);
 
   const handleSelectCategory = (catId: string) => {
     setSelectedCategoryId(catId);
@@ -163,7 +169,7 @@ export function CategoryProductGrid({
     if (targetCat) {
       router.push(`/categories/${targetCat.slug}`);
     } else {
-      router.push('/categories');
+      router.push('/products');
     }
   };
 
@@ -258,9 +264,9 @@ export function CategoryProductGrid({
             Categories
           </h3>
 
-          {/* All collections link */}
+          {/* All products link */}
           <Link
-            href="/categories"
+            href="/products"
             onClick={() => {
               handleSelectCategory('all');
               setIsFilterOpen(false);
@@ -271,7 +277,7 @@ export function CategoryProductGrid({
                 : 'bg-white text-slate-700 border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/50'
             }`}
           >
-            All Collections
+            All Products
           </Link>
 
           {categories.map((cat) => {
@@ -539,7 +545,7 @@ export function CategoryProductGrid({
         <div className="flex flex-wrap items-center gap-2 mb-6 pt-1">
           <span className="text-xs text-slate-400 font-medium">Active filters:</span>
           
-          {selectedCategoryObj && !selectedSubObj && (
+          {selectedCategoryObj && !selectedSubObj && selectedCategoryId !== (initialCategoryId || 'all') && (
             <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-medium border border-emerald-100">
               Category: {selectedCategoryObj.name}
               <button
@@ -553,7 +559,7 @@ export function CategoryProductGrid({
             </span>
           )}
 
-          {selectedSubObj && (
+          {selectedSubObj && selectedSubSlug !== (propSubSlug || '') && (
             <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-medium border border-emerald-100">
               {selectedCategoryObj?.name} › {selectedSubObj.name}
               <button
@@ -741,12 +747,12 @@ export function CategoryProductGrid({
           </div>
 
           {/* Drawer Scrollable Content */}
-          <div className="p-5 overflow-y-auto">
+          <div className="p-5 overflow-y-auto flex-1 min-h-0">
             <FilterPanel />
           </div>
 
           {/* Drawer Footer */}
-          <div className="p-4 sm:p-5 border-t border-emerald-100 bg-[#FAF7F2] shrink-0">
+          <div className="p-4 sm:p-5 border-t border-emerald-100 bg-white shrink-0">
             <button
               type="button"
               onClick={() => setIsFilterOpen(false)}

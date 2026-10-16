@@ -72,7 +72,7 @@ export default function OrderSuccessPage() {
 
           <div>
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EBF7F1] text-emerald-900 text-xs font-bold uppercase tracking-wider mb-2">
-              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+              
               <span>ORDER PLACED SUCCESSFULLY</span>
             </div>
             <h1 className="font-heading text-3xl sm:text-4xl font-bold text-slate-900">

@@ -127,7 +127,7 @@ export function MegaMenu({
           {/* Text Content */}
           <div className="relative z-10 max-w-[280px]">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/90 backdrop-blur-xs rounded-full text-xs font-semibold text-emerald-800 mb-3 shadow-2xs border border-emerald-100/60">
-              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+              
               <span>Special Collection</span>
             </div>
             <h4 className="font-heading text-xl font-bold text-slate-900 mb-2 leading-snug">

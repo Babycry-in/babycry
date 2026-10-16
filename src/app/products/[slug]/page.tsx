@@ -150,7 +150,7 @@ export default async function ProductPage({ params }: Props) {
   };
 
   return (
-    <div className="bg-[#FAF7F2] min-h-screen py-8 sm:py-12">
+    <div className="bg-white min-h-screen py-5 sm:py-12">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
@@ -163,7 +163,7 @@ export default async function ProductPage({ params }: Props) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Breadcrumb Navigation */}
-        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-slate-500 mb-8 overflow-x-auto pb-1">
+        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-slate-500 mb-4 sm:mb-8 overflow-x-auto no-scrollbar pb-1">
           <Link href="/" className="hover:text-emerald-800 flex items-center gap-1 shrink-0">
             <Home className="w-3.5 h-3.5" />
             <span>Home</span>

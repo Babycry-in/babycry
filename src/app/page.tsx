@@ -20,7 +20,7 @@ import { TrustPillars } from '@/components/storefront/TrustPillars';
 import { InstagramGallery } from '@/components/storefront/InstagramGallery';
 import type { Metadata } from 'next';
 
-export const revalidate = 0; // Ensure fresh content on updates
+export const revalidate = 60; // 60s cache for fast navigation and instant logo redirects
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getBusinessSettings();
@@ -72,7 +72,7 @@ export default async function HomePage() {
     title: 'Brighter Little Days',
     description: 'Cute outfits, thoughtful essentials and little toys for your little one.',
     primary_cta_text: 'Shop the Collection',
-    primary_cta_url: '/categories/apparels',
+    primary_cta_url: '/categories',
     secondary_cta_text: 'Explore New Arrivals',
     secondary_cta_url: '/categories',
     desktop_image: '/uploads/ChatGPT Image Oct 2, 2026, 05_55_15 PM-1790943937695-631678435.webp',
