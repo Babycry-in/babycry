@@ -153,42 +153,6 @@ export function BusinessSettingsEditor({ initialSettings }: BusinessSettingsEdit
             className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-600"
           />
         </div>
-      </div>
-
-      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-2xs space-y-4">
-        <h2 className="font-heading font-bold text-base text-slate-900 border-b border-slate-100 pb-3">
-          Shipping Rules
-        </h2>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-              Free Shipping Threshold (₹)
-            </label>
-            <input
-              type="number"
-              value={settings.free_shipping_threshold}
-              onChange={(e) =>
-                setSettings({ ...settings, free_shipping_threshold: Number(e.target.value) })
-              }
-              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-600"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-              Standard Delivery Charge (₹)
-            </label>
-            <input
-              type="number"
-              value={settings.standard_delivery_fee}
-              onChange={(e) =>
-                setSettings({ ...settings, standard_delivery_fee: Number(e.target.value) })
-              }
-              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-600"
-            />
-          </div>
-        </div>
 
         <div className="pt-4 border-t border-slate-100 flex justify-end">
           <button
