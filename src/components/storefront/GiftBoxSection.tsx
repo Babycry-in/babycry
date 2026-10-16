@@ -130,7 +130,6 @@ export function GiftBoxSection({ section }: GiftBoxSectionProps) {
               alt="Baby Showers & Newborns - A little love, packed with care"
               fill
               sizes="100vw"
-              priority
               className="object-cover object-[center_bottom] select-none"
             />
           </div>
@@ -142,7 +141,6 @@ export function GiftBoxSection({ section }: GiftBoxSectionProps) {
               alt="Baby Showers & Newborns - A little love, packed with care"
               fill
               sizes="100vw"
-              priority
               className="object-cover object-center select-none"
             />
           </div>

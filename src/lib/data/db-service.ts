@@ -34,9 +34,11 @@ interface StoreData {
 }
 
 const STORAGE_FILE = path.join(process.cwd(), 'data', 'db-store.json');
+let memoryStore: StoreData | null = null;
 
 // Ensure local persistent storage directory exists
 function ensureStorage(): StoreData {
+  if (memoryStore) return memoryStore;
   try {
     const dir = path.dirname(STORAGE_FILE);
     if (!fs.existsSync(dir)) {
@@ -85,6 +87,7 @@ function ensureStorage(): StoreData {
           console.error('Failed to sync missing keys to db-store.json', e);
         }
       }
+      memoryStore = data;
       return data;
     }
   } catch (err) {
@@ -125,10 +128,12 @@ function ensureStorage(): StoreData {
     console.error('Error writing local db-store.json:', err);
   }
 
+  memoryStore = initialData;
   return initialData;
 }
 
 function saveStorage(data: StoreData) {
+  memoryStore = data;
   try {
     const dir = path.dirname(STORAGE_FILE);
     if (!fs.existsSync(dir)) {
@@ -299,6 +304,7 @@ export async function getCategoryBySlug(slug: string): Promise<Category | null> 
 }
 
 export async function saveCategory(categoryData: Partial<Category>): Promise<Category> {
+  invalidateStoreCache('categories');
   const admin = getSupabaseAdmin();
   const store = ensureStorage();
 
@@ -358,6 +364,7 @@ export async function saveCategory(categoryData: Partial<Category>): Promise<Cat
 }
 
 export async function deleteCategory(id: string): Promise<boolean> {
+  invalidateStoreCache('categories');
   const admin = getSupabaseAdmin();
   if (admin && isUUID(id)) {
     try {
@@ -386,6 +393,10 @@ export async function getProducts(options?: {
   search?: string;
   onlyActive?: boolean;
 }): Promise<Product[]> {
+  const cacheKey = `products_${JSON.stringify(options || {})}`;
+  const cached = getCached<Product[]>(cacheKey);
+  if (cached) return cached;
+
   const admin = getSupabaseAdmin();
   if (admin) {
     try {
@@ -424,12 +435,14 @@ export async function getProducts(options?: {
 
       const { data, error } = await query;
       if (!error && Array.isArray(data)) {
-        return data.map((p: any) => ({
+        const result = data.map((p: any) => ({
           ...p,
           images: Array.isArray(p.images)
             ? p.images.sort((a: any, b: any) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
             : [],
         }));
+        setCached(cacheKey, result);
+        return result;
       }
       if (error) {
         console.warn('Supabase getProducts error:', error.message);
@@ -481,13 +494,19 @@ export async function getProducts(options?: {
   }
 
   // Populate category object
-  return list.map(prod => ({
+  const result = list.map(prod => ({
     ...prod,
     category: store.categories.find(c => c.id === prod.category_id)
   }));
+  setCached(cacheKey, result);
+  return result;
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
+  const cacheKey = `product_${slug}`;
+  const cached = getCached<Product | null>(cacheKey);
+  if (cached) return cached;
+
   const admin = getSupabaseAdmin();
   if (admin) {
     try {
@@ -506,13 +525,15 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
           const subs = await getSubcategories(false);
           subcategory = subs.find(s => s.id === data.subcategory_id);
         }
-        return {
+        const result = {
           ...data,
           subcategory,
           images: Array.isArray(data.images)
             ? data.images.sort((a: any, b: any) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
             : [],
         };
+        setCached(cacheKey, result);
+        return result;
       }
     } catch (err) {
       console.warn('Supabase getProductBySlug error:', err);
@@ -522,14 +543,20 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
   const store = ensureStorage();
   const prod = store.products.find(p => p.slug === slug);
   if (!prod) return null;
-  return {
+  const result = {
     ...prod,
     category: store.categories.find(c => c.id === prod.category_id),
     subcategory: store.subcategories?.find(s => s.id === prod.subcategory_id),
   };
+  setCached(cacheKey, result);
+  return result;
 }
 
 export async function getProductById(id: string): Promise<Product | null> {
+  const cacheKey = `product_id_${id}`;
+  const cached = getCached<Product | null>(cacheKey);
+  if (cached) return cached;
+
   const admin = getSupabaseAdmin();
   if (admin && isUUID(id)) {
     try {
@@ -543,12 +570,14 @@ export async function getProductById(id: string): Promise<Product | null> {
         .eq('id', id)
         .maybeSingle();
       if (!error && data) {
-        return {
+        const result = {
           ...data,
           images: Array.isArray(data.images)
             ? data.images.sort((a: any, b: any) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
             : [],
         };
+        setCached(cacheKey, result);
+        return result;
       }
     } catch (err) {
       console.warn('Supabase getProductById error:', err);
@@ -558,13 +587,16 @@ export async function getProductById(id: string): Promise<Product | null> {
   const store = ensureStorage();
   const prod = store.products.find(p => p.id === id);
   if (!prod) return null;
-  return {
+  const result = {
     ...prod,
     category: store.categories.find(c => c.id === prod.category_id)
   };
+  setCached(cacheKey, result);
+  return result;
 }
 
 export async function saveProduct(productData: Partial<Product>): Promise<Product> {
+  invalidateStoreCache('product');
   const admin = getSupabaseAdmin();
   const store = ensureStorage();
 
@@ -681,6 +713,7 @@ export async function saveProduct(productData: Partial<Product>): Promise<Produc
 }
 
 export async function deleteProduct(id: string): Promise<boolean> {
+  invalidateStoreCache('product');
   const admin = getSupabaseAdmin();
   if (admin && isUUID(id)) {
     try {
@@ -1153,22 +1186,31 @@ export async function deleteMediaItem(id: string): Promise<boolean> {
 // SUBCATEGORIES
 // -------------------------------------------------------------
 export async function getSubcategories(onlyActive = true): Promise<Subcategory[]> {
+  const cacheKey = `subcategories_${onlyActive}`;
+  const cached = getCached<Subcategory[]>(cacheKey);
+  if (cached) return cached;
+
   const admin = getSupabaseAdmin();
   if (admin) {
     try {
       let query = admin.from('subcategories').select('*').order('display_order', { ascending: true });
       if (onlyActive) query = query.eq('is_active', true);
       const { data, error } = await query;
-      if (!error && Array.isArray(data)) return data;
+      if (!error && Array.isArray(data)) {
+        setCached(cacheKey, data);
+        return data;
+      }
     } catch (err) {
       console.warn('Supabase getSubcategories error:', err);
     }
   }
   const store = ensureStorage();
   const list = store.subcategories || [];
-  return list
+  const result = list
     .filter(s => !onlyActive || s.is_active)
     .sort((a, b) => a.display_order - b.display_order);
+  setCached(cacheKey, result);
+  return result;
 }
 
 export async function getSubcategoriesByCategoryId(categoryId: string, onlyActive = true): Promise<Subcategory[]> {
@@ -1177,18 +1219,25 @@ export async function getSubcategoriesByCategoryId(categoryId: string, onlyActiv
 }
 
 export async function getCategoriesWithSubcategories(onlyActive = true): Promise<(Category & { subcategories: Subcategory[] })[]> {
+  const cacheKey = `categories_with_subs_${onlyActive}`;
+  const cached = getCached<(Category & { subcategories: Subcategory[] })[]>(cacheKey);
+  if (cached) return cached;
+
   const [categories, subcategories] = await Promise.all([
     getCategories(onlyActive),
     getSubcategories(onlyActive),
   ]);
-  return categories.map(cat => ({
+  const result = categories.map(cat => ({
     ...cat,
     subcategories: subcategories.filter(s => s.category_id === cat.id),
   }));
+  setCached(cacheKey, result);
+  return result;
 }
 
 export async function saveSubcategory(data: Partial<Subcategory>): Promise<Subcategory> {
   invalidateStoreCache('categories');
+  invalidateStoreCache('subcategories');
   const admin = getSupabaseAdmin();
   const store = ensureStorage();
   if (!store.subcategories) store.subcategories = [];
@@ -1259,6 +1308,7 @@ export async function saveSubcategory(data: Partial<Subcategory>): Promise<Subca
 
 export async function deleteSubcategory(id: string): Promise<boolean> {
   invalidateStoreCache('categories');
+  invalidateStoreCache('subcategories');
   const admin = getSupabaseAdmin();
   if (admin && isUUID(id)) {
     try {
