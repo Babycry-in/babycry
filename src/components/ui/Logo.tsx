@@ -5,9 +5,10 @@ import Image from 'next/image';
 interface LogoProps {
   className?: string;
   size?: 'sm' | 'md' | 'lg';
+  onClick?: () => void;
 }
 
-export function Logo({ className = '', size = 'md' }: LogoProps) {
+export function Logo({ className = '', size = 'md', onClick }: LogoProps) {
   const dims = {
     sm: { h: 52, w: 52 },
     md: { h: 68, w: 68 },
@@ -17,7 +18,7 @@ export function Logo({ className = '', size = 'md' }: LogoProps) {
   const { h, w } = dims[size];
 
   return (
-    <Link href="/" className={`inline-flex items-center group ${className}`}>
+    <Link href="/" prefetch={true} onClick={onClick} className={`inline-flex items-center group ${className}`}>
       <div
         className="relative transition-transform duration-300 group-hover:scale-105"
         style={{ width: w, height: h }}

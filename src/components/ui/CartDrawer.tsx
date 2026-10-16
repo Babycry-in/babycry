@@ -19,10 +19,6 @@ export function CartDrawer() {
 
   if (!isCartDrawerOpen) return null;
 
-  const freeShippingThreshold = 999;
-  const progressPercent = Math.min(100, Math.round((subtotal / freeShippingThreshold) * 100));
-  const amountToFreeShipping = Math.max(0, freeShippingThreshold - subtotal);
-
   return (
     <div className="fixed inset-0 z-50 overflow-hidden">
       {/* Backdrop */}
@@ -32,9 +28,9 @@ export function CartDrawer() {
       />
 
       <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
-        <div className="w-screen max-w-md bg-[#FAF7F2] shadow-2xl flex flex-col">
+        <div className="w-screen max-w-md bg-white shadow-2xl flex flex-col">
           {/* Header */}
-          <div className="p-5 border-b border-emerald-100 flex items-center justify-between bg-white/90">
+          <div className="p-5 border-b border-emerald-100 flex items-center justify-between bg-white">
             <div className="flex items-center gap-2">
               <ShoppingBag className="w-5 h-5 text-emerald-700" />
               <h2 className="font-heading text-xl font-semibold text-slate-800">
@@ -51,24 +47,6 @@ export function CartDrawer() {
             >
               <X className="w-5 h-5" />
             </button>
-          </div>
-
-          {/* Free Shipping Bar */}
-          <div className="px-5 py-3 bg-[#EBF7F1] border-b border-emerald-100">
-            <div className="text-xs font-medium text-emerald-800 mb-1 flex justify-between">
-              <span>
-                {amountToFreeShipping > 0
-                  ? `Add ₹${amountToFreeShipping} more for FREE Delivery! 🚚`
-                  : '🎉 Congratulations! You have unlocked FREE Delivery!'}
-              </span>
-              <span>{progressPercent}%</span>
-            </div>
-            <div className="w-full bg-emerald-200/60 rounded-full h-1.5 overflow-hidden">
-              <div
-                className="bg-emerald-600 h-1.5 rounded-full transition-all duration-300"
-                style={{ width: `${progressPercent}%` }}
-              />
-            </div>
           </div>
 
           {/* Items List */}

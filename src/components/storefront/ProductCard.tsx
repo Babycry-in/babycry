@@ -5,8 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Product } from '@/types/database';
 import { useCart } from '@/lib/context/cart-context';
-import { useWishlist } from '@/lib/context/wishlist-context';
-import { Heart, ShoppingBag, Check } from 'lucide-react';
+import { ShoppingBag, Check } from 'lucide-react';
 
 interface ProductCardProps {
   product: Product;
@@ -14,7 +13,6 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart();
-  const { isInWishlist, toggleWishlist } = useWishlist();
   const [justAdded, setJustAdded] = React.useState(false);
 
   const primaryImage =
@@ -22,7 +20,6 @@ export function ProductCard({ product }: ProductCardProps) {
     product.images?.[0]?.cloudinary_url ||
     '/images/babycry-logo.png';
 
-  const inWishlist = isInWishlist(product.id);
   const price = product.sale_price || product.price;
   const hasDiscount = product.sale_price && product.sale_price < product.price;
 
@@ -43,21 +40,6 @@ export function ProductCard({ product }: ProductCardProps) {
     });
     setJustAdded(true);
     setTimeout(() => setJustAdded(false), 1500);
-  };
-
-  const handleToggleWishlist = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    toggleWishlist({
-      productId: product.id,
-      name: product.name,
-      slug: product.slug,
-      price: product.price,
-      salePrice: product.sale_price,
-      image: primaryImage,
-      categoryName: product.category?.name,
-      inStock: product.stock > 0,
-    });
   };
 
   return (
@@ -89,19 +71,6 @@ export function ProductCard({ product }: ProductCardProps) {
             NEW
           </span>
         )}
-
-        {/* Wishlist Heart — top right */}
-        <button
-          onClick={handleToggleWishlist}
-          className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur-xs flex items-center justify-center shadow-sm transition-colors z-10 hover:bg-white"
-          aria-label={inWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
-        >
-          <Heart
-            className={`w-4 h-4 transition-transform active:scale-125 ${
-              inWishlist ? 'fill-rose-500 text-rose-500' : 'text-slate-400 hover:text-rose-400'
-            }`}
-          />
-        </button>
       </Link>
 
       {/* Text area — category label, name, price, add to cart */}

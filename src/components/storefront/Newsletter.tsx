@@ -19,7 +19,7 @@ export function Newsletter() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         
         <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white text-emerald-800 text-xs font-bold uppercase tracking-wider mb-4 shadow-2xs">
-          <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+         
           <span>JOIN OUR LITTLE FAMILY</span>
         </div>
 

@@ -25,7 +25,8 @@ export function CloudDivider({
       <svg
         viewBox="0 0 1440 120"
         fill="none"
-        xmlns="http://www.w3.org/2000/svg"
+        xmlns="
+        "
         className="w-full h-12 md:h-20 lg:h-24 block preserve-3d"
         preserveAspectRatio="none"
       >

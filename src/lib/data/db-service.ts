@@ -141,23 +141,59 @@ function saveStorage(data: StoreData) {
 }
 
 // -------------------------------------------------------------
+// IN-MEMORY SHORT-TERM CACHE (Speed up storefront navigation & logo clicks)
+// -------------------------------------------------------------
+const memCache = new Map<string, { data: any; expiry: number }>();
+
+function getCached<T>(key: string): T | null {
+  const item = memCache.get(key);
+  if (item && item.expiry > Date.now()) {
+    return item.data as T;
+  }
+  return null;
+}
+
+function setCached<T>(key: string, data: T, ttlMs = 60_000) {
+  memCache.set(key, { data, expiry: Date.now() + ttlMs });
+}
+
+export function invalidateStoreCache(prefix?: string) {
+  if (!prefix) {
+    memCache.clear();
+  } else {
+    for (const k of Array.from(memCache.keys())) {
+      if (k.startsWith(prefix)) memCache.delete(k);
+    }
+  }
+}
+
+// -------------------------------------------------------------
 // BUSINESS SETTINGS
 // -------------------------------------------------------------
 export async function getBusinessSettings(): Promise<BusinessSettings> {
+  const cacheKey = 'business_settings';
+  const cached = getCached<BusinessSettings>(cacheKey);
+  if (cached) return cached;
+
   const admin = getSupabaseAdmin();
   if (admin) {
     try {
       const { data, error } = await admin.from('business_settings').select('*').limit(1).single();
-      if (!error && data) return data;
+      if (!error && data) {
+        setCached(cacheKey, data);
+        return data;
+      }
     } catch {
       // Fallback
     }
   }
   const store = ensureStorage();
+  setCached(cacheKey, store.settings);
   return store.settings;
 }
 
 export async function updateBusinessSettings(settings: Partial<BusinessSettings>): Promise<BusinessSettings> {
+  invalidateStoreCache('business_settings');
   const admin = getSupabaseAdmin();
   if (admin) {
     try {
@@ -219,6 +255,10 @@ async function autoSeedCategories(admin: any) {
 // CATEGORIES
 // -------------------------------------------------------------
 export async function getCategories(onlyActive = true): Promise<Category[]> {
+  const cacheKey = `categories_${onlyActive}`;
+  const cached = getCached<Category[]>(cacheKey);
+  if (cached) return cached;
+
   const admin = getSupabaseAdmin();
   if (admin) {
     try {
@@ -226,12 +266,16 @@ export async function getCategories(onlyActive = true): Promise<Category[]> {
       if (onlyActive) query = query.eq('is_active', true);
       const { data, error } = await query;
       if (!error && Array.isArray(data) && data.length > 0) {
+        setCached(cacheKey, data);
         return data;
       }
       if (!error && Array.isArray(data) && data.length === 0) {
         await autoSeedCategories(admin);
         const { data: seeded } = await query;
-        if (seeded && seeded.length > 0) return seeded;
+        if (seeded && seeded.length > 0) {
+          setCached(cacheKey, seeded);
+          return seeded;
+        }
       }
       if (error) {
         console.warn('Supabase getCategories warning:', error.message);
@@ -242,9 +286,11 @@ export async function getCategories(onlyActive = true): Promise<Category[]> {
   }
 
   const store = ensureStorage();
-  return store.categories
+  const result = store.categories
     .filter(c => !onlyActive || c.is_active)
     .sort((a, b) => a.display_order - b.display_order);
+  setCached(cacheKey, result);
+  return result;
 }
 
 export async function getCategoryBySlug(slug: string): Promise<Category | null> {
@@ -665,34 +711,46 @@ export async function deleteProduct(id: string): Promise<boolean> {
 // HERO SLIDES & HOMEPAGE SECTIONS
 // -------------------------------------------------------------
 export async function getHeroSlides(onlyActive = true): Promise<HeroSlide[]> {
+  const cacheKey = `hero_slides_${onlyActive}`;
+  const cached = getCached<HeroSlide[]>(cacheKey);
+  if (cached) return cached;
+
   const admin = getSupabaseAdmin();
   if (admin) {
     try {
       let query = admin.from('hero_slides').select('*').order('sort_order', { ascending: true });
       if (onlyActive) query = query.eq('is_active', true);
       const { data, error } = await query;
-      if (!error && data && data.length > 0) return data;
+      if (!error && data && data.length > 0) {
+        setCached(cacheKey, data);
+        return data;
+      }
     } catch {
       // Fallback
     }
   }
   const store = ensureStorage();
-  return store.heroSlides
+  const result = store.heroSlides
     .filter(s => !onlyActive || s.is_active)
     .sort((a, b) => a.sort_order - b.sort_order);
+  setCached(cacheKey, result);
+  return result;
 }
 
 export async function saveHeroSlide(slide: Partial<HeroSlide>): Promise<HeroSlide> {
+  invalidateStoreCache('hero_slides');
   const admin = getSupabaseAdmin();
   const store = ensureStorage();
   const id = slide.id || `hero-${Date.now()}`;
+  const rawCtaUrl = slide.primary_cta_url;
+  const primary_cta_url = (rawCtaUrl && rawCtaUrl !== '/categories/apparels') ? rawCtaUrl : '/categories';
   const fullSlide: HeroSlide = {
     id,
     eyebrow: slide.eyebrow || 'LITTLE THINGS FOR',
     title: slide.title || 'Brighter Little Days',
     description: slide.description || 'Cute outfits, thoughtful essentials and little toys.',
     primary_cta_text: slide.primary_cta_text || 'Shop the Collection',
-    primary_cta_url: slide.primary_cta_url || '/categories/apparels',
+    primary_cta_url,
     secondary_cta_text: slide.secondary_cta_text || 'Explore New Arrivals',
     secondary_cta_url: slide.secondary_cta_url || '/categories',
     desktop_image: slide.desktop_image || '',
@@ -720,19 +778,29 @@ export async function saveHeroSlide(slide: Partial<HeroSlide>): Promise<HeroSlid
 }
 
 export async function getHomepageSections(): Promise<HomepageSection[]> {
+  const cacheKey = 'homepage_sections';
+  const cached = getCached<HomepageSection[]>(cacheKey);
+  if (cached) return cached;
+
   const admin = getSupabaseAdmin();
   if (admin) {
     try {
       const { data, error } = await admin.from('homepage_sections').select('*').order('display_order', { ascending: true });
-      if (!error && data && data.length > 0) return data;
+      if (!error && data && data.length > 0) {
+        setCached(cacheKey, data);
+        return data;
+      }
     } catch {}
   }
   const store = ensureStorage();
   const list = Array.isArray(store.sections) ? store.sections : INITIAL_HOMEPAGE_SECTIONS;
-  return [...list].sort((a, b) => a.display_order - b.display_order);
+  const result = [...list].sort((a, b) => a.display_order - b.display_order);
+  setCached(cacheKey, result);
+  return result;
 }
 
 export async function updateHomepageSection(section: Partial<HomepageSection>): Promise<HomepageSection | null> {
+  invalidateStoreCache('homepage_sections');
   const admin = getSupabaseAdmin();
   const store = ensureStorage();
   if (!Array.isArray(store.sections)) {
@@ -1120,6 +1188,7 @@ export async function getCategoriesWithSubcategories(onlyActive = true): Promise
 }
 
 export async function saveSubcategory(data: Partial<Subcategory>): Promise<Subcategory> {
+  invalidateStoreCache('categories');
   const admin = getSupabaseAdmin();
   const store = ensureStorage();
   if (!store.subcategories) store.subcategories = [];
@@ -1189,6 +1258,7 @@ export async function saveSubcategory(data: Partial<Subcategory>): Promise<Subca
 }
 
 export async function deleteSubcategory(id: string): Promise<boolean> {
+  invalidateStoreCache('categories');
   const admin = getSupabaseAdmin();
   if (admin && isUUID(id)) {
     try {
