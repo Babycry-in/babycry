@@ -58,7 +58,7 @@ export function MobileMenu({ categories, isOpen, onClose, phone }: MobileMenuPro
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
-        <div className="w-screen max-w-xs sm:max-w-sm bg-white shadow-2xl flex flex-col justify-between h-full">
+        <div className="w-[85vw] max-w-xs sm:max-w-sm bg-white shadow-2xl flex flex-col justify-between h-full">
           <div>
             {/* Header */}
             <div className="p-4 border-b border-emerald-100 flex items-center justify-between bg-white">

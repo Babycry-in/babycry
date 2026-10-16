@@ -60,7 +60,7 @@ export default function OrderSuccessPage() {
   }, [orderNumber]);
 
   return (
-    <div className="bg-[#FAF7F2] min-h-screen py-12 sm:py-20">
+    <div className="min-h-screen py-12 sm:py-20">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Main Success Card */}

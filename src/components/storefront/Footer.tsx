@@ -58,7 +58,6 @@ export function Footer({ settings }: FooterProps) {
       links: [
         { href: '/about', label: 'About Us' },
         { href: '/contact', label: 'Contact' },
-        { href: '/shipping', label: 'Shipping & Delivery' },
       ],
     },
   ];
@@ -186,7 +185,6 @@ export function Footer({ settings }: FooterProps) {
             <ul className="space-y-2 text-sm lg:text-base text-slate-900 font-bold">
               <li><Link href="/about" className="hover:text-emerald-900 transition-colors block py-0.5">About Us</Link></li>
               <li><Link href="/contact" className="hover:text-emerald-900 transition-colors block py-0.5">Contact</Link></li>
-              <li><Link href="/shipping" className="hover:text-emerald-900 transition-colors block py-0.5">Shipping & Delivery</Link></li>
             </ul>
           </div>
 
@@ -351,14 +349,9 @@ export function Footer({ settings }: FooterProps) {
             </a>
           </p>
 
-          {/* Mobile: copyright, made with ♥, then Ekodrix at the bottom */}
+          {/* Mobile: copyright, then Ekodrix at the bottom */}
           <div className="lg:hidden flex flex-col items-center gap-1.5 text-center">
             <p>© 2026 Baby Cry.in. All rights reserved.</p>
-            <p className="flex items-center gap-1.5 font-bold">
-              <span>Made with</span>
-              <span className="text-red-600 text-sm">♥</span>
-              <span>for little ones.</span>
-            </p>
             <p className="font-bold">
               Crafted by{' '}
               <a

@@ -23,7 +23,7 @@ export default async function ContactPage() {
   const cleanPhone = settings.phone.replace(/[^0-9]/g, '');
 
   return (
-    <div className="bg-[#FAF7F2] min-h-screen py-12 sm:py-20">
+    <div className=" min-h-screen py-12 sm:py-20">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         
         {/* Header */}

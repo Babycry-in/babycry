@@ -43,16 +43,16 @@ export function PolaroidGallery({ section }: PolaroidGalleryProps) {
   }
 
   return (
-    <section className="relative w-full py-7 sm:py-16 lg:py-16 overflow-hidden">
-      {/* Background Image: Dreamy-bg (2).png */}
-      <div className="absolute inset-0 w-full h-full -z-10 pointer-events-none">
+    <section className="relative isolate w-full py-10 sm:py-16 lg:py-20 overflow-hidden">
+      {/* Background Image: Desktop only */}
+      <div className="hidden lg:block absolute inset-0 w-full h-full z-0 pointer-events-none">
         <Image
-          src="/images/Dreamy-bg (2).png"
+          src="/images/Dreamy-bg-(2).png"
           alt="Dreamy background"
           fill
           priority
           sizes="100vw"
-          className="object-cover object-center select-none"
+          className="object-cover object-bottom sm:object-[center_bottom] select-none"
         />
       </div>
 

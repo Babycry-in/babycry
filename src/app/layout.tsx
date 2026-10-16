@@ -149,11 +149,11 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
         />
       </head>
-      <body className="min-h-screen flex flex-col antialiased selection:bg-emerald-200 selection:text-emerald-900">
+      <body className="min-h-screen flex flex-col antialiased selection:bg-emerald-200 selection:text-emerald-900 w-full max-w-full">
         <CartProvider>
           <WishlistProvider>
             <Header categories={categories} settings={settings} />
-            <main className="flex-1">{children}</main>
+            <main className="flex-1 w-full max-w-full overflow-x-clip">{children}</main>
             <Footer settings={settings} />
           </WishlistProvider>
         </CartProvider>
