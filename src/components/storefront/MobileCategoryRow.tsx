@@ -234,11 +234,11 @@ export function MobileCategoryRow({ items, mode }: MobileCategoryRowProps) {
       onPointerDown={handleInteractionStart}
       onPointerUp={handleInteractionEnd}
       onPointerCancel={handleInteractionEnd}
-      className="flex md:hidden overflow-x-auto no-scrollbar gap-4 sm:gap-5 py-2 px-4 touch-pan-x select-none cursor-grab active:cursor-grabbing w-full"
+      className="flex md:hidden overflow-x-auto no-scrollbar gap-4 sm:gap-5 py-2 px-4 touch-auto select-none cursor-grab active:cursor-grabbing w-full"
       style={{
         scrollbarWidth: 'none',
         msOverflowStyle: 'none',
-        overscrollBehaviorX: 'contain',
+        touchAction: 'pan-y pinch-zoom',
       }}
     >
       {visualTrack.map((item, index) => (

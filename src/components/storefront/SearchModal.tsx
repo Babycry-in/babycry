@@ -26,6 +26,26 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
     }
   }, [isOpen]);
 
+  // Handle ESC key press and body scroll locking
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [isOpen, onClose]);
+
   useEffect(() => {
     if (!query.trim()) {
       setResults([]);
@@ -55,12 +75,22 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
+      {/* Backdrop */}
       <div
         className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs transition-opacity"
         onClick={onClose}
+        aria-hidden="true"
       />
-      <div className="relative min-h-screen flex items-start justify-center p-4 sm:p-6 lg:p-12">
-        <div className="relative bg-[#FAF7F2] w-full max-w-2xl rounded-3xl shadow-2xl border border-emerald-100 overflow-hidden my-12">
+      {/* Click outside target wrapper */}
+      <div
+        className="relative min-h-screen flex items-start justify-center p-4 sm:p-6 lg:p-12"
+        onClick={onClose}
+      >
+        {/* Search Modal Panel — stopPropagation prevents clicks inside from closing */}
+        <div
+          className="relative bg-white w-full max-w-2xl rounded-3xl shadow-2xl border border-emerald-100 overflow-hidden my-8 sm:my-12 z-10"
+          onClick={(e) => e.stopPropagation()}
+        >
           {/* Search Bar Input */}
           <div className="p-4 sm:p-5 border-b border-emerald-100 flex items-center gap-3 bg-white">
             <Search className="w-5 h-5 text-emerald-700 shrink-0" />

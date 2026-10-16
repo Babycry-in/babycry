@@ -140,3 +140,38 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 .no-scrollbar::-webkit-scrollbar {
   display: none;                /* Chrome, Safari, Opera */
 }
+
+/* ── Continuous Category Marquee Animation ── */
+@keyframes categoryMarquee {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.category-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: categoryMarquee 38s linear infinite;
+  will-change: transform;
+  touch-action: pan-y;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .category-marquee-track:hover {
+    animation-play-state: paused;
+  }
+}
+
+.category-marquee-track.is-paused {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .category-marquee-track {
+    animation: none;
+    transform: none;
+  }
+}

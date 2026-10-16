@@ -28,7 +28,7 @@ export default async function AboutPage() {
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto space-y-4">
           <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#EBF7F1] text-emerald-900 text-xs font-bold uppercase tracking-wider shadow-2xs">
-            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+           
             <span>OUR LITTLE STORY</span>
           </div>
           <h1 className="font-heading text-3xl sm:text-5xl font-bold text-slate-900 leading-tight">
