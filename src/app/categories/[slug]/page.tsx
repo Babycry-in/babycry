@@ -7,8 +7,7 @@ import { CategoryProductGrid } from '@/components/category/CategoryProductGrid';
 import { ChevronRight, Home, ArrowRight, Loader2 } from 'lucide-react';
 import type { Metadata } from 'next';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 60;
 
 interface Props {
   params: Promise<{ slug: string }>;

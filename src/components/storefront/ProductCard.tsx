@@ -11,7 +11,7 @@ interface ProductCardProps {
   product: Product;
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+function ProductCardInner({ product }: ProductCardProps) {
   const { addToCart } = useCart();
   const [justAdded, setJustAdded] = React.useState(false);
 
@@ -118,3 +118,5 @@ export function ProductCard({ product }: ProductCardProps) {
     </div>
   );
 }
+
+export const ProductCard = React.memo(ProductCardInner);

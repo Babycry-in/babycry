@@ -7,6 +7,8 @@ import { ProductCard } from '@/components/storefront/ProductCard';
 import { ChevronRight, Home, CheckCircle2 } from 'lucide-react';
 import type { Metadata } from 'next';
 
+export const revalidate = 60;
+
 interface Props {
   params: Promise<{ slug: string }>;
 }

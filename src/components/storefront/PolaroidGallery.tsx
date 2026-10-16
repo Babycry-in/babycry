@@ -50,7 +50,6 @@ export function PolaroidGallery({ section }: PolaroidGalleryProps) {
           src="/images/Dreamy-bg-(2).png"
           alt="Dreamy background"
           fill
-          priority
           sizes="100vw"
           className="object-cover object-bottom sm:object-[center_bottom] select-none"
         />
@@ -105,7 +104,6 @@ export function PolaroidGallery({ section }: PolaroidGalleryProps) {
                         fill
                         sizes="(max-width: 1280px) 25vw, 300px"
                         className="object-contain object-center select-none"
-                        priority={item.id <= 2}
                       />
                     </div>
 
