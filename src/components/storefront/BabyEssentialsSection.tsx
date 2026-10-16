@@ -14,7 +14,7 @@ interface BabyEssentialsSectionProps {
 export function BabyEssentialsSection({ categories = [] }: BabyEssentialsSectionProps) {
   const essentials = useMemo(() => getEssentialCategories(categories), [categories]);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const isInteractingRef = useRef(false);
+  const isTouchingRef = useRef(false);
   const isHoveredRef = useRef(false);
   const resumeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const scrollPosRef = useRef(0);
@@ -48,24 +48,6 @@ export function BabyEssentialsSection({ categories = [] }: BabyEssentialsSection
     isHoveredRef.current = false;
     lastTimeRef.current = performance.now();
   };
-
-  // Pause carousel during vertical page scroll for completely smooth native touch scrolling
-  useEffect(() => {
-    let scrollTimer: NodeJS.Timeout | null = null;
-    const onWindowScroll = () => {
-      isInteractingRef.current = true;
-      if (scrollTimer) clearTimeout(scrollTimer);
-      scrollTimer = setTimeout(() => {
-        isInteractingRef.current = false;
-        lastTimeRef.current = performance.now();
-      }, 200);
-    };
-    window.addEventListener('scroll', onWindowScroll, { passive: true });
-    return () => {
-      window.removeEventListener('scroll', onWindowScroll);
-      if (scrollTimer) clearTimeout(scrollTimer);
-    };
-  }, []);
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -107,12 +89,17 @@ export function BabyEssentialsSection({ categories = [] }: BabyEssentialsSection
     const SPEED = 28; // Gentle 28px/s crawl on mobile
     lastTimeRef.current = performance.now();
     let isMounted = true;
+    let isVisible = true;
 
     const step = (now: number) => {
       if (!isMounted) return;
+      if (!isVisible) {
+        rafIdRef.current = null;
+        return;
+      }
 
-      // Stop moving when hovered or user is touching / interacting
-      if (!isInteractingRef.current && !isHoveredRef.current && el) {
+      // Automatically move when user is NOT touching and NOT hovering
+      if (!isTouchingRef.current && !isHoveredRef.current && el) {
         const dt = Math.min((now - lastTimeRef.current) / 1000, 0.05);
         scrollPosRef.current += SPEED * dt;
 
@@ -134,13 +121,29 @@ export function BabyEssentialsSection({ categories = [] }: BabyEssentialsSection
 
     rafIdRef.current = requestAnimationFrame(step);
 
+    let observer: IntersectionObserver | null = null;
+    if (typeof IntersectionObserver !== 'undefined') {
+      observer = new IntersectionObserver(
+        (entries) => {
+          const entry = entries[0];
+          isVisible = entry.isIntersecting;
+          if (isVisible && !isDesktop() && rafIdRef.current === null) {
+            lastTimeRef.current = performance.now();
+            rafIdRef.current = requestAnimationFrame(step);
+          }
+        },
+        { rootMargin: '100px' }
+      );
+      observer.observe(el);
+    }
+
     const handleResize = () => {
       if (isDesktop()) {
         if (rafIdRef.current !== null) {
           cancelAnimationFrame(rafIdRef.current);
           rafIdRef.current = null;
         }
-      } else if (rafIdRef.current === null) {
+      } else if (rafIdRef.current === null && isVisible) {
         lastTimeRef.current = performance.now();
         rafIdRef.current = requestAnimationFrame(step);
       }
@@ -150,6 +153,7 @@ export function BabyEssentialsSection({ categories = [] }: BabyEssentialsSection
 
     return () => {
       isMounted = false;
+      observer?.disconnect();
       if (rafIdRef.current !== null) {
         cancelAnimationFrame(rafIdRef.current);
         rafIdRef.current = null;
@@ -163,7 +167,7 @@ export function BabyEssentialsSection({ categories = [] }: BabyEssentialsSection
   }, [loopTrack, halfCount]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    isInteractingRef.current = true;
+    isTouchingRef.current = true;
     if (resumeTimeoutRef.current) {
       clearTimeout(resumeTimeoutRef.current);
       resumeTimeoutRef.current = null;
@@ -177,7 +181,7 @@ export function BabyEssentialsSection({ categories = [] }: BabyEssentialsSection
     if (!touchStartPos.current || e.touches.length === 0) return;
     const dx = e.touches[0].clientX - touchStartPos.current.x;
     const dy = e.touches[0].clientY - touchStartPos.current.y;
-    // Only flag swiping if horizontal motion dominates
+    // Set isSwiping flag if horizontal drag is detected
     if (Math.abs(dx) > 6 && Math.abs(dx) > Math.abs(dy)) {
       isSwiping.current = true;
     }
@@ -185,17 +189,22 @@ export function BabyEssentialsSection({ categories = [] }: BabyEssentialsSection
 
   const handleTouchEnd = () => {
     touchStartPos.current = null;
+    const el = scrollRef.current;
+    if (el) {
+      scrollPosRef.current = el.scrollLeft;
+    }
+
     if (resumeTimeoutRef.current) {
       clearTimeout(resumeTimeoutRef.current);
     }
-    // Resume auto-movement cleanly 800ms after interaction ends if not hovered
+    // Resume auto-movement cleanly 800ms after touch ends if not hovered
     resumeTimeoutRef.current = setTimeout(() => {
-      const el = scrollRef.current;
-      if (el) {
-        scrollPosRef.current = el.scrollLeft;
+      const cur = scrollRef.current;
+      if (cur) {
+        scrollPosRef.current = cur.scrollLeft;
       }
       lastTimeRef.current = performance.now();
-      isInteractingRef.current = false;
+      isTouchingRef.current = false;
     }, 800);
   };
 
@@ -204,7 +213,7 @@ export function BabyEssentialsSection({ categories = [] }: BabyEssentialsSection
     const el = scrollRef.current;
     if (!el) return;
 
-    if (isInteractingRef.current) {
+    if (isTouchingRef.current) {
       scrollPosRef.current = el.scrollLeft;
       const children = el.children;
       if (children.length >= halfCount * 2) {
@@ -327,8 +336,9 @@ export function BabyEssentialsSection({ categories = [] }: BabyEssentialsSection
           onMouseLeave={handleMouseLeave}
           className="flex overflow-x-auto no-scrollbar py-2 px-4 gap-5 sm:gap-8 w-full"
           style={{
-            touchAction: 'pan-y pinch-zoom',
+            touchAction: 'pan-x pan-y pinch-zoom',
             WebkitOverflowScrolling: 'touch',
+            overscrollBehaviorX: 'contain',
           }}
         >
           {loopTrack.map((item, index) => (
