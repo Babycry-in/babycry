@@ -65,6 +65,7 @@ create table if not exists public.products (
     sale_price numeric(10, 2),
     sku text,
     stock integer not null default 0,
+    stock_status text default 'in_stock',
     category_id uuid references public.categories(id) on delete set null,
     subcategory_id uuid references public.subcategories(id) on delete set null,
     brand text default 'Baby Cry',

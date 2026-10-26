@@ -66,7 +66,7 @@ export default function CheckoutPage() {
             name: it.name,
             price: it.salePrice || it.price,
             image: it.image,
-            variant: `${it.selectedSize || ''} ${it.selectedColor || ''}`.trim() || 'Standard',
+            variant: it.selectedVariantTitle || `${it.selectedSize || ''} ${it.selectedColor || ''}`.trim() || 'Standard',
             quantity: it.quantity,
           })),
         }),
@@ -312,7 +312,7 @@ export default function CheckoutPage() {
                         {item.name}
                       </p>
                       <p className="text-[11px] text-slate-400">
-                        Qty: {item.quantity} {item.selectedSize && `• Size: ${item.selectedSize}`}
+                        Qty: {item.quantity} {item.selectedVariantTitle ? `• ${item.selectedVariantTitle}` : (item.selectedSize ? `• Size: ${item.selectedSize}` : '')}
                       </p>
                     </div>
                     <span className="font-bold text-xs sm:text-sm text-slate-900">

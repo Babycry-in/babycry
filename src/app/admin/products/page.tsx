@@ -86,7 +86,7 @@ export default async function AdminProductsPage() {
                               {p.name}
                             </span>
                             <span className="text-[11px] text-slate-400">
-                              SKU: {p.sku || 'N/A'} {p.is_new && '• NEW'}
+                              SKU: {p.sku || 'N/A'} {p.variants && p.variants.length > 0 && `• ${p.variants.length} Variants`} {p.is_new && '• NEW'}
                             </span>
                           </div>
                         </div>
@@ -112,14 +112,18 @@ export default async function AdminProductsPage() {
                       <td className="py-3.5 px-4">
                         <span
                           className={`font-semibold ${
-                            p.stock > 10
-                              ? 'text-emerald-700'
-                              : p.stock > 0
+                            p.stock_status === 'out_of_stock' || p.stock <= 0
+                              ? 'text-rose-600'
+                              : p.stock_status === 'limited_stock' || p.stock <= 5
                               ? 'text-amber-700'
-                              : 'text-rose-600'
+                              : 'text-emerald-700'
                           }`}
                         >
-                          {p.stock > 0 ? `${p.stock} units` : 'Out of Stock'}
+                          {p.stock_status === 'out_of_stock' || p.stock <= 0
+                            ? 'Out of Stock'
+                            : p.stock_status === 'limited_stock'
+                            ? `Limited (${p.stock})`
+                            : `${p.stock} units`}
                         </span>
                       </td>
 

@@ -10,6 +10,7 @@ interface ImageUploaderProps {
   onUploadComplete: (url: string, publicId?: string) => void;
   label?: string;
   className?: string;
+  resetOnSuccess?: boolean;
 }
 
 export function ImageUploader({
@@ -17,6 +18,7 @@ export function ImageUploader({
   onUploadComplete,
   label = 'Upload Image',
   className = '',
+  resetOnSuccess = false,
 }: ImageUploaderProps) {
   const [preview, setPreview] = useState<string>(currentImageUrl || '');
 
@@ -72,9 +74,21 @@ export function ImageUploader({
         throw new Error(data.error || 'Upload failed');
       }
 
-      setPreview(data.url);
-      setStatus('done');
-      onUploadComplete(data.url, data.public_id);
+      if (resetOnSuccess) {
+        onUploadComplete(data.url, data.public_id);
+        setStatus('done');
+        setTimeout(() => {
+          setPreview('');
+          setStatus('idle');
+          if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+          }
+        }, 600);
+      } else {
+        setPreview(data.url);
+        setStatus('done');
+        onUploadComplete(data.url, data.public_id);
+      }
     } catch (err: any) {
       console.error('Image upload error:', err);
       setStatus('error');

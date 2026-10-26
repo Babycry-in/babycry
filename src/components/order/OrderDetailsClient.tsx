@@ -27,6 +27,7 @@ interface OrderDetailsClientProps {
   isCart?: boolean;
   whatsappNumber: string;
   initialQty?: number;
+  initialVariant?: string;
   initialSize?: string;
   initialColor?: string;
 }
@@ -36,6 +37,7 @@ export default function OrderDetailsClient({
   isCart = false,
   whatsappNumber,
   initialQty = 1,
+  initialVariant,
   initialSize,
   initialColor,
 }: OrderDetailsClientProps) {
@@ -87,7 +89,7 @@ export default function OrderDetailsClient({
     product?.images?.[0]?.cloudinary_url ||
     '/images/babycry-logo.png';
 
-  const variantLabel = [initialSize, initialColor].filter(Boolean).join(' / ') || 'Standard';
+  const variantLabel = initialVariant || [initialSize, initialColor].filter(Boolean).join(' / ') || 'Standard';
 
   const validate = () => {
     const newErrors: { name?: string; phone?: string; location?: string } = {};
@@ -151,7 +153,7 @@ export default function OrderDetailsClient({
         ? cartItems.map((item) => ({
             productId: item.productId,
             name: item.name,
-            variant: [item.selectedSize, item.selectedColor].filter(Boolean).join(' / ') || 'Standard',
+            variant: item.selectedVariantTitle || [item.selectedSize, item.selectedColor].filter(Boolean).join(' / ') || 'Standard',
             quantity: item.quantity,
             price: item.salePrice || item.price,
           }))
@@ -482,11 +484,13 @@ export default function OrderDetailsClient({
                         <h3 className="font-heading font-semibold text-xs sm:text-sm text-slate-800 truncate">
                           {item.name}
                         </h3>
-                        {(item.selectedSize || item.selectedColor) && (
-                          <p className="text-[11px] text-slate-400">
-                            {[item.selectedSize, item.selectedColor].filter(Boolean).join(' • ')}
-                          </p>
-                        )}
+                        <p className="text-[11px] text-slate-500">
+                          {item.selectedVariantTitle ? (
+                            <span className="font-medium text-emerald-800">{item.selectedVariantTitle}</span>
+                          ) : (
+                            [item.selectedSize, item.selectedColor].filter(Boolean).join(' • ')
+                          )}
+                        </p>
                         <p className="text-xs text-slate-500 mt-0.5">
                           Qty: {item.quantity} × ₹{item.salePrice || item.price}
                         </p>

@@ -53,6 +53,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       const existingIndex = prev.findIndex(
         (i) =>
           i.productId === newItem.productId &&
+          (i.selectedVariantId || i.selectedVariantTitle || '') === (newItem.selectedVariantId || newItem.selectedVariantTitle || '') &&
           i.selectedSize === newItem.selectedSize &&
           i.selectedColor === newItem.selectedColor
       );
@@ -65,7 +66,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         return updated;
       }
 
-      const id = `${newItem.productId}-${newItem.selectedSize || 's'}-${newItem.selectedColor || 'c'}`;
+      const id = `${newItem.productId}-${newItem.selectedVariantId || newItem.selectedVariantTitle || 'v'}-${newItem.selectedSize || 's'}-${newItem.selectedColor || 'c'}`;
       return [...prev, { ...newItem, id }];
     });
     setIsCartDrawerOpen(true);
