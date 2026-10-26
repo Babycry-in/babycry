@@ -66,9 +66,15 @@ export default function CartPage() {
                             {item.name}
                           </h3>
                         </Link>
-                        <p className="text-xs text-slate-400 mt-0.5">
-                          {item.selectedSize && `Size: ${item.selectedSize} `}
-                          {item.selectedColor && `• Color: ${item.selectedColor}`}
+                        <p className="text-xs text-slate-500 mt-0.5">
+                          {item.selectedVariantTitle ? (
+                            <span className="font-medium text-emerald-800">{item.selectedVariantTitle}</span>
+                          ) : (
+                            <>
+                              {item.selectedSize && `Size: ${item.selectedSize} `}
+                              {item.selectedColor && `• Color: ${item.selectedColor}`}
+                            </>
+                          )}
                         </p>
                         <span className="font-bold text-sm text-emerald-800 sm:hidden block mt-1">
                           ₹{unitPrice}

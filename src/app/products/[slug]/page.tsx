@@ -205,7 +205,7 @@ export default async function ProductPage({ params }: Props) {
         />
 
         {/* Product In-depth Details & Specifications */}
-        <div className="mt-16 sm:mt-24 pt-12 border-t border-emerald-100">
+        <div className="mt-16 sm:mt-24 pt-2 border-t border-emerald-100">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
             
             {/* Description & Features */}
@@ -240,37 +240,47 @@ export default async function ProductPage({ params }: Props) {
             </div>
 
             {/* Specifications Card */}
-            <div className="lg:col-span-4 bg-white p-6 rounded-3xl border border-emerald-100 shadow-xs space-y-4 h-fit">
-              <h3 className="font-heading text-lg font-bold text-slate-900">
-                Fabric & Care
-              </h3>
-              <div className="space-y-3 text-xs sm:text-sm text-slate-600">
-                <div className="flex justify-between border-b border-slate-100 pb-2">
-                  <span className="text-slate-400">Material</span>
-                  <span className="font-semibold text-slate-800">
-                    {product.material || '100% Organic Cotton'}
-                  </span>
-                </div>
-                <div className="flex justify-between border-b border-slate-100 pb-2">
-                  <span className="text-slate-400">Age Group</span>
-                  <span className="font-semibold text-slate-800">
-                    {product.age_group || 'Newborn - 24M'}
-                  </span>
-                </div>
-                <div className="flex justify-between border-b border-slate-100 pb-2">
-                  <span className="text-slate-400">Gender</span>
-                  <span className="font-semibold text-slate-800">
-                    {product.gender || 'Unisex'}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-slate-400 block mb-1">Care Instructions</span>
-                  <span className="font-medium text-slate-700 text-xs">
-                    {product.care_instructions || 'Gentle machine wash cold. Do not bleach.'}
-                  </span>
+            {(product.material || product.age_group || product.gender || product.care_instructions) && (
+              <div className="lg:col-span-4 bg-white p-6 rounded-3xl border border-emerald-100 shadow-xs space-y-4 h-fit">
+                <h3 className="font-heading text-lg font-bold text-slate-900">
+                  Fabric &amp; Care
+                </h3>
+                <div className="space-y-3 text-xs sm:text-sm text-slate-600">
+                  {product.material && (
+                    <div className="flex justify-between border-b border-slate-100 pb-2">
+                      <span className="text-slate-400">Material</span>
+                      <span className="font-semibold text-slate-800">
+                        {product.material}
+                      </span>
+                    </div>
+                  )}
+                  {product.age_group && (
+                    <div className="flex justify-between border-b border-slate-100 pb-2">
+                      <span className="text-slate-400">Age Group</span>
+                      <span className="font-semibold text-slate-800">
+                        {product.age_group}
+                      </span>
+                    </div>
+                  )}
+                  {product.gender && (
+                    <div className="flex justify-between border-b border-slate-100 pb-2">
+                      <span className="text-slate-400">Gender</span>
+                      <span className="font-semibold text-slate-800">
+                        {product.gender}
+                      </span>
+                    </div>
+                  )}
+                  {product.care_instructions && (
+                    <div>
+                      <span className="text-slate-400 block mb-1">Care Instructions</span>
+                      <span className="font-medium text-slate-700 text-xs">
+                        {product.care_instructions}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
-            </div>
+            )}
 
           </div>
         </div>

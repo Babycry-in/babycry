@@ -449,6 +449,30 @@
   ],
   "media": [
     {
+      "file_name": "PROJETO Black Logo with Gold Underline.webp",
+      "cloudinary_url": "https://res.cloudinary.com/hjkjyndc/image/upload/v1792998977/babycry/clf3yeo6azwn75wxnfe2.webp",
+      "cloudinary_public_id": "babycry/clf3yeo6azwn75wxnfe2",
+      "width": 1600,
+      "height": 535,
+      "format": "webp",
+      "size_bytes": 86894,
+      "used_by": "Admin Upload",
+      "id": "media-1792998978886",
+      "created_at": "2026-10-26T07:16:18.886Z"
+    },
+    {
+      "file_name": "CADO-Tile-123.webp",
+      "cloudinary_url": "https://res.cloudinary.com/hjkjyndc/image/upload/v1792998962/babycry/eyttbtqzvdim8sslmcxg.webp",
+      "cloudinary_public_id": "babycry/eyttbtqzvdim8sslmcxg",
+      "width": 1448,
+      "height": 1086,
+      "format": "webp",
+      "size_bytes": 185618,
+      "used_by": "Admin Upload",
+      "id": "media-1792998962592",
+      "created_at": "2026-10-26T07:16:02.592Z"
+    },
+    {
       "file_name": "Joyful Baby’s Mealtime Moment.webp",
       "cloudinary_url": "https://res.cloudinary.com/hjkjyndc/image/upload/v1791211339/babycry/tifn7zrsp79wpkknolxz.webp",
       "cloudinary_public_id": "babycry/tifn7zrsp79wpkknolxz",

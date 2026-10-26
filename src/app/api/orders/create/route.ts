@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
         name: it.name || it.product_name || it.product_name_snapshot,
         price: it.price !== undefined && it.price !== null ? Number(it.price) : undefined,
         image: it.image || it.product_image || it.product_image_snapshot,
-        variant_snapshot: it.variant || `${it.selectedSize || ''} ${it.selectedColor || ''}`.trim() || 'Default',
+        variant_snapshot: it.variant || it.selectedVariantTitle || `${it.selectedSize || ''} ${it.selectedColor || ''}`.trim() || 'Default',
         quantity: it.quantity || 1,
       })),
     });

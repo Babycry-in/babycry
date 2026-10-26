@@ -90,8 +90,14 @@ export function CartDrawer() {
                         {item.name}
                       </h4>
                       <p className="text-xs text-slate-500 mt-0.5">
-                        {item.selectedSize && `Size: ${item.selectedSize} `}
-                        {item.selectedColor && `• Color: ${item.selectedColor}`}
+                        {item.selectedVariantTitle ? (
+                          <span className="font-medium text-emerald-800">{item.selectedVariantTitle}</span>
+                        ) : (
+                          <>
+                            {item.selectedSize && `Size: ${item.selectedSize} `}
+                            {item.selectedColor && `• Color: ${item.selectedColor}`}
+                          </>
+                        )}
                       </p>
                       <div className="flex items-center justify-between mt-3">
                         <span className="font-semibold text-emerald-800 text-sm">

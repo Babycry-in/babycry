@@ -53,15 +53,28 @@ export interface ProductImage {
   is_primary: boolean;
 }
 
+export type VariantType = 'Size' | 'Volume' | 'Weight' | 'Color' | 'Material' | 'Custom';
+export type StockStatus = 'in_stock' | 'limited_stock' | 'out_of_stock';
+
 export interface ProductVariant {
   id: string;
-  product_id: string;
+  product_id?: string;
   title: string;
+  variant_type?: string;
+  variant_value?: string;
   size?: string;
   color?: string;
   sku?: string;
-  price?: number;
+  price?: number | null;
+  sale_price?: number | null;
   stock: number;
+  attributes?: Record<string, string>;
+}
+
+export interface VariantAttributeGroup {
+  id: string;
+  name: string;
+  values: string[];
 }
 
 export interface Product {
@@ -74,6 +87,7 @@ export interface Product {
   sale_price?: number | null;
   sku?: string;
   stock: number;
+  stock_status?: StockStatus;
   category_id: string;
   subcategory_id?: string;
   category?: Category;
@@ -94,6 +108,7 @@ export interface Product {
   seo_description?: string;
   images: ProductImage[];
   variants?: ProductVariant[];
+  variant_groups?: VariantAttributeGroup[];
   created_at?: string;
   updated_at?: string;
 }
