@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Product } from '@/types/database';
 import { useCart } from '@/lib/context/cart-context';
-import { ShoppingBag, Check } from 'lucide-react';
+import { ShoppingBag, Check, Ban } from 'lucide-react';
 
 interface ProductCardProps {
   product: Product;
@@ -23,20 +23,32 @@ function ProductCardInner({ product }: ProductCardProps) {
   const price = product.sale_price || product.price;
   const hasDiscount = product.sale_price && product.sale_price < product.price;
 
+  // Determine Out of Stock and Limited Stock states
+  const isOutOfStock = product.stock <= 0 || product.stock_status === 'out_of_stock';
+  const isLimitedStock = !isOutOfStock && (product.stock_status === 'limited_stock' || (product.stock > 0 && product.stock <= 5));
+
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+
+    if (isOutOfStock) return;
+
+    // Pick first variant if present
+    const firstVariant = product.variants?.[0];
+
     addToCart({
       productId: product.id,
       name: product.name,
       slug: product.slug,
-      price: product.price,
-      salePrice: product.sale_price,
+      price: firstVariant?.price || product.price,
+      salePrice: firstVariant?.price ? null : product.sale_price,
       image: primaryImage,
       quantity: 1,
-      selectedSize: product.sizes?.[0],
-      selectedColor: product.colors?.[0],
-      maxStock: product.stock,
+      selectedSize: firstVariant?.size || product.sizes?.[0],
+      selectedColor: firstVariant?.color || product.colors?.[0],
+      selectedVariantId: firstVariant?.id,
+      selectedVariantTitle: firstVariant?.title,
+      maxStock: firstVariant?.stock ?? product.stock,
     });
     setJustAdded(true);
     setTimeout(() => setJustAdded(false), 1500);
@@ -45,31 +57,55 @@ function ProductCardInner({ product }: ProductCardProps) {
   return (
     <div
       style={{ backgroundColor: '#ffffff' }}
-      className="group relative flex flex-col rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+      className={`group relative flex flex-col rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 ${
+        isOutOfStock ? 'opacity-85' : ''
+      }`}
     >
       {/* Image area — white background, full-width fill */}
       <Link
         href={`/products/${product.slug}`}
-        className="relative block w-full"
+        className="relative block w-full overflow-hidden"
         style={{ paddingBottom: '110%', backgroundColor: '#ffffff' }}
       >
-        {/* mix-blend-multiply + brightness-110 turns white / very light gray
-            image backgrounds (like #E8E8E8) into pure white.
-            Remove `brightness-110` if product colors look too bright. */}
+        {/* mix-blend-multiply + brightness-110 turns white / very light gray image backgrounds into pure white.
+            If product is out of stock, apply elegant fade-out filter */}
         <Image
           src={primaryImage}
           alt={product.name}
           fill
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
           style={{ backgroundColor: '#ffffff' }}
-          className="object-contain object-center p-3 sm:p-4 mix-blend-multiply brightness-110 group-hover:scale-105 transition-transform duration-500"
+          className={`object-contain object-center p-3 sm:p-4 mix-blend-multiply brightness-110 transition-all duration-500 ${
+            isOutOfStock
+              ? 'opacity-55 grayscale-[40%] scale-100'
+              : 'group-hover:scale-105'
+          }`}
         />
 
-        {/* NEW badge — top left */}
-        {product.is_new && (
-          <span className="absolute top-3 left-3 bg-[#5BAF91] text-white text-[10px] sm:text-xs font-bold uppercase tracking-wide px-2.5 py-1 rounded-full shadow-sm z-10">
-            NEW
-          </span>
+        {/* Top Badges */}
+        <div className="absolute top-3 left-3 flex flex-col gap-1 z-10">
+          {product.is_new && !isOutOfStock && (
+            <span className="bg-[#5BAF91] text-white text-[10px] sm:text-xs font-bold uppercase tracking-wide px-2.5 py-1 rounded-full shadow-sm">
+              NEW
+            </span>
+          )}
+          {isLimitedStock && (
+            <span className="bg-amber-500 text-white text-[10px] sm:text-xs font-bold uppercase tracking-wide px-2.5 py-0.5 rounded-full shadow-sm">
+              Few Left
+            </span>
+          )}
+        </div>
+
+        {/* High-visibility Out of Stock Overlay Banner — Not just an icon, full responsive banner */}
+        {isOutOfStock && (
+          <div className="absolute inset-0 z-20 flex items-center justify-center p-3 bg-black/20 backdrop-blur-[1.5px] pointer-events-none">
+            <div className="bg-black/75 text-white px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full shadow-lg border border-white/20 flex items-center gap-1.5 transform group-hover:scale-105 transition-transform">
+              <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+              <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-wider text-white">
+                Out of Stock
+              </span>
+            </div>
+          </div>
         )}
       </Link>
 
@@ -88,7 +124,7 @@ function ProductCardInner({ product }: ProductCardProps) {
         <div className="flex items-center justify-between mt-1.5">
           {/* Price */}
           <div className="flex items-baseline gap-1.5">
-            <span className="font-heading font-bold text-slate-900 text-sm sm:text-base">
+            <span className={`font-heading font-bold text-sm sm:text-base ${isOutOfStock ? 'text-slate-500' : 'text-slate-900'}`}>
               ₹{price}
             </span>
             {hasDiscount && (
@@ -96,23 +132,34 @@ function ProductCardInner({ product }: ProductCardProps) {
             )}
           </div>
 
-          {/* Add to cart */}
-          <button
-            onClick={handleAddToCart}
-            className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center transition-all shadow-xs ${
-              justAdded
-                ? 'bg-emerald-600 text-white'
-                : 'bg-[#EBF7F1] text-emerald-800 hover:bg-emerald-600 hover:text-white'
-            }`}
-            aria-label="Add to cart"
-            title="Add to cart"
-          >
-            {justAdded ? (
-              <Check className="w-4 h-4" />
-            ) : (
-              <ShoppingBag className="w-4 h-4" />
-            )}
-          </button>
+          {/* Add to cart / Out of stock button */}
+          {isOutOfStock ? (
+            <button
+              disabled
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center bg-slate-100 text-slate-400 cursor-not-allowed opacity-80"
+              aria-label="Out of stock"
+              title="Out of stock"
+            >
+              <Ban className="w-4 h-4 text-slate-400" />
+            </button>
+          ) : (
+            <button
+              onClick={handleAddToCart}
+              className={`w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center transition-all shadow-xs cursor-pointer ${
+                justAdded
+                  ? 'bg-emerald-600 text-white'
+                  : 'bg-[#EBF7F1] text-emerald-800 hover:bg-emerald-600 hover:text-white'
+              }`}
+              aria-label="Add to cart"
+              title="Add to cart"
+            >
+              {justAdded ? (
+                <Check className="w-4 h-4" />
+              ) : (
+                <ShoppingBag className="w-4 h-4" />
+              )}
+            </button>
+          )}
         </div>
       </div>
     </div>

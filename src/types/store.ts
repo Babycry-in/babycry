@@ -11,6 +11,8 @@ export interface CartItem {
   quantity: number;
   selectedSize?: string;
   selectedColor?: string;
+  selectedVariantId?: string;
+  selectedVariantTitle?: string;
   maxStock: number;
 }
 

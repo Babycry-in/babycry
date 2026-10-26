@@ -11,6 +11,7 @@ import {
   OrderItem, 
   OrderStatus, 
   Product, 
+  ProductVariant,
   MediaItem 
 } from '@/types/database';
 import { 
@@ -403,7 +404,8 @@ export async function getProducts(options?: {
       let query = admin.from('products').select(`
         *,
         images:product_images(*),
-        category:categories(*)
+        category:categories(*),
+        variants:product_variants(*)
       `).order('created_at', { ascending: false });
 
       if (options?.onlyActive !== false) query = query.eq('is_active', true);
@@ -502,6 +504,47 @@ export async function getProducts(options?: {
   return result;
 }
 
+function normalizeVariant(v: any): ProductVariant {
+  let vType = v.variant_type;
+  let val = (v.variant_value || v.size || v.color || v.title || '').trim();
+
+  // If title has encoded prefix like "[Volume] 50 ml" or "[Color] White"
+  const prefixMatch = (v.title || '').match(/^\[([A-Za-z]+)\]\s*(.*)$/);
+  if (prefixMatch) {
+    vType = prefixMatch[1];
+    val = prefixMatch[2] || val;
+  }
+
+  if (!vType || vType === 'Option') {
+    const valLower = val.toLowerCase();
+    if (/\b\d+\s*(ml|l|litre|liter|litres|liters)\b/i.test(valLower)) {
+      vType = 'Volume';
+    } else if (/\b\d+\s*(g|gm|gms|kg|kgs|gram|grams)\b/i.test(valLower)) {
+      vType = 'Weight';
+    } else if (/\b(fabric|cotton|muslin|linen|bamboo|wool|silicone|leather|polyester|denim|modal|fleece|satin|wood)\b/i.test(valLower)) {
+      vType = 'Material';
+    } else {
+      const commonColors = ['red', 'blue', 'green', 'white', 'black', 'pink', 'yellow', 'mint', 'cream', 'peach', 'grey', 'gray', 'beige', 'navy', 'brown', 'purple', 'orange'];
+      if (v.color || commonColors.some(c => valLower.includes(c))) {
+        vType = 'Color';
+      } else if (v.size || /^(newborn|nb|\d+-\d+\s*m|\d+\s*m|\d+-\d+\s*y|\d+\s*y|xs|s|m|l|xl|xxl|free\s*size)$/i.test(valLower) || /month|year|size/i.test(valLower)) {
+        vType = 'Size';
+      } else {
+        vType = 'Size';
+      }
+    }
+  }
+
+  return {
+    ...v,
+    title: val || v.title,
+    variant_type: vType,
+    variant_value: val,
+    size: vType === 'Size' ? val : undefined,
+    color: vType === 'Color' ? val : undefined,
+  };
+}
+
 export async function getProductBySlug(slug: string): Promise<Product | null> {
   const cacheKey = `product_${slug}`;
   const cached = getCached<Product | null>(cacheKey);
@@ -515,7 +558,8 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
         .select(`
           *,
           images:product_images(*),
-          category:categories(*)
+          category:categories(*),
+          variants:product_variants(*)
         `)
         .eq('slug', slug)
         .maybeSingle();
@@ -531,6 +575,7 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
           images: Array.isArray(data.images)
             ? data.images.sort((a: any, b: any) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
             : [],
+          variants: Array.isArray(data.variants) ? data.variants.map(normalizeVariant) : [],
         };
         setCached(cacheKey, result);
         return result;
@@ -547,6 +592,7 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
     ...prod,
     category: store.categories.find(c => c.id === prod.category_id),
     subcategory: store.subcategories?.find(s => s.id === prod.subcategory_id),
+    variants: Array.isArray(prod.variants) ? prod.variants.map(normalizeVariant) : [],
   };
   setCached(cacheKey, result);
   return result;
@@ -565,7 +611,8 @@ export async function getProductById(id: string): Promise<Product | null> {
         .select(`
           *,
           images:product_images(*),
-          category:categories(*)
+          category:categories(*),
+          variants:product_variants(*)
         `)
         .eq('id', id)
         .maybeSingle();
@@ -575,6 +622,7 @@ export async function getProductById(id: string): Promise<Product | null> {
           images: Array.isArray(data.images)
             ? data.images.sort((a: any, b: any) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
             : [],
+          variants: Array.isArray(data.variants) ? data.variants.map(normalizeVariant) : [],
         };
         setCached(cacheKey, result);
         return result;
@@ -608,6 +656,48 @@ export async function saveProduct(productData: Partial<Product>): Promise<Produc
   const fallbackCatId = store.categories[0]?.id && isUUID(store.categories[0]?.id) ? store.categories[0].id : null;
   const finalCategoryId = resolvedCatId || fallbackCatId;
 
+  const stockQty = Number(productData.stock ?? 10);
+  let stockStatus = productData.stock_status;
+  if (!stockStatus) {
+    if (stockQty <= 0) stockStatus = 'out_of_stock';
+    else if (stockQty <= 5) stockStatus = 'limited_stock';
+    else stockStatus = 'in_stock';
+  }
+  const finalStock = stockStatus === 'out_of_stock' ? 0 : stockQty;
+
+  const rawVariants = Array.isArray(productData.variants) ? productData.variants : [];
+  const variants = rawVariants.map((v, idx) => ({
+    id: v.id && isUUID(v.id) ? v.id : (v.id || randomUUID()),
+    product_id: id,
+    title: v.title || `Variant ${idx + 1}`,
+    variant_type: v.variant_type || 'Size',
+    variant_value: v.variant_value || v.title,
+    size: v.size || (v.variant_type === 'Size' ? v.variant_value || v.title : undefined),
+    color: v.color || (v.variant_type === 'Color' ? v.variant_value || v.title : undefined),
+    sku: v.sku || undefined,
+    price: v.price !== null && v.price !== undefined && !isNaN(Number(v.price)) && Number(v.price) > 0 ? Number(v.price) : null,
+    sale_price: v.sale_price !== null && v.sale_price !== undefined && !isNaN(Number(v.sale_price)) ? Number(v.sale_price) : null,
+    stock: Math.max(0, Number(v.stock ?? 0)),
+    attributes: v.attributes || undefined,
+  }));
+
+  let sizes = Array.isArray(productData.sizes) ? productData.sizes : [];
+  let colors = Array.isArray(productData.colors) ? productData.colors : [];
+
+  if (variants.length > 0) {
+    const extractedSizes = variants
+      .filter(v => v.variant_type === 'Size')
+      .map(v => v.variant_value || v.size || v.title)
+      .filter(Boolean);
+    sizes = extractedSizes.length > 0 ? Array.from(new Set(extractedSizes)) : [];
+
+    const extractedColors = variants
+      .filter(v => v.variant_type === 'Color')
+      .map(v => v.variant_value || v.color || v.title)
+      .filter(Boolean);
+    colors = extractedColors.length > 0 ? Array.from(new Set(extractedColors)) : [];
+  }
+
   const product: Product = {
     id,
     name: productData.name || 'New Product',
@@ -617,14 +707,15 @@ export async function saveProduct(productData: Partial<Product>): Promise<Produc
     price: Number(productData.price || 0),
     sale_price: productData.sale_price !== null && productData.sale_price !== undefined && !isNaN(Number(productData.sale_price)) ? Number(productData.sale_price) : null,
     sku: productData.sku || `BC-${Date.now().toString().slice(-4)}`,
-    stock: Number(productData.stock ?? 10),
+    stock: finalStock,
+    stock_status: stockStatus,
     category_id: finalCategoryId || '',
     subcategory_id: productData.subcategory_id || undefined,
     brand: productData.brand || 'Baby Cry',
     age_group: productData.age_group || '0-24M',
     gender: productData.gender || 'Unisex',
-    sizes: Array.isArray(productData.sizes) ? productData.sizes : ['0-6M', '6-12M'],
-    colors: Array.isArray(productData.colors) ? productData.colors : ['Natural Cream'],
+    sizes,
+    colors,
     material: productData.material || '100% Organic Cotton',
     features: Array.isArray(productData.features) ? productData.features : ['Soft & Breathable'],
     care_instructions: productData.care_instructions || 'Gentle wash',
@@ -635,6 +726,8 @@ export async function saveProduct(productData: Partial<Product>): Promise<Produc
     seo_title: productData.seo_title,
     seo_description: productData.seo_description,
     images: productData.images || [],
+    variants,
+    variant_groups: productData.variant_groups || [],
     updated_at: now,
     created_at: productData.created_at || now,
   };
@@ -694,6 +787,36 @@ export async function saveProduct(productData: Partial<Product>): Promise<Produc
         console.warn('Supabase product_images insert warning:', imgError.message);
       }
     }
+
+    if (variants.length > 0) {
+      try {
+        const dbVariants = variants.map((v) => {
+          const vType = v.variant_type || 'Size';
+          const val = (v.variant_value || v.size || v.color || v.title || '').trim();
+          return {
+            id: isUUID(v.id) ? v.id : randomUUID(),
+            product_id: id,
+            title: `[${vType}] ${val}`,
+            size: vType === 'Size' ? val : null,
+            color: vType === 'Color' ? val : null,
+            sku: v.sku || null,
+            price: v.price || null,
+            stock: v.stock,
+          };
+        });
+        await admin.from('product_variants').delete().eq('product_id', id);
+        const { error: vError } = await admin.from('product_variants').insert(dbVariants);
+        if (vError) {
+          console.warn('Supabase product_variants insert warning:', vError.message);
+        }
+      } catch (vErr) {
+        console.warn('Supabase product_variants operation error:', vErr);
+      }
+    } else {
+      try {
+        await admin.from('product_variants').delete().eq('product_id', id);
+      } catch {}
+    }
   }
 
   // 2. Also keep local store synced if filesystem allows
@@ -717,6 +840,7 @@ export async function deleteProduct(id: string): Promise<boolean> {
   const admin = getSupabaseAdmin();
   if (admin && isUUID(id)) {
     try {
+      await admin.from('product_variants').delete().eq('product_id', id);
       await admin.from('product_images').delete().eq('product_id', id);
       const { error } = await admin.from('products').delete().eq('id', id);
       if (error) {
@@ -1007,6 +1131,58 @@ export async function createOrderServerSide(payload: {
       console.warn('Supabase order insert failed:', e);
     }
   }
+
+  // Deduct stock for each ordered item from database and storage
+  for (const item of orderItems) {
+    const targetProdId = item.product_id;
+    if (!targetProdId) continue;
+
+    // 1. Update in local store
+    const storeProd = store.products.find(p => p.id === targetProdId);
+    if (storeProd) {
+      const updatedStock = Math.max(0, (storeProd.stock || 0) - item.quantity);
+      storeProd.stock = updatedStock;
+      if (updatedStock <= 0) {
+        storeProd.stock_status = 'out_of_stock';
+      } else if (updatedStock <= 5) {
+        storeProd.stock_status = 'limited_stock';
+      }
+    }
+
+    // 2. Update in Supabase
+    if (admin) {
+      try {
+        const { data: dbProd } = await admin
+          .from('products')
+          .select('id, stock, stock_status')
+          .eq('id', targetProdId)
+          .maybeSingle();
+
+        if (dbProd) {
+          const currentStock = Number(dbProd.stock || 0);
+          const newStock = Math.max(0, currentStock - item.quantity);
+          const newStatus = newStock <= 0 
+            ? 'out_of_stock' 
+            : newStock <= 5 
+            ? 'limited_stock' 
+            : (dbProd.stock_status || 'in_stock');
+
+          await admin
+            .from('products')
+            .update({
+              stock: newStock,
+              stock_status: newStatus,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', targetProdId);
+        }
+      } catch (stkErr) {
+        console.warn('Failed to deduct stock in Supabase for product:', targetProdId, stkErr);
+      }
+    }
+  }
+
+  invalidateStoreCache('product');
 
   store.orders.unshift(order);
   saveStorage(store);

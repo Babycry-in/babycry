@@ -36,6 +36,7 @@ export default async function OrderPage({ params, searchParams }: Props) {
   }
 
   const initialQty = typeof resolvedSearchParams.qty === 'string' ? parseInt(resolvedSearchParams.qty, 10) : 1;
+  const initialVariant = typeof resolvedSearchParams.variant === 'string' ? resolvedSearchParams.variant : undefined;
   const initialSize = typeof resolvedSearchParams.size === 'string' ? resolvedSearchParams.size : undefined;
   const initialColor = typeof resolvedSearchParams.color === 'string' ? resolvedSearchParams.color : undefined;
 
@@ -45,6 +46,7 @@ export default async function OrderPage({ params, searchParams }: Props) {
       isCart={isCart}
       whatsappNumber={whatsappNumber}
       initialQty={initialQty || 1}
+      initialVariant={initialVariant}
       initialSize={initialSize}
       initialColor={initialColor}
     />

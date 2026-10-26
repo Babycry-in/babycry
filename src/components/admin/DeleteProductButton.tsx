@@ -91,7 +91,7 @@ export function DeleteProductButton({
             }
           }}
         >
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 text-left space-y-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100 text-left space-y-4 whitespace-normal break-words">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
                 <AlertTriangle className="w-5 h-5" />
@@ -106,14 +106,14 @@ export function DeleteProductButton({
               </div>
             </div>
 
-            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-              Are you sure you want to permanently delete{' '}
-              <strong className="text-slate-900">&quot;{productName}&quot;</strong>?
-              All photos, price details, and inventory for this item will be removed from your store.
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed whitespace-normal break-words">
+              Are you sure you want to delete{' '}
+              <strong className="text-slate-900 font-semibold">&quot;{productName}&quot;</strong>?
+              This item will be permanently removed from your store.
             </p>
 
             {error && (
-              <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700">
+              <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 whitespace-normal break-words">
                 {error}
               </div>
             )}
@@ -123,7 +123,7 @@ export function DeleteProductButton({
                 type="button"
                 disabled={loading}
                 onClick={() => setIsOpen(false)}
-                className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors disabled:opacity-50"
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors disabled:opacity-50 cursor-pointer"
               >
                 Cancel
               </button>
@@ -131,7 +131,7 @@ export function DeleteProductButton({
                 type="button"
                 disabled={loading}
                 onClick={handleDelete}
-                className="px-4 py-2 rounded-xl text-xs font-semibold bg-rose-600 hover:bg-rose-700 text-white flex items-center gap-1.5 transition-colors disabled:opacity-50 shadow-xs"
+                className="px-4 py-2 rounded-xl text-xs font-semibold bg-rose-600 hover:bg-rose-700 text-white flex items-center gap-1.5 transition-colors disabled:opacity-50 shadow-xs cursor-pointer"
               >
                 {loading ? (
                   <>
@@ -141,7 +141,7 @@ export function DeleteProductButton({
                 ) : (
                   <>
                     <Trash2 className="w-3.5 h-3.5" />
-                    <span>Yes, Delete Product</span>
+                    <span>Yes, Delete</span>
                   </>
                 )}
               </button>
