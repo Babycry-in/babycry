@@ -4,16 +4,15 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Product, Category, Subcategory, ProductVariant, StockStatus, VariantType } from '@/types/database';
 import { ImageUploader } from './ImageUploader';
-import { 
-  Loader2, 
-  ArrowLeft, 
-  Trash2, 
-  Check, 
-  Star, 
-  Plus, 
-  Sparkles, 
-  Layers, 
-  AlertCircle, 
+import {
+  Loader2,
+  ArrowLeft,
+  Trash2,
+  Check,
+  Star,
+  Plus,
+  Layers,
+  AlertCircle,
   X,
   PackageCheck,
   PackageX,
@@ -41,13 +40,13 @@ interface FormVariant {
   sku: string;
 }
 
-const VARIANT_TYPE_CONFIG: { type: string; label: string; icon: string }[] = [
-  { type: 'Size', label: 'Size', icon: '📏' },
-  { type: 'Volume', label: 'Volume (ml/L)', icon: '🧴' },
-  { type: 'Weight', label: 'Weight (g/kg)', icon: '⚖️' },
-  { type: 'Color', label: 'Color', icon: '🎨' },
-  { type: 'Material', label: 'Material', icon: '🧵' },
-  { type: 'Custom', label: 'Custom', icon: '⚙️' },
+const VARIANT_TYPE_CONFIG: { type: string; label: string }[] = [
+  { type: 'Size', label: 'Size' },
+  { type: 'Volume', label: 'Volume (ml/L)' },
+  { type: 'Weight', label: 'Weight (g/kg)' },
+  { type: 'Color', label: 'Color' },
+  { type: 'Material', label: 'Material' },
+  { type: 'Custom', label: 'Custom' },
 ];
 
 const VARIANT_PRESETS: Record<string, string[]> = {
@@ -83,23 +82,20 @@ function CustomVariantTypeDropdown({
   const current = VARIANT_TYPE_CONFIG.find((c) => c.type === value) || VARIANT_TYPE_CONFIG[0];
 
   return (
-    <div className="relative w-40 shrink-0" ref={ref}>
+    <div className="relative w-36 sm:w-40 shrink-0" ref={ref}>
       <button
         type="button"
         onClick={() => setOpen(!open)}
         className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white hover:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 text-xs font-semibold text-slate-800 flex items-center justify-between gap-1.5 transition-all shadow-2xs cursor-pointer"
       >
-        <span className="flex items-center gap-1.5 truncate">
-          <span>{current.icon}</span>
-          <span>{current.label}</span>
-        </span>
+        <span className="truncate">{current.label}</span>
         <ChevronDown
           className={`w-3.5 h-3.5 text-slate-400 shrink-0 transition-transform ${open ? 'rotate-180 text-emerald-600' : ''}`}
         />
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full mt-1.5 w-48 bg-white rounded-xl border border-slate-200 shadow-xl z-50 py-1.5 overflow-hidden animate-in fade-in zoom-in-95 duration-100">
+        <div className="absolute left-0 top-full mt-1.5 w-44 bg-white rounded-xl border border-slate-200 shadow-xl z-50 py-1.5 overflow-hidden animate-in fade-in zoom-in-95 duration-100">
           <div className="px-3 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 mb-1">
             Variant Type
           </div>
@@ -111,16 +107,12 @@ function CustomVariantTypeDropdown({
                 onChange(opt.type);
                 setOpen(false);
               }}
-              className={`w-full px-3 py-2 text-xs font-medium text-left flex items-center justify-between transition-colors cursor-pointer ${
-                value === opt.type
+              className={`w-full px-3 py-2 text-xs font-medium text-left flex items-center justify-between transition-colors cursor-pointer ${value === opt.type
                   ? 'bg-emerald-50 text-emerald-900 font-semibold'
                   : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'
-              }`}
+                }`}
             >
-              <span className="flex items-center gap-2">
-                <span>{opt.icon}</span>
-                <span>{opt.label}</span>
-              </span>
+              <span>{opt.label}</span>
               {value === opt.type && <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />}
             </button>
           ))}
@@ -208,11 +200,10 @@ function CustomVariantValueCombobox({
                     onChange(preset);
                     setOpen(false);
                   }}
-                  className={`px-2.5 py-1.5 text-xs text-left rounded-lg transition-colors cursor-pointer flex items-center justify-between ${
-                    value === preset
+                  className={`px-2.5 py-1.5 text-xs text-left rounded-lg transition-colors cursor-pointer flex items-center justify-between ${value === preset
                       ? 'bg-emerald-100 text-emerald-900 font-bold'
                       : 'hover:bg-slate-50 text-slate-700'
-                  }`}
+                    }`}
                 >
                   <span className="truncate">{preset}</span>
                   {value === preset && <Check className="w-3 h-3 text-emerald-700 shrink-0" />}
@@ -232,11 +223,10 @@ function CustomVariantValueCombobox({
               key={chip}
               type="button"
               onClick={() => onChange(chip)}
-              className={`px-2 py-0.5 rounded-md text-[11px] font-medium transition-colors cursor-pointer border ${
-                value === chip
+              className={`px-2 py-0.5 rounded-md text-[11px] font-medium transition-colors cursor-pointer border ${value === chip
                   ? 'bg-emerald-100 border-emerald-300 text-emerald-900 font-bold'
                   : 'bg-white hover:bg-emerald-50 hover:border-emerald-200 border-slate-200 text-slate-600'
-              }`}
+                }`}
             >
               {chip}
             </button>
@@ -632,8 +622,8 @@ export function ProductForm({
 
     // Calculate sum of stock if variants have inventory
     const totalVariantStock = validVariants.reduce((acc, curr) => acc + (curr.stock || 0), 0);
-    const finalStock = formData.stock_status === 'out_of_stock' 
-      ? 0 
+    const finalStock = formData.stock_status === 'out_of_stock'
+      ? 0
       : Math.max(Number(formData.stock), totalVariantStock > 0 ? totalVariantStock : Number(formData.stock));
 
     setLoading(true);
@@ -871,11 +861,10 @@ export function ProductForm({
             <button
               type="button"
               onClick={() => handleStockStatusChange('in_stock')}
-              className={`p-3 rounded-xl border-2 flex items-center gap-3 transition-all cursor-pointer text-left ${
-                formData.stock_status === 'in_stock'
+              className={`p-3 rounded-xl border-2 flex items-center gap-3 transition-all cursor-pointer text-left ${formData.stock_status === 'in_stock'
                   ? 'border-emerald-600 bg-emerald-50/70 text-emerald-900 shadow-2xs'
                   : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
-              }`}
+                }`}
             >
               <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
                 <PackageCheck className="w-4 h-4" />
@@ -889,11 +878,10 @@ export function ProductForm({
             <button
               type="button"
               onClick={() => handleStockStatusChange('limited_stock')}
-              className={`p-3 rounded-xl border-2 flex items-center gap-3 transition-all cursor-pointer text-left ${
-                formData.stock_status === 'limited_stock'
+              className={`p-3 rounded-xl border-2 flex items-center gap-3 transition-all cursor-pointer text-left ${formData.stock_status === 'limited_stock'
                   ? 'border-amber-500 bg-amber-50/70 text-amber-900 shadow-2xs'
                   : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
-              }`}
+                }`}
             >
               <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
                 <AlertTriangle className="w-4 h-4" />
@@ -907,11 +895,10 @@ export function ProductForm({
             <button
               type="button"
               onClick={() => handleStockStatusChange('out_of_stock')}
-              className={`p-3 rounded-xl border-2 flex items-center gap-3 transition-all cursor-pointer text-left ${
-                formData.stock_status === 'out_of_stock'
+              className={`p-3 rounded-xl border-2 flex items-center gap-3 transition-all cursor-pointer text-left ${formData.stock_status === 'out_of_stock'
                   ? 'border-rose-500 bg-rose-50/70 text-rose-900 shadow-2xs'
                   : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
-              }`}
+                }`}
             >
               <div className="w-8 h-8 rounded-lg bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
                 <PackageX className="w-4 h-4" />
@@ -991,11 +978,10 @@ export function ProductForm({
               Standard max limit: 6 total images (1 main + 5 gallery). All existing saved images are fully preserved.
             </p>
           </div>
-          <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
-            images.length >= MAX_TOTAL_IMAGES
+          <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${images.length >= MAX_TOTAL_IMAGES
               ? 'bg-amber-100 text-amber-800'
               : 'bg-emerald-100 text-emerald-800'
-          }`}>
+            }`}>
             {images.length} / {Math.max(MAX_TOTAL_IMAGES, images.length)} Images
           </span>
         </div>
@@ -1006,9 +992,8 @@ export function ProductForm({
             {images.map((img, idx) => (
               <div
                 key={img.id || idx}
-                className={`relative rounded-xl border-2 p-1.5 bg-slate-50 flex flex-col justify-between transition-all ${
-                  img.is_primary ? 'border-emerald-600 ring-2 ring-emerald-600/20' : 'border-slate-200'
-                }`}
+                className={`relative rounded-xl border-2 p-1.5 bg-slate-50 flex flex-col justify-between transition-all ${img.is_primary ? 'border-emerald-600 ring-2 ring-emerald-600/20' : 'border-slate-200'
+                  }`}
               >
                 <div className="relative aspect-square w-full rounded-lg overflow-hidden bg-white mb-1.5">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -1032,9 +1017,8 @@ export function ProductForm({
                   <button
                     type="button"
                     onClick={() => handleSetPrimaryImage(idx)}
-                    className={`text-[10px] font-semibold flex items-center gap-0.5 transition-colors cursor-pointer ${
-                      img.is_primary ? 'text-emerald-700 font-bold' : 'text-slate-500 hover:text-emerald-700'
-                    }`}
+                    className={`text-[10px] font-semibold flex items-center gap-0.5 transition-colors cursor-pointer ${img.is_primary ? 'text-emerald-700 font-bold' : 'text-slate-500 hover:text-emerald-700'
+                      }`}
                   >
                     <Star className={`w-3 h-3 ${img.is_primary ? 'fill-emerald-600 text-emerald-600' : ''}`} />
                     <span>{img.is_primary ? 'Main' : 'Make Main'}</span>
@@ -1091,7 +1075,6 @@ export function ProductForm({
             onClick={() => setShowComboModal(true)}
             className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer border border-emerald-200"
           >
-            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
             <span>Combinations Generator</span>
           </button>
         </div>
@@ -1106,28 +1089,28 @@ export function ProductForm({
             onClick={() => applyPreset('Size', ['Newborn', '0-3M', '3-6M', '6-12M', '12-18M'])}
             className="px-2.5 py-1 bg-white hover:bg-emerald-50 hover:text-emerald-800 border border-slate-200 rounded-lg text-xs font-medium text-slate-700 transition-colors cursor-pointer shadow-2xs"
           >
-            👕 Clothes (Sizes: 0-3M, 3-6M...)
+            Clothes (Sizes)
           </button>
           <button
             type="button"
             onClick={() => applyPreset('Volume', ['50 ml', '100 ml', '200 ml', '500 ml'])}
             className="px-2.5 py-1 bg-white hover:bg-emerald-50 hover:text-emerald-800 border border-slate-200 rounded-lg text-xs font-medium text-slate-700 transition-colors cursor-pointer shadow-2xs"
           >
-            🧴 Lotion / Liquid (Volume: 50ml, 100ml...)
+            Lotion / Liquid (Volume)
           </button>
           <button
             type="button"
             onClick={() => applyPreset('Weight', ['50 g', '100 g', '200 g', '500 g'])}
             className="px-2.5 py-1 bg-white hover:bg-emerald-50 hover:text-emerald-800 border border-slate-200 rounded-lg text-xs font-medium text-slate-700 transition-colors cursor-pointer shadow-2xs"
           >
-            ✨ Powder / Cream (Weight: 50g, 100g...)
+            Powder / Cream (Weight)
           </button>
           <button
             type="button"
             onClick={() => applyPreset('Color', ['Blue', 'White', 'Red', 'Pink'])}
             className="px-2.5 py-1 bg-white hover:bg-emerald-50 hover:text-emerald-800 border border-slate-200 rounded-lg text-xs font-medium text-slate-700 transition-colors cursor-pointer shadow-2xs"
           >
-            🎨 Colors (Blue, White, Red, Pink...)
+            Colors
           </button>
         </div>
 
@@ -1138,7 +1121,7 @@ export function ProductForm({
               Configured Variants ({variants.length})
             </span>
             <span className="text-[11px] text-slate-400">
-              Pricing and stock are managed globally in Section 2 above
+              Type custom price per variant (leave empty to use base product price)
             </span>
           </div>
 
@@ -1146,48 +1129,75 @@ export function ProductForm({
             {variants.map((v, idx) => (
               <div
                 key={v.id || idx}
-                className="p-3 bg-slate-50/80 rounded-xl border border-slate-200 flex items-start gap-3 transition-all hover:bg-white hover:border-emerald-200 shadow-2xs"
+                className="p-3 bg-slate-50/80 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-stretch sm:items-start gap-2.5 sm:gap-3 transition-all hover:bg-white hover:border-emerald-200 shadow-2xs"
               >
-                {/* Variant Number Indicator */}
-                <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold flex items-center justify-center shrink-0 mt-1">
-                  {idx + 1}
-                </span>
+                <div className="flex items-center gap-2 shrink-0">
+                  {/* Variant Number Indicator */}
+                  <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold flex items-center justify-center shrink-0">
+                    {idx + 1}
+                  </span>
 
-                {/* Type Selection with Custom BabyCry Dropdown */}
-                <CustomVariantTypeDropdown
-                  value={v.variant_type}
-                  onChange={(val) => handleUpdateVariant(idx, 'variant_type', val)}
-                />
+                  {/* Type Selection with Clean BabyCry Dropdown */}
+                  <CustomVariantTypeDropdown
+                    value={v.variant_type}
+                    onChange={(val) => handleUpdateVariant(idx, 'variant_type', val)}
+                  />
+                </div>
 
                 {/* Custom Type Name input if Custom is chosen */}
                 {v.variant_type === 'Custom' && (
-                  <div className="w-32 shrink-0">
+                  <div className="w-full sm:w-32 shrink-0">
                     <input
                       type="text"
                       placeholder="Type name (e.g. Scent)"
                       value={v.custom_type || ''}
                       onChange={(e) => handleUpdateVariant(idx, 'custom_type', e.target.value)}
-                      className="w-full px-2.5 py-2 rounded-xl border border-slate-200 text-slate-900 text-xs focus:outline-none focus:border-emerald-600 bg-white"
+                      className="w-full px-2.5 py-2 rounded-xl border border-slate-200 text-slate-900 text-xs font-semibold focus:outline-none focus:border-emerald-600 bg-white"
                     />
                   </div>
                 )}
 
                 {/* Value / Title with Smart Preset Combobox & Quick Chips */}
-                <CustomVariantValueCombobox
-                  variantType={v.variant_type}
-                  value={v.variant_value}
-                  onChange={(val) => handleUpdateVariant(idx, 'variant_value', val)}
-                />
+                <div className="flex-1 min-w-0">
+                  <CustomVariantValueCombobox
+                    variantType={v.variant_type}
+                    value={v.variant_value}
+                    onChange={(val) => handleUpdateVariant(idx, 'variant_value', val)}
+                  />
+                </div>
 
-                {/* Remove button */}
-                <button
-                  type="button"
-                  onClick={() => handleRemoveVariant(idx)}
-                  className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer shrink-0 mt-0.5"
-                  title="Remove variant"
-                >
-                  <X className="w-4 h-4" />
-                </button>
+                {/* Price for Variant and Remove Button */}
+                <div className="flex items-center gap-2 self-end sm:self-start shrink-0">
+                  <div className="w-28 sm:w-32">
+                    <div className="relative">
+                      <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-400">
+                        ₹
+                      </span>
+                      <input
+                        type="number"
+                        min="0"
+                        step="any"
+                        placeholder="Base price"
+                        value={v.price}
+                        onChange={(e) => handleUpdateVariant(idx, 'price', e.target.value)}
+                        className="w-full pl-6 pr-2.5 py-2 rounded-xl border border-slate-200 text-slate-900 text-xs font-semibold focus:outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/20 bg-white shadow-2xs"
+                        title="Price for this variant (leave blank to use product default price)"
+                      />
+                    </div>
+                    <span className="text-[10px] text-slate-400 block px-1 mt-0.5 truncate">
+                      {v.price ? `Custom ₹${v.price}` : 'Uses default price'}
+                    </span>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveVariant(idx)}
+                    className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer shrink-0"
+                    title="Remove variant"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -1265,11 +1275,10 @@ export function ProductForm({
                   key={chip}
                   type="button"
                   onClick={() => setFormData({ ...formData, age_group: chip })}
-                  className={`px-1.5 py-0.5 rounded text-[10px] font-medium transition-colors cursor-pointer border ${
-                    formData.age_group === chip
+                  className={`px-1.5 py-0.5 rounded text-[10px] font-medium transition-colors cursor-pointer border ${formData.age_group === chip
                       ? 'bg-emerald-100 border-emerald-300 text-emerald-900 font-bold'
                       : 'bg-white hover:bg-emerald-50 hover:border-emerald-200 border-slate-200 text-slate-600'
-                  }`}
+                    }`}
                 >
                   {chip}
                 </button>
@@ -1408,7 +1417,6 @@ export function ProductForm({
           <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 animate-scale-in">
             <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <h3 className="font-heading font-bold text-base text-slate-900 flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-emerald-600" />
                 <span>Combinations Generator</span>
               </h3>
               <button
@@ -1495,9 +1503,8 @@ export function ProductForm({
               <button
                 type="button"
                 onClick={handleGenerateCombinations}
-                className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5"
+                className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
               >
-                <Sparkles className="w-3.5 h-3.5" />
                 <span>Generate Combinations</span>
               </button>
             </div>
