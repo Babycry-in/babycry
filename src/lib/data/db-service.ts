@@ -1,25 +1,25 @@
 import fs from 'fs';
 import path from 'path';
 import { randomUUID } from 'crypto';
-import { 
-  BusinessSettings, 
-  Category, 
+import {
+  BusinessSettings,
+  Category,
   Subcategory,
-  HeroSlide, 
-  HomepageSection, 
-  Order, 
-  OrderItem, 
-  OrderStatus, 
-  Product, 
+  HeroSlide,
+  HomepageSection,
+  Order,
+  OrderItem,
+  OrderStatus,
+  Product,
   ProductVariant,
-  MediaItem 
+  MediaItem
 } from '@/types/database';
-import { 
-  INITIAL_BUSINESS_SETTINGS, 
-  INITIAL_CATEGORIES, 
-  INITIAL_HERO_SLIDES, 
-  INITIAL_HOMEPAGE_SECTIONS, 
-  INITIAL_PRODUCTS 
+import {
+  INITIAL_BUSINESS_SETTINGS,
+  INITIAL_CATEGORIES,
+  INITIAL_HERO_SLIDES,
+  INITIAL_HOMEPAGE_SECTIONS,
+  INITIAL_PRODUCTS
 } from './initial-data';
 import { getSupabaseAdmin, isServerSupabaseConfigured } from '@/lib/supabase/admin';
 
@@ -410,8 +410,8 @@ export async function getProducts(options?: {
 
       if (options?.onlyActive !== false) query = query.eq('is_active', true);
       if (options?.categoryId) {
-        const catId = isUUID(options.categoryId) 
-          ? options.categoryId 
+        const catId = isUUID(options.categoryId)
+          ? options.categoryId
           : (await resolveCategoryId(options.categoryId));
         if (catId) query = query.eq('category_id', catId);
       }
@@ -489,7 +489,7 @@ export async function getProducts(options?: {
   }
   if (options?.search) {
     const term = options.search.toLowerCase();
-    list = list.filter(p => 
+    list = list.filter(p =>
       p.name.toLowerCase().includes(term) ||
       (p.short_description && p.short_description.toLowerCase().includes(term))
     );
@@ -815,7 +815,7 @@ export async function saveProduct(productData: Partial<Product>): Promise<Produc
     } else {
       try {
         await admin.from('product_variants').delete().eq('product_id', id);
-      } catch {}
+      } catch { }
     }
   }
 
@@ -947,7 +947,7 @@ export async function getHomepageSections(): Promise<HomepageSection[]> {
         setCached(cacheKey, data);
         return data;
       }
-    } catch {}
+    } catch { }
   }
   const store = ensureStorage();
   const list = Array.isArray(store.sections) ? store.sections : INITIAL_HOMEPAGE_SECTIONS;
@@ -1041,7 +1041,7 @@ export async function createOrderServerSide(payload: {
           .eq('id', item.product_id)
           .maybeSingle();
         if (data) product = data;
-      } catch {}
+      } catch { }
     }
 
     let unitPrice = 0;
@@ -1052,6 +1052,22 @@ export async function createOrderServerSide(payload: {
       unitPrice = product.sale_price !== null && product.sale_price !== undefined
         ? product.sale_price
         : product.price;
+
+      if (product.variants && product.variants.length > 0 && item.variant_snapshot) {
+        const snap = String(item.variant_snapshot).toLowerCase().trim();
+        const matched = product.variants.find((v: any) => {
+          const vTitle = (v.title || '').toLowerCase().trim();
+          const vVal = (v.variant_value || '').toLowerCase().trim();
+          return (
+            (vTitle && (snap === vTitle || snap.includes(vTitle) || vTitle.includes(snap))) ||
+            (vVal && (snap === vVal || snap.includes(vVal) || vVal.includes(snap)))
+          );
+        });
+        if (matched && matched.price != null && !isNaN(matched.price) && matched.price > 0) {
+          unitPrice = matched.price;
+        }
+      }
+
       productName = product.name;
       primaryImg = product.images?.find(img => img.is_primary)?.cloudinary_url || product.images?.[0]?.cloudinary_url || primaryImg;
     } else if (item.price !== undefined && item.price !== null) {
@@ -1161,11 +1177,11 @@ export async function createOrderServerSide(payload: {
         if (dbProd) {
           const currentStock = Number(dbProd.stock || 0);
           const newStock = Math.max(0, currentStock - item.quantity);
-          const newStatus = newStock <= 0 
-            ? 'out_of_stock' 
-            : newStock <= 5 
-            ? 'limited_stock' 
-            : (dbProd.stock_status || 'in_stock');
+          const newStatus = newStock <= 0
+            ? 'out_of_stock'
+            : newStock <= 5
+              ? 'limited_stock'
+              : (dbProd.stock_status || 'in_stock');
 
           await admin
             .from('products')
@@ -1301,7 +1317,7 @@ export async function getOrderByNumber(orderNumber: string): Promise<Order | nul
           }))
         };
       }
-    } catch {}
+    } catch { }
   }
 
   const store = ensureStorage();
@@ -1325,7 +1341,7 @@ export async function updateOrderStatus(orderId: string, status: OrderStatus): P
         order_status: status,
         updated_at: now
       }).or(`id.eq.${orderId},order_number.eq.${orderId}`);
-    } catch {}
+    } catch { }
   }
 
   return order || null;
@@ -1426,7 +1442,7 @@ export async function saveSubcategory(data: Partial<Subcategory>): Promise<Subca
     try {
       const { data: dbItem } = await admin.from('subcategories').select('*').eq('id', id).maybeSingle();
       if (dbItem) existingItem = dbItem;
-    } catch {}
+    } catch { }
   }
 
   const category_id = data.category_id || existingItem?.category_id;

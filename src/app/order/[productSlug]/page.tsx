@@ -39,6 +39,7 @@ export default async function OrderPage({ params, searchParams }: Props) {
   const initialVariant = typeof resolvedSearchParams.variant === 'string' ? resolvedSearchParams.variant : undefined;
   const initialSize = typeof resolvedSearchParams.size === 'string' ? resolvedSearchParams.size : undefined;
   const initialColor = typeof resolvedSearchParams.color === 'string' ? resolvedSearchParams.color : undefined;
+  const initialPrice = typeof resolvedSearchParams.price === 'string' && !isNaN(parseFloat(resolvedSearchParams.price)) ? parseFloat(resolvedSearchParams.price) : undefined;
 
   return (
     <OrderDetailsClient
@@ -49,6 +50,7 @@ export default async function OrderPage({ params, searchParams }: Props) {
       initialVariant={initialVariant}
       initialSize={initialSize}
       initialColor={initialColor}
+      initialPrice={initialPrice}
     />
   );
 }

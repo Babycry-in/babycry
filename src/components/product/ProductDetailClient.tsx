@@ -141,17 +141,69 @@ export function ProductDetailClient({ product, whatsappNumber: _whatsappNumber }
   const { addToCart } = useCart();
   const router = useRouter();
 
-  // Price calculations
-  const unitPrice = product.sale_price || product.price;
-  const originalPrice = product.price;
-  const hasDiscount = Boolean(product.sale_price && product.sale_price < product.price);
-  const discountPercent = hasDiscount
+  // Helper to match the active variant based on selected attributes
+  const matchedVariant = useMemo(() => {
+    if (!product.variants || product.variants.length === 0) return null;
+
+    const selectedEntries = Object.entries(selectedAttributes).filter(([_, val]) => Boolean(val));
+    if (selectedEntries.length === 0) return product.variants[0] || null;
+
+    // 1. Single attribute match (Size, Volume, Weight, Color, Material, Custom)
+    if (selectedEntries.length === 1) {
+      const [selType, selVal] = selectedEntries[0];
+      const found = product.variants.find((v) => {
+        const type = getVariantType(v);
+        const val = (v.variant_value || v.size || v.color || v.title || '')
+          .replace(/^\[[A-Za-z]+\]\s*/, '')
+          .trim();
+        return (
+          (type.toLowerCase() === selType.toLowerCase() || selType.toLowerCase() === 'custom') &&
+          val.toLowerCase() === selVal.toLowerCase()
+        );
+      });
+      if (found) return found;
+    }
+
+    // 2. Combination match where all selected values are included
+    const foundMulti = product.variants.find((v) => {
+      const vVal = (v.variant_value || v.size || v.color || v.title || '').toLowerCase();
+      return selectedEntries.every(([_, val]) => vVal.includes(val.toLowerCase()));
+    });
+    if (foundMulti) return foundMulti;
+
+    // 3. Fallback: match any selected attribute value
+    const foundAny = product.variants.find((v) => {
+      const vVal = (v.variant_value || v.size || v.color || v.title || '').toLowerCase();
+      return selectedEntries.some(([_, val]) => vVal === val.toLowerCase());
+    });
+
+    return foundAny || product.variants[0] || null;
+  }, [product.variants, selectedAttributes]);
+
+
+  // Price calculations: Admin-assigned variant price takes precedence
+  const hasVariantPrice = Boolean(
+    matchedVariant?.price != null && !isNaN(matchedVariant.price) && matchedVariant.price > 0
+  );
+  const unitPrice = hasVariantPrice
+    ? matchedVariant!.price!
+    : (product.sale_price || product.price);
+  const originalPrice = hasVariantPrice
+    ? (product.price > unitPrice ? product.price : unitPrice)
+    : product.price;
+  const hasDiscount = Boolean(
+    !hasVariantPrice && product.sale_price && product.sale_price < product.price
+  );
+  const discountPercent = hasDiscount && originalPrice > 0
     ? Math.round(((originalPrice - unitPrice) / originalPrice) * 100)
     : 0;
 
-  // Global Out of Stock check
-  const isOutOfStock = product.stock <= 0 || product.stock_status === 'out_of_stock';
-  const isLimitedStock = !isOutOfStock && (product.stock <= 5 || product.stock_status === 'limited_stock');
+  // Stock check
+  const activeStock = (matchedVariant?.stock !== undefined && matchedVariant.stock > 0)
+    ? matchedVariant.stock
+    : product.stock;
+  const isOutOfStock = product.stock <= 0 || product.stock_status === 'out_of_stock' || activeStock <= 0;
+  const isLimitedStock = !isOutOfStock && (activeStock <= 5 || product.stock_status === 'limited_stock');
 
   const activeIndex = Math.max(
     0,
@@ -171,14 +223,15 @@ export function ProductDetailClient({ product, whatsappNumber: _whatsappNumber }
       productId: product.id,
       name: product.name,
       slug: product.slug,
-      price: product.price,
-      salePrice: product.sale_price,
+      price: unitPrice,
+      salePrice: null,
       image: activeImage,
       quantity,
       selectedSize: selectedAttributes['Size'],
       selectedColor: selectedAttributes['Color'],
+      selectedVariantId: matchedVariant?.id,
       selectedVariantTitle: selectedVariantSummary,
-      maxStock: product.stock,
+      maxStock: activeStock,
     });
     setAddedAnimation(true);
     setTimeout(() => setAddedAnimation(false), 2000);
@@ -198,6 +251,9 @@ export function ProductDetailClient({ product, whatsappNumber: _whatsappNumber }
     if (selectedAttributes['Color']) {
       params.set('color', selectedAttributes['Color']);
     }
+    if (unitPrice) {
+      params.set('price', String(unitPrice));
+    }
     router.push(`/order/${product.slug}?${params.toString()}`);
   };
 
@@ -215,9 +271,8 @@ export function ProductDetailClient({ product, whatsappNumber: _whatsappNumber }
             fill
             priority
             sizes="(max-width: 1024px) 100vw, 650px"
-            className={`object-contain p-2 sm:p-6 transition-all duration-300 ${
-              isOutOfStock ? 'opacity-55 grayscale-[40%]' : ''
-            }`}
+            className={`object-contain p-2 sm:p-6 transition-all duration-300 ${isOutOfStock ? 'opacity-55 grayscale-[40%]' : ''
+              }`}
           />
 
           {/* Badges */}
@@ -267,11 +322,10 @@ export function ProductDetailClient({ product, whatsappNumber: _whatsappNumber }
                 key={img.id}
                 type="button"
                 onClick={() => setActiveImage(img.cloudinary_url)}
-                className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl overflow-hidden border-2 bg-white transition-all shrink-0 cursor-pointer snap-start ${
-                  activeImage === img.cloudinary_url
+                className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl overflow-hidden border-2 bg-white transition-all shrink-0 cursor-pointer snap-start ${activeImage === img.cloudinary_url
                     ? 'border-emerald-600 scale-105 shadow-xs'
                     : 'border-slate-100 opacity-70 hover:opacity-100'
-                }`}
+                  }`}
               >
                 <Image
                   src={img.cloudinary_url}
@@ -307,19 +361,18 @@ export function ProductDetailClient({ product, whatsappNumber: _whatsappNumber }
           {/* Rating / Stock Status */}
           <div className="flex flex-wrap items-center gap-2 pt-1">
             <span
-              className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-semibold ${
-                isOutOfStock
+              className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-semibold ${isOutOfStock
                   ? 'bg-rose-50 text-rose-700 border border-rose-200'
                   : isLimitedStock
-                  ? 'bg-amber-50 text-amber-800 border border-amber-200'
-                  : 'bg-[#EBF7F1] text-emerald-900 border border-emerald-100'
-              }`}
+                    ? 'bg-amber-50 text-amber-800 border border-amber-200'
+                    : 'bg-[#EBF7F1] text-emerald-900 border border-emerald-100'
+                }`}
             >
               {isOutOfStock
                 ? 'Out of Stock'
                 : isLimitedStock
-                ? `Limited Stock (Only ${product.stock} left!)`
-                : `In Stock (${product.stock} available)`}
+                  ? `Limited Stock (Only ${product.stock} left!)`
+                  : `In Stock (${product.stock} available)`}
             </span>
             <span className="inline-flex items-center text-[11px] sm:text-xs font-medium text-slate-600 bg-slate-50 border border-slate-100 px-2.5 py-1 rounded-full">
               • Certified Baby Safe
@@ -379,13 +432,12 @@ export function ProductDetailClient({ product, whatsappNumber: _whatsappNumber }
                           key={val}
                           type="button"
                           onClick={() => handleSelectAttribute(group.type, val)}
-                          className={`min-h-[42px] px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold border transition-all cursor-pointer ${
-                            isSelected
+                          className={`min-h-[42px] px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold border transition-all cursor-pointer inline-flex items-center justify-center ${isSelected
                               ? 'bg-[#1A5741] text-white border-[#1A5741] shadow-2xs'
                               : 'bg-white text-slate-700 border-slate-200 hover:border-emerald-300'
-                          }`}
+                            }`}
                         >
-                          {val}
+                          <span>{val}</span>
                         </button>
                       );
                     })}
@@ -440,11 +492,10 @@ export function ProductDetailClient({ product, whatsappNumber: _whatsappNumber }
               <button
                 type="button"
                 onClick={handleAddToCart}
-                className={`w-full py-3.5 sm:py-4 px-6 rounded-full font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-sm cursor-pointer ${
-                  addedAnimation
+                className={`w-full py-3.5 sm:py-4 px-6 rounded-full font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-sm cursor-pointer ${addedAnimation
                     ? 'bg-emerald-800 text-white'
                     : 'bg-emerald-700 hover:bg-emerald-800 active:scale-[0.99] text-white hover:shadow-md'
-                }`}
+                  }`}
               >
                 {addedAnimation ? (
                   <>
@@ -497,9 +548,8 @@ export function ProductDetailClient({ product, whatsappNumber: _whatsappNumber }
             <button
               type="button"
               onClick={handleAddToCart}
-              className={`flex-1 h-12 px-3 rounded-full font-semibold text-[13px] flex items-center justify-center gap-1.5 transition-all shadow-sm text-white cursor-pointer ${
-                addedAnimation ? 'bg-emerald-800' : 'bg-emerald-700 active:scale-[0.98]'
-              }`}
+              className={`flex-1 h-12 px-3 rounded-full font-semibold text-[13px] flex items-center justify-center gap-1.5 transition-all shadow-sm text-white cursor-pointer ${addedAnimation ? 'bg-emerald-800' : 'bg-emerald-700 active:scale-[0.98]'
+                }`}
             >
               {addedAnimation ? (
                 <>
