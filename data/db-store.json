@@ -449,6 +449,18 @@
   ],
   "media": [
     {
+      "file_name": "Bull-Gear-logo1.webp",
+      "cloudinary_url": "https://res.cloudinary.com/hjkjyndc/image/upload/v1793079768/babycry/jpt7uysgqglncrcrbdas.webp",
+      "cloudinary_public_id": "babycry/jpt7uysgqglncrcrbdas",
+      "width": 990,
+      "height": 789,
+      "format": "webp",
+      "size_bytes": 165810,
+      "used_by": "Admin Upload",
+      "id": "media-1793079769925",
+      "created_at": "2026-10-27T05:42:49.925Z"
+    },
+    {
       "file_name": "PROJETO Black Logo with Gold Underline.webp",
       "cloudinary_url": "https://res.cloudinary.com/hjkjyndc/image/upload/v1792998977/babycry/clf3yeo6azwn75wxnfe2.webp",
       "cloudinary_public_id": "babycry/clf3yeo6azwn75wxnfe2",

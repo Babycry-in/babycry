@@ -30,6 +30,7 @@ interface OrderDetailsClientProps {
   initialVariant?: string;
   initialSize?: string;
   initialColor?: string;
+  initialPrice?: number;
 }
 
 export default function OrderDetailsClient({
@@ -40,6 +41,7 @@ export default function OrderDetailsClient({
   initialVariant,
   initialSize,
   initialColor,
+  initialPrice,
 }: OrderDetailsClientProps) {
   const router = useRouter();
   const { items: cartItems, subtotal: cartSubtotal, clearCart } = useCart();
@@ -70,8 +72,30 @@ export default function OrderDetailsClient({
   // Calculations
   const freeShippingThreshold = 999;
   
-  // Single product calculations
-  const singleUnitPrice = product ? (product.sale_price || product.price) : 0;
+  // Single product calculations - match variant or use initialPrice
+  const matchedVariant = React.useMemo(() => {
+    if (!product?.variants || product.variants.length === 0) return null;
+    const searchTarget = (initialVariant || [initialSize, initialColor].filter(Boolean).join(' / ')).trim().toLowerCase();
+    if (!searchTarget) return product.variants[0] || null;
+    return product.variants.find((v) => {
+      const val = (v.variant_value || v.size || v.color || v.title || '')
+        .replace(/^\[[A-Za-z]+\]\s*/, '')
+        .trim()
+        .toLowerCase();
+      return val === searchTarget || searchTarget.includes(val) || val.includes(searchTarget);
+    }) || null;
+  }, [product, initialVariant, initialSize, initialColor]);
+
+  const hasVariantPrice = Boolean(
+    matchedVariant?.price != null && !isNaN(matchedVariant.price) && matchedVariant.price > 0
+  );
+
+  const singleUnitPrice = hasVariantPrice
+    ? matchedVariant!.price!
+    : (initialPrice !== undefined && !isNaN(initialPrice) && initialPrice > 0)
+    ? initialPrice
+    : (product ? (product.sale_price || product.price) : 0);
+
   const singleSubtotal = singleUnitPrice * quantity;
   const singleDeliveryFee = singleSubtotal >= freeShippingThreshold ? 0 : 99;
   const singleTotal = singleSubtotal + singleDeliveryFee;
