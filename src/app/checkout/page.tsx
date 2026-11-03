@@ -63,10 +63,12 @@ export default function CheckoutPage() {
           delivery_instructions: form.deliveryInstructions,
           items: items.map((it) => ({
             productId: it.productId,
+            variantId: it.selectedVariantId,
             name: it.name,
-            price: it.salePrice || it.price,
+            price: (it.salePrice !== null && it.salePrice !== undefined && it.salePrice > 0) ? it.salePrice : it.price,
             image: it.image,
             variant: it.selectedVariantTitle || `${it.selectedSize || ''} ${it.selectedColor || ''}`.trim() || 'Standard',
+            sku: it.sku,
             quantity: it.quantity,
           })),
         }),

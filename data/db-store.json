@@ -449,6 +449,18 @@
   ],
   "media": [
     {
+      "file_name": "bottle_holder_1_4_to_1 (1).webp",
+      "cloudinary_url": "https://res.cloudinary.com/hjkjyndc/image/upload/v1793694412/babycry/eilrm0uhemtez5sryugb.webp",
+      "cloudinary_public_id": "babycry/eilrm0uhemtez5sryugb",
+      "width": 1494,
+      "height": 1067,
+      "format": "webp",
+      "size_bytes": 58444,
+      "used_by": "Admin Upload",
+      "id": "media-1793694413519",
+      "created_at": "2026-11-03T08:26:53.520Z"
+    },
+    {
       "file_name": "Bull-Gear-logo1.webp",
       "cloudinary_url": "https://res.cloudinary.com/hjkjyndc/image/upload/v1793079768/babycry/jpt7uysgqglncrcrbdas.webp",
       "cloudinary_public_id": "babycry/jpt7uysgqglncrcrbdas",
