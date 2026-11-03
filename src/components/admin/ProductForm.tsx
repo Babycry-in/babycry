@@ -14,11 +14,11 @@ import {
   Layers,
   AlertCircle,
   X,
+  Info,
+  ChevronDown,
   PackageCheck,
   PackageX,
-  AlertTriangle,
-  Info,
-  ChevronDown
+  AlertTriangle
 } from 'lucide-react';
 import Link from 'next/link';
 import { DeleteProductButton } from './DeleteProductButton';
@@ -36,6 +36,7 @@ interface FormVariant {
   custom_type?: string;
   variant_value: string;
   price: string;
+  sale_price: string;
   stock: number;
   sku: string;
 }
@@ -253,20 +254,13 @@ export function ProductForm({
 
   // Initial stock status determination
   const initialStockNum = initialProduct?.stock ?? 15;
-  const initialStockStatus: StockStatus = initialProduct?.stock_status || (
-    initialStockNum <= 0 ? 'out_of_stock' : initialStockNum <= 5 ? 'limited_stock' : 'in_stock'
-  );
 
   const [formData, setFormData] = useState({
     name: initialProduct?.name || '',
     slug: initialProduct?.slug || '',
     category_id: initialProduct?.category_id || categories[0]?.id || '',
     subcategory_id: initialProduct?.subcategory_id || '',
-    price: initialProduct?.price || '',
-    sale_price: initialProduct?.sale_price || '',
     sku: initialProduct?.sku || '',
-    stock: initialStockNum,
-    stock_status: initialStockStatus,
     gender: initialProduct?.gender || 'Unisex',
     age_group: initialProduct?.age_group || '0-24M',
     short_description: initialProduct?.short_description || '',
@@ -322,6 +316,7 @@ export function ProductForm({
           custom_type: '',
           variant_value: val,
           price: v.price ? String(v.price) : '',
+          sale_price: v.sale_price ? String(v.sale_price) : '',
           stock: v.stock ?? 15,
           sku: v.sku || '',
         });
@@ -339,6 +334,7 @@ export function ProductForm({
             custom_type: '',
             variant_value: sVal,
             price: '',
+            sale_price: '',
             stock: initialProduct.stock || 15,
             sku: initialProduct.sku ? `${initialProduct.sku}-${sVal}` : '',
           });
@@ -357,6 +353,7 @@ export function ProductForm({
             custom_type: '',
             variant_value: cVal,
             price: '',
+            sale_price: '',
             stock: initialProduct.stock || 15,
             sku: initialProduct.sku ? `${initialProduct.sku}-${cVal}` : '',
           });
@@ -376,6 +373,7 @@ export function ProductForm({
         custom_type: '',
         variant_value: '0-6M',
         price: '',
+        sale_price: '',
         stock: 15,
         sku: '',
       },
@@ -385,6 +383,7 @@ export function ProductForm({
         custom_type: '',
         variant_value: '6-12M',
         price: '',
+        sale_price: '',
         stock: 15,
         sku: '',
       },
@@ -392,6 +391,7 @@ export function ProductForm({
   };
 
   const [variants, setVariants] = useState<FormVariant[]>(getInitialVariants());
+  const [stockStatus, setStockStatus] = useState<StockStatus>(initialProduct?.stock_status || 'in_stock');
   const [showComboModal, setShowComboModal] = useState(false);
   const [comboAttr1, setComboAttr1] = useState({ name: 'Size', values: '0-6M, 6-12M' });
   const [comboAttr2, setComboAttr2] = useState({ name: 'Color', values: 'Mint, Cream' });
@@ -407,42 +407,7 @@ export function ProductForm({
     }));
   };
 
-  // Stock status quick click
-  const handleStockStatusChange = (status: StockStatus) => {
-    setFormData((prev) => {
-      let newStock = prev.stock;
-      if (status === 'out_of_stock') {
-        newStock = 0;
-      } else if (status === 'limited_stock') {
-        if (newStock <= 0 || newStock > 5) newStock = 5;
-      } else if (status === 'in_stock') {
-        if (newStock <= 0) newStock = 15;
-      }
-      return {
-        ...prev,
-        stock_status: status,
-        stock: newStock,
-      };
-    });
-  };
 
-  // Stock quantity manual change
-  const handleStockQtyChange = (val: number) => {
-    const stockNum = Math.max(0, val);
-    let autoStatus: StockStatus = formData.stock_status;
-    if (stockNum === 0) {
-      autoStatus = 'out_of_stock';
-    } else if (stockNum <= 5) {
-      autoStatus = 'limited_stock';
-    } else {
-      autoStatus = 'in_stock';
-    }
-    setFormData((prev) => ({
-      ...prev,
-      stock: stockNum,
-      stock_status: autoStatus,
-    }));
-  };
 
   // Image upload handling with max 5 gallery + 1 main = 6 images limit
   const handleAddUploadedImage = (url: string, publicId?: string) => {
@@ -493,7 +458,8 @@ export function ProductForm({
         custom_type: lastVariant?.custom_type || '',
         variant_value: '',
         price: '',
-        stock: 15,
+        sale_price: '',
+        stock: 0,
         sku: '',
       },
     ]);
@@ -517,7 +483,8 @@ export function ProductForm({
           custom_type: '',
           variant_value: '',
           price: '',
-          stock: 15,
+          sale_price: '',
+          stock: 0,
           sku: '',
         },
       ]);
@@ -534,7 +501,8 @@ export function ProductForm({
       custom_type: '',
       variant_value: val,
       price: '',
-      stock: 15,
+      sale_price: '',
+      stock: 0,
       sku: formData.sku ? `${formData.sku}-${val.toLowerCase().replace(/\s+/g, '')}` : '',
     }));
     setVariants(newVariants);
@@ -557,7 +525,8 @@ export function ProductForm({
             custom_type: '',
             variant_value: `${v1} / ${v2}`,
             price: '',
-            stock: 15,
+            sale_price: '',
+            stock: 0,
             sku: formData.sku ? `${formData.sku}-${v1.replace(/\s+/g, '')}-${v2.replace(/\s+/g, '')}` : '',
           });
         });
@@ -570,7 +539,8 @@ export function ProductForm({
           custom_type: '',
           variant_value: v1,
           price: '',
-          stock: 15,
+          sale_price: '',
+          stock: 0,
           sku: formData.sku ? `${formData.sku}-${v1.replace(/\s+/g, '')}` : '',
         });
       });
@@ -587,8 +557,8 @@ export function ProductForm({
     setErrorMessage('');
     setSuccessMessage('');
 
-    if (!formData.name || !formData.price) {
-      setErrorMessage('Product title and price are required.');
+    if (!formData.name) {
+      setErrorMessage('Product title is required.');
       return;
     }
 
@@ -597,13 +567,17 @@ export function ProductForm({
       return;
     }
 
-    // Validate variants
+    // Validate variants — each must have a value, a regular price, and stock
     const validVariants: ProductVariant[] = [];
     for (let i = 0; i < variants.length; i++) {
       const v = variants[i];
       const val = v.variant_value.trim();
       if (!val) {
         setErrorMessage(`Please enter a value for variant row #${i + 1}.`);
+        return;
+      }
+      if (!v.price || isNaN(Number(v.price)) || Number(v.price) <= 0) {
+        setErrorMessage(`Please enter a valid Regular Price for variant "${val}" (row #${i + 1}).`);
         return;
       }
       const vType = v.variant_type === 'Custom' ? (v.custom_type?.trim() || 'Custom') : v.variant_type;
@@ -615,16 +589,23 @@ export function ProductForm({
         size: vType === 'Size' ? val : undefined,
         color: vType === 'Color' ? val : undefined,
         sku: v.sku.trim() || undefined,
-        price: v.price ? Number(v.price) : null,
+        price: Number(v.price),
+        sale_price: v.sale_price && !isNaN(Number(v.sale_price)) && Number(v.sale_price) > 0
+          ? Number(v.sale_price)
+          : null,
         stock: Math.max(0, Number(v.stock ?? 0)),
       });
     }
 
-    // Calculate sum of stock if variants have inventory
+    // Derive global stock and price from variants (for backwards-compat fields)
     const totalVariantStock = validVariants.reduce((acc, curr) => acc + (curr.stock || 0), 0);
-    const finalStock = formData.stock_status === 'out_of_stock'
-      ? 0
-      : Math.max(Number(formData.stock), totalVariantStock > 0 ? totalVariantStock : Number(formData.stock));
+    const firstVariant = validVariants[0];
+    const derivedPrice = firstVariant?.price || 0;
+    const derivedSalePrice = firstVariant?.sale_price || null;
+    let finalStockStatus: StockStatus = stockStatus;
+    if (totalVariantStock <= 0) {
+      finalStockStatus = 'out_of_stock';
+    }
 
     setLoading(true);
 
@@ -634,11 +615,12 @@ export function ProductForm({
         slug: formData.slug || formData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
         category_id: formData.category_id,
         subcategory_id: formData.subcategory_id || null,
-        price: Number(formData.price),
-        sale_price: formData.sale_price ? Number(formData.sale_price) : null,
+        // Global price/stock derived from variants for backward compat
+        price: derivedPrice,
+        sale_price: derivedSalePrice,
         sku: formData.sku,
-        stock: finalStock,
-        stock_status: formData.stock_status,
+        stock: totalVariantStock,
+        stock_status: finalStockStatus,
         gender: formData.gender,
         age_group: formData.age_group,
         short_description: formData.short_description,
@@ -841,133 +823,7 @@ export function ProductForm({
         </div>
       </div>
 
-      {/* 2. Pricing & Stock Status */}
-      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-2xs space-y-5">
-        <div className="flex flex-wrap items-center justify-between border-b border-slate-100 pb-3 gap-2">
-          <h2 className="font-heading font-bold text-base text-slate-900">
-            2. Pricing & Inventory Status
-          </h2>
-          <span className="text-xs text-slate-400">
-            Control base pricing & availability across storefront
-          </span>
-        </div>
-
-        {/* Stock Status Selector Bar */}
-        <div>
-          <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
-            Stock Availability Status *
-          </label>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <button
-              type="button"
-              onClick={() => handleStockStatusChange('in_stock')}
-              className={`p-3 rounded-xl border-2 flex items-center gap-3 transition-all cursor-pointer text-left ${formData.stock_status === 'in_stock'
-                  ? 'border-emerald-600 bg-emerald-50/70 text-emerald-900 shadow-2xs'
-                  : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
-                }`}
-            >
-              <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
-                <PackageCheck className="w-4 h-4" />
-              </div>
-              <div>
-                <span className="block font-bold text-xs sm:text-sm">Stock Full / In Stock</span>
-                <span className="text-[11px] text-slate-500">Available for customer checkout</span>
-              </div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleStockStatusChange('limited_stock')}
-              className={`p-3 rounded-xl border-2 flex items-center gap-3 transition-all cursor-pointer text-left ${formData.stock_status === 'limited_stock'
-                  ? 'border-amber-500 bg-amber-50/70 text-amber-900 shadow-2xs'
-                  : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
-                }`}
-            >
-              <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
-                <AlertTriangle className="w-4 h-4" />
-              </div>
-              <div>
-                <span className="block font-bold text-xs sm:text-sm">Limited Stock</span>
-                <span className="text-[11px] text-slate-500">Few units left banner</span>
-              </div>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleStockStatusChange('out_of_stock')}
-              className={`p-3 rounded-xl border-2 flex items-center gap-3 transition-all cursor-pointer text-left ${formData.stock_status === 'out_of_stock'
-                  ? 'border-rose-500 bg-rose-50/70 text-rose-900 shadow-2xs'
-                  : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
-                }`}
-            >
-              <div className="w-8 h-8 rounded-lg bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
-                <PackageX className="w-4 h-4" />
-              </div>
-              <div>
-                <span className="block font-bold text-xs sm:text-sm">Out of Stock</span>
-                <span className="text-[11px] text-slate-500">Faded card + Out of Stock overlay</span>
-              </div>
-            </button>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 pt-1">
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-              Regular Price (₹) *
-            </label>
-            <input
-              type="number"
-              required
-              value={formData.price}
-              onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-600 font-mono"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-              Sale Price (₹)
-            </label>
-            <input
-              type="number"
-              value={formData.sale_price}
-              onChange={(e) => setFormData({ ...formData, sale_price: e.target.value })}
-              placeholder="Leave empty if none"
-              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-600 font-mono"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-              Stock Quantity *
-            </label>
-            <input
-              type="number"
-              required
-              min={0}
-              value={formData.stock}
-              onChange={(e) => handleStockQtyChange(Number(e.target.value))}
-              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-600 font-mono"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-              Base SKU Code
-            </label>
-            <input
-              type="text"
-              value={formData.sku}
-              onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
-              placeholder="e.g. BC-101"
-              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-slate-900 text-sm focus:outline-none focus:border-emerald-600 font-mono"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* 3. Product Images (1 Main + 5 Gallery = 6 Images Limit, Existing Preserved) */}
+      {/* 2. Product Images (1 Main + 5 Gallery = 6 Images Limit, Existing Preserved) */}
       <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-2xs space-y-4">
         <div className="flex flex-wrap items-center justify-between border-b border-slate-100 pb-3 gap-2">
           <div>
@@ -1057,13 +913,13 @@ export function ProductForm({
         )}
       </div>
 
-      {/* 4. Dynamic Variants, Material & Care */}
+      {/* 3. Dynamic Product Variants & Measurement Options */}
       <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-2xs space-y-6">
         <div className="border-b border-slate-100 pb-3 flex flex-wrap items-center justify-between gap-2">
           <div>
             <h2 className="font-heading font-bold text-base text-slate-900 flex items-center gap-2">
               <Layers className="w-4 h-4 text-emerald-700" />
-              <span>4. Dynamic Product Variants & Measurement Options</span>
+              <span>3. Dynamic Product Variants & Measurement Options</span>
             </h2>
             <p className="text-xs text-slate-500 mt-0.5">
               Support any measurement type: Clothes Sizes, Lotion Volumes (ml), Powder Weights (g), or multiple attributes with custom price, stock, and SKU.
@@ -1121,83 +977,142 @@ export function ProductForm({
               Configured Variants ({variants.length})
             </span>
             <span className="text-[11px] text-slate-400">
-              Type custom price per variant (leave empty to use base product price)
+              Set independent price, sale price, stock and SKU for each variant
             </span>
           </div>
 
-          <div className="space-y-2.5">
+          <div className="space-y-3">
             {variants.map((v, idx) => (
               <div
                 key={v.id || idx}
-                className="p-3 bg-slate-50/80 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-stretch sm:items-start gap-2.5 sm:gap-3 transition-all hover:bg-white hover:border-emerald-200 shadow-2xs"
+                className="p-3 bg-slate-50/80 rounded-xl border border-slate-200 flex flex-col gap-2.5 transition-all hover:bg-white hover:border-emerald-200 shadow-2xs"
               >
-                <div className="flex items-center gap-2 shrink-0">
-                  {/* Variant Number Indicator */}
-                  <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold flex items-center justify-center shrink-0">
-                    {idx + 1}
-                  </span>
+                {/* Row 1: Number + Type + Value + Remove */}
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-start gap-2.5">
+                  <div className="flex items-center gap-2 shrink-0">
+                    {/* Variant Number Indicator */}
+                    <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold flex items-center justify-center shrink-0">
+                      {idx + 1}
+                    </span>
 
-                  {/* Type Selection with Clean BabyCry Dropdown */}
-                  <CustomVariantTypeDropdown
-                    value={v.variant_type}
-                    onChange={(val) => handleUpdateVariant(idx, 'variant_type', val)}
-                  />
-                </div>
-
-                {/* Custom Type Name input if Custom is chosen */}
-                {v.variant_type === 'Custom' && (
-                  <div className="w-full sm:w-32 shrink-0">
-                    <input
-                      type="text"
-                      placeholder="Type name (e.g. Scent)"
-                      value={v.custom_type || ''}
-                      onChange={(e) => handleUpdateVariant(idx, 'custom_type', e.target.value)}
-                      className="w-full px-2.5 py-2 rounded-xl border border-slate-200 text-slate-900 text-xs font-semibold focus:outline-none focus:border-emerald-600 bg-white"
+                    {/* Type Selection with Clean BabyCry Dropdown */}
+                    <CustomVariantTypeDropdown
+                      value={v.variant_type}
+                      onChange={(val) => handleUpdateVariant(idx, 'variant_type', val)}
                     />
                   </div>
-                )}
 
-                {/* Value / Title with Smart Preset Combobox & Quick Chips */}
-                <div className="flex-1 min-w-0">
-                  <CustomVariantValueCombobox
-                    variantType={v.variant_type}
-                    value={v.variant_value}
-                    onChange={(val) => handleUpdateVariant(idx, 'variant_value', val)}
-                  />
-                </div>
-
-                {/* Price for Variant and Remove Button */}
-                <div className="flex items-center gap-2 self-end sm:self-start shrink-0">
-                  <div className="w-28 sm:w-32">
-                    <div className="relative">
-                      <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-400">
-                        ₹
-                      </span>
+                  {/* Custom Type Name input if Custom is chosen */}
+                  {v.variant_type === 'Custom' && (
+                    <div className="w-full sm:w-32 shrink-0">
                       <input
-                        type="number"
-                        min="0"
-                        step="any"
-                        placeholder="Base price"
-                        value={v.price}
-                        onChange={(e) => handleUpdateVariant(idx, 'price', e.target.value)}
-                        className="w-full pl-6 pr-2.5 py-2 rounded-xl border border-slate-200 text-slate-900 text-xs font-semibold focus:outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/20 bg-white shadow-2xs"
-                        title="Price for this variant (leave blank to use product default price)"
+                        type="text"
+                        placeholder="Type name (e.g. Scent)"
+                        value={v.custom_type || ''}
+                        onChange={(e) => handleUpdateVariant(idx, 'custom_type', e.target.value)}
+                        className="w-full px-2.5 py-2 rounded-xl border border-slate-200 text-slate-900 text-xs font-semibold focus:outline-none focus:border-emerald-600 bg-white"
                       />
                     </div>
-                    <span className="text-[10px] text-slate-400 block px-1 mt-0.5 truncate">
-                      {v.price ? `Custom ₹${v.price}` : 'Uses default price'}
-                    </span>
+                  )}
+
+                  {/* Value / Title with Smart Preset Combobox & Quick Chips */}
+                  <div className="flex-1 min-w-0">
+                    <CustomVariantValueCombobox
+                      variantType={v.variant_type}
+                      value={v.variant_value}
+                      onChange={(val) => handleUpdateVariant(idx, 'variant_value', val)}
+                    />
                   </div>
 
                   <button
                     type="button"
                     onClick={() => handleRemoveVariant(idx)}
-                    className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer shrink-0"
+                    className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer shrink-0 self-start"
                     title="Remove variant"
                   >
                     <X className="w-4 h-4" />
                   </button>
                 </div>
+
+                {/* Row 2: Price + Sale Price + Stock + SKU */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pl-8">
+                  {/* Regular Price */}
+                  <div>
+                    <label className="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                      Regular Price (₹) *
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-slate-400">₹</span>
+                      <input
+                        type="number"
+                        min="0"
+                        step="any"
+                        required
+                        placeholder="0"
+                        value={v.price}
+                        onChange={(e) => handleUpdateVariant(idx, 'price', e.target.value)}
+                        className="w-full pl-5 pr-2 py-2 rounded-xl border border-slate-200 text-slate-900 text-xs font-semibold focus:outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/20 bg-white shadow-2xs"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Sale Price */}
+                  <div>
+                    <label className="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                      Sale Price (₹)
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-slate-400">₹</span>
+                      <input
+                        type="number"
+                        min="0"
+                        step="any"
+                        placeholder="Optional"
+                        value={v.sale_price}
+                        onChange={(e) => handleUpdateVariant(idx, 'sale_price', e.target.value)}
+                        className="w-full pl-5 pr-2 py-2 rounded-xl border border-slate-200 text-slate-900 text-xs font-semibold focus:outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/20 bg-white shadow-2xs"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Stock Quantity */}
+                  <div>
+                    <label className="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                      Stock Qty
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      placeholder="0"
+                      value={v.stock}
+                      onChange={(e) => handleUpdateVariant(idx, 'stock', Number(e.target.value))}
+                      className="w-full px-2 py-2 rounded-xl border border-slate-200 text-slate-900 text-xs font-semibold focus:outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/20 bg-white shadow-2xs"
+                    />
+                  </div>
+
+                  {/* SKU */}
+                  <div>
+                    <label className="block text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                      SKU
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. BC-50ML"
+                      value={v.sku}
+                      onChange={(e) => handleUpdateVariant(idx, 'sku', e.target.value)}
+                      className="w-full px-2 py-2 rounded-xl border border-slate-200 text-slate-900 text-xs font-mono focus:outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/20 bg-white shadow-2xs"
+                    />
+                  </div>
+                </div>
+
+                {/* Sale discount hint */}
+                {v.price && v.sale_price && Number(v.sale_price) < Number(v.price) && (
+                  <div className="pl-8">
+                    <span className="text-[10px] text-emerald-700 font-semibold bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                      {Math.round(((Number(v.price) - Number(v.sale_price)) / Number(v.price)) * 100)}% discount applied
+                    </span>
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -1215,7 +1130,7 @@ export function ProductForm({
         </div>
       </div>
 
-      {/* 5. Product Specifications & Details */}
+      {/* 4. Product Specifications & Details */}
       <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-2xs space-y-4">
         <div className="border-b border-slate-100 pb-3 flex flex-wrap items-center justify-between gap-2">
           <div>
@@ -1373,6 +1288,76 @@ export function ProductForm({
             />
             <span className="text-xs font-semibold text-slate-700">Active (Public)</span>
           </label>
+        </div>
+      </div>
+
+      {/* Stock Availability Status Selector */}
+      <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-2xs space-y-4">
+        <div className="flex flex-wrap items-center justify-between border-b border-slate-100 pb-3 gap-2">
+          <div>
+            <h2 className="font-heading font-bold text-base text-slate-900">
+              Stock Availability Status
+            </h2>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Control stock status banner across storefront (In Stock / Limited Stock / Out of Stock)
+            </p>
+          </div>
+          <span className="text-xs font-semibold text-slate-400">
+            Current: <span className="font-bold text-slate-700 capitalize">{stockStatus.replace('_', ' ')}</span>
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <button
+            type="button"
+            onClick={() => setStockStatus('in_stock')}
+            className={`p-3.5 rounded-xl border-2 flex items-center gap-3 transition-all cursor-pointer text-left ${stockStatus === 'in_stock'
+                ? 'border-emerald-600 bg-emerald-50/70 text-emerald-900 shadow-2xs ring-2 ring-emerald-500/20'
+                : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
+              }`}
+          >
+            <div className="w-9 h-9 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+              <PackageCheck className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="block font-bold text-xs sm:text-sm">Stock Full / In Stock</span>
+              <span className="text-[11px] text-slate-500">Available for customer checkout</span>
+            </div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setStockStatus('limited_stock')}
+            className={`p-3.5 rounded-xl border-2 flex items-center gap-3 transition-all cursor-pointer text-left ${stockStatus === 'limited_stock'
+                ? 'border-amber-500 bg-amber-50/70 text-amber-900 shadow-2xs ring-2 ring-amber-500/20'
+                : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
+              }`}
+          >
+            <div className="w-9 h-9 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
+              <AlertTriangle className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="block font-bold text-xs sm:text-sm">Limited Stock</span>
+              <span className="text-[11px] text-slate-500">Few units left banner</span>
+            </div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setStockStatus('out_of_stock')}
+            className={`p-3.5 rounded-xl border-2 flex items-center gap-3 transition-all cursor-pointer text-left ${stockStatus === 'out_of_stock'
+                ? 'border-rose-500 bg-rose-50/70 text-rose-900 shadow-2xs ring-2 ring-rose-500/20'
+                : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
+              }`}
+          >
+            <div className="w-9 h-9 rounded-lg bg-rose-100 text-rose-700 flex items-center justify-center shrink-0">
+              <PackageX className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="block font-bold text-xs sm:text-sm">Out of Stock</span>
+              <span className="text-[11px] text-slate-500">Faded card + Out of Stock overlay</span>
+            </div>
+          </button>
         </div>
       </div>
 

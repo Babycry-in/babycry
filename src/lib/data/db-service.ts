@@ -542,6 +542,10 @@ function normalizeVariant(v: any): ProductVariant {
     variant_value: val,
     size: vType === 'Size' ? val : undefined,
     color: vType === 'Color' ? val : undefined,
+    price: v.price != null && !isNaN(Number(v.price)) ? Number(v.price) : null,
+    sale_price: v.sale_price != null && !isNaN(Number(v.sale_price)) ? Number(v.sale_price) : null,
+    stock: Math.max(0, Number(v.stock ?? 0)),
+    sku: v.sku || undefined,
   };
 }
 
@@ -656,15 +660,6 @@ export async function saveProduct(productData: Partial<Product>): Promise<Produc
   const fallbackCatId = store.categories[0]?.id && isUUID(store.categories[0]?.id) ? store.categories[0].id : null;
   const finalCategoryId = resolvedCatId || fallbackCatId;
 
-  const stockQty = Number(productData.stock ?? 10);
-  let stockStatus = productData.stock_status;
-  if (!stockStatus) {
-    if (stockQty <= 0) stockStatus = 'out_of_stock';
-    else if (stockQty <= 5) stockStatus = 'limited_stock';
-    else stockStatus = 'in_stock';
-  }
-  const finalStock = stockStatus === 'out_of_stock' ? 0 : stockQty;
-
   const rawVariants = Array.isArray(productData.variants) ? productData.variants : [];
   const variants = rawVariants.map((v, idx) => ({
     id: v.id && isUUID(v.id) ? v.id : (v.id || randomUUID()),
@@ -680,6 +675,15 @@ export async function saveProduct(productData: Partial<Product>): Promise<Produc
     stock: Math.max(0, Number(v.stock ?? 0)),
     attributes: v.attributes || undefined,
   }));
+
+  const variantTotalStock = variants.reduce((sum, v) => sum + (v.stock || 0), 0);
+  const finalStock = variants.length > 0 ? variantTotalStock : Math.max(0, Number(productData.stock ?? 0));
+  let stockStatus = productData.stock_status;
+  if (variants.length > 0 || !stockStatus) {
+    if (finalStock <= 0) stockStatus = 'out_of_stock';
+    else if (finalStock <= 5) stockStatus = 'limited_stock';
+    else stockStatus = 'in_stock';
+  }
 
   let sizes = Array.isArray(productData.sizes) ? productData.sizes : [];
   let colors = Array.isArray(productData.colors) ? productData.colors : [];
@@ -801,11 +805,17 @@ export async function saveProduct(productData: Partial<Product>): Promise<Produc
             color: vType === 'Color' ? val : null,
             sku: v.sku || null,
             price: v.price || null,
+            sale_price: v.sale_price || null,
             stock: v.stock,
           };
         });
         await admin.from('product_variants').delete().eq('product_id', id);
-        const { error: vError } = await admin.from('product_variants').insert(dbVariants);
+        let { error: vError } = await admin.from('product_variants').insert(dbVariants);
+        if (vError && vError.message && vError.message.includes('sale_price')) {
+          const fallbackVariants = dbVariants.map(({ sale_price, ...rest }) => rest);
+          const res = await admin.from('product_variants').insert(fallbackVariants);
+          vError = res.error;
+        }
         if (vError) {
           console.warn('Supabase product_variants insert warning:', vError.message);
         }
@@ -1016,11 +1026,13 @@ export async function createOrderServerSide(payload: {
   payment_method?: string;
   items: Array<{
     product_id: string;
+    variant_id?: string;
     variant_snapshot?: string;
     quantity: number;
     name?: string;
     price?: number;
     image?: string;
+    sku?: string;
   }>;
 }): Promise<Order> {
   const store = ensureStorage();
@@ -1037,34 +1049,63 @@ export async function createOrderServerSide(payload: {
       try {
         const { data } = await admin
           .from('products')
-          .select('*, images:product_images(*)')
+          .select('*, images:product_images(*), variants:product_variants(*)')
           .eq('id', item.product_id)
           .maybeSingle();
-        if (data) product = data;
+        if (data) {
+          product = {
+            ...data,
+            variants: Array.isArray(data.variants) ? data.variants.map(normalizeVariant) : [],
+          };
+        }
       } catch { }
     }
 
     let unitPrice = 0;
     let productName = item.name || 'Product';
     let primaryImg = item.image || '/images/babycry-logo.png';
+    const qty = Math.max(1, Math.floor(item.quantity));
 
     if (product) {
       unitPrice = product.sale_price !== null && product.sale_price !== undefined
         ? product.sale_price
         : product.price;
 
-      if (product.variants && product.variants.length > 0 && item.variant_snapshot) {
-        const snap = String(item.variant_snapshot).toLowerCase().trim();
-        const matched = product.variants.find((v: any) => {
-          const vTitle = (v.title || '').toLowerCase().trim();
-          const vVal = (v.variant_value || '').toLowerCase().trim();
-          return (
-            (vTitle && (snap === vTitle || snap.includes(vTitle) || vTitle.includes(snap))) ||
-            (vVal && (snap === vVal || snap.includes(vVal) || vVal.includes(snap)))
-          );
-        });
-        if (matched && matched.price != null && !isNaN(matched.price) && matched.price > 0) {
-          unitPrice = matched.price;
+      if (product.variants && product.variants.length > 0) {
+        let matched = null;
+        if ((item as any).variant_id) {
+          matched = product.variants.find((v: any) => v.id === (item as any).variant_id);
+        }
+        if (!matched && item.variant_snapshot) {
+          const snap = String(item.variant_snapshot).toLowerCase().trim();
+          matched = product.variants.find((v: any) => {
+            const vTitle = (v.title || '').toLowerCase().trim();
+            const vVal = (v.variant_value || '').toLowerCase().trim();
+            return (
+              (vTitle && (snap === vTitle || snap.includes(vTitle) || vTitle.includes(snap))) ||
+              (vVal && (snap === vVal || snap.includes(vVal) || vVal.includes(snap)))
+            );
+          });
+        }
+
+        if (matched) {
+          const availStock = Number(matched.stock ?? 0);
+          if (availStock < qty) {
+            throw new Error(`Insufficient stock for "${product.name} (${matched.variant_value || matched.title})". Only ${availStock} available.`);
+          }
+          if (matched.sale_price != null && !isNaN(matched.sale_price) && matched.sale_price > 0) {
+            unitPrice = matched.sale_price;
+          } else if (matched.price != null && !isNaN(matched.price) && matched.price > 0) {
+            unitPrice = matched.price;
+          }
+        } else {
+          if (Number(product.stock ?? 0) < qty) {
+            throw new Error(`Insufficient stock for "${product.name}". Only ${product.stock} available.`);
+          }
+        }
+      } else {
+        if (Number(product.stock ?? 0) < qty) {
+          throw new Error(`Insufficient stock for "${product.name}". Only ${product.stock} available.`);
         }
       }
 
@@ -1074,7 +1115,6 @@ export async function createOrderServerSide(payload: {
       unitPrice = Number(item.price);
     }
 
-    const qty = Math.max(1, Math.floor(item.quantity));
     const itemTotal = unitPrice * qty;
     subtotal += itemTotal;
 
@@ -1155,39 +1195,55 @@ export async function createOrderServerSide(payload: {
 
     // 1. Update in local store
     const storeProd = store.products.find(p => p.id === targetProdId);
+    let matchedVar: any = null;
+
     if (storeProd) {
-      const updatedStock = Math.max(0, (storeProd.stock || 0) - item.quantity);
-      storeProd.stock = updatedStock;
-      if (updatedStock <= 0) {
+      if (storeProd.variants && storeProd.variants.length > 0) {
+        if (item.variant_snapshot) {
+          const snap = String(item.variant_snapshot).toLowerCase().trim();
+          matchedVar = storeProd.variants.find((v: any) => {
+            const vTitle = (v.title || '').toLowerCase().trim();
+            const vVal = (v.variant_value || '').toLowerCase().trim();
+            return (
+              (vTitle && (snap === vTitle || snap.includes(vTitle) || vTitle.includes(snap))) ||
+              (vVal && (snap === vVal || snap.includes(vVal) || vVal.includes(snap)))
+            );
+          });
+        }
+        if (matchedVar) {
+          matchedVar.stock = Math.max(0, (matchedVar.stock || 0) - item.quantity);
+          storeProd.stock = storeProd.variants.reduce((acc, curr) => acc + (curr.stock || 0), 0);
+        } else {
+          storeProd.stock = Math.max(0, (storeProd.stock || 0) - item.quantity);
+        }
+      } else {
+        storeProd.stock = Math.max(0, (storeProd.stock || 0) - item.quantity);
+      }
+
+      if (storeProd.stock <= 0) {
         storeProd.stock_status = 'out_of_stock';
-      } else if (updatedStock <= 5) {
+      } else if (storeProd.stock <= 5) {
         storeProd.stock_status = 'limited_stock';
+      } else {
+        storeProd.stock_status = 'in_stock';
       }
     }
 
     // 2. Update in Supabase
     if (admin) {
       try {
-        const { data: dbProd } = await admin
-          .from('products')
-          .select('id, stock, stock_status')
-          .eq('id', targetProdId)
-          .maybeSingle();
-
-        if (dbProd) {
-          const currentStock = Number(dbProd.stock || 0);
-          const newStock = Math.max(0, currentStock - item.quantity);
-          const newStatus = newStock <= 0
-            ? 'out_of_stock'
-            : newStock <= 5
-              ? 'limited_stock'
-              : (dbProd.stock_status || 'in_stock');
-
+        if (matchedVar && isUUID(matchedVar.id)) {
+          await admin
+            .from('product_variants')
+            .update({ stock: matchedVar.stock })
+            .eq('id', matchedVar.id);
+        }
+        if (storeProd) {
           await admin
             .from('products')
             .update({
-              stock: newStock,
-              stock_status: newStatus,
+              stock: storeProd.stock,
+              stock_status: storeProd.stock_status,
               updated_at: new Date().toISOString()
             })
             .eq('id', targetProdId);

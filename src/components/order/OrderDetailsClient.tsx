@@ -90,11 +90,13 @@ export default function OrderDetailsClient({
     matchedVariant?.price != null && !isNaN(matchedVariant.price) && matchedVariant.price > 0
   );
 
-  const singleUnitPrice = hasVariantPrice
-    ? matchedVariant!.price!
-    : (initialPrice !== undefined && !isNaN(initialPrice) && initialPrice > 0)
-    ? initialPrice
-    : (product ? (product.sale_price || product.price) : 0);
+  const singleUnitPrice = (matchedVariant?.sale_price != null && !isNaN(matchedVariant.sale_price) && matchedVariant.sale_price > 0)
+    ? matchedVariant.sale_price
+    : (hasVariantPrice
+      ? matchedVariant!.price!
+      : ((initialPrice !== undefined && !isNaN(initialPrice) && initialPrice > 0)
+        ? initialPrice
+        : (product ? (product.sale_price || product.price) : 0)));
 
   const singleSubtotal = singleUnitPrice * quantity;
   const singleDeliveryFee = singleSubtotal >= freeShippingThreshold ? 0 : 99;
@@ -176,16 +178,20 @@ export default function OrderDetailsClient({
       const orderItems = isCart
         ? cartItems.map((item) => ({
             productId: item.productId,
+            variantId: item.selectedVariantId,
             name: item.name,
             variant: item.selectedVariantTitle || [item.selectedSize, item.selectedColor].filter(Boolean).join(' / ') || 'Standard',
+            sku: item.sku,
             quantity: item.quantity,
-            price: item.salePrice || item.price,
+            price: (item.salePrice !== null && item.salePrice !== undefined && item.salePrice > 0) ? item.salePrice : item.price,
           }))
         : [
             {
               productId: product!.id,
+              variantId: matchedVariant?.id,
               name: product!.name,
               variant: variantLabel,
+              sku: matchedVariant?.sku || product!.sku,
               quantity,
               price: singleUnitPrice,
             },
@@ -221,9 +227,11 @@ export default function OrderDetailsClient({
             pincode: form.pincode.trim() || '676521',
             items: orderItems.map((item) => ({
               productId: item.productId,
+              variantId: (item as any).variantId,
               name: item.name,
               price: item.price,
               variant: item.variant,
+              sku: (item as any).sku,
               quantity: item.quantity,
             })),
           }),

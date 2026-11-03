@@ -13,6 +13,7 @@ export interface CartItem {
   selectedColor?: string;
   selectedVariantId?: string;
   selectedVariantTitle?: string;
+  sku?: string;
   maxStock: number;
 }
 
