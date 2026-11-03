@@ -20,12 +20,21 @@ function ProductCardInner({ product }: ProductCardProps) {
     product.images?.[0]?.cloudinary_url ||
     '/images/babycry-logo.png';
 
-  const price = product.sale_price || product.price;
-  const hasDiscount = product.sale_price && product.sale_price < product.price;
+  // Variant-aware pricing and inventory
+  const firstVariant = product.variants && product.variants.length > 0 ? product.variants[0] : null;
+  const regularPrice = firstVariant?.price != null ? firstVariant.price : product.price;
+  const salePrice = firstVariant ? (firstVariant.sale_price != null ? firstVariant.sale_price : null) : product.sale_price;
+  const price = (salePrice != null && salePrice > 0) ? salePrice : regularPrice;
+  const hasDiscount = Boolean(salePrice != null && regularPrice > salePrice);
+
+  // Total stock across variants or product stock
+  const effectiveStock = product.variants && product.variants.length > 0
+    ? product.variants.reduce((acc, curr) => acc + (curr.stock || 0), 0)
+    : product.stock;
 
   // Determine Out of Stock and Limited Stock states
-  const isOutOfStock = product.stock <= 0 || product.stock_status === 'out_of_stock';
-  const isLimitedStock = !isOutOfStock && (product.stock_status === 'limited_stock' || (product.stock > 0 && product.stock <= 5));
+  const isOutOfStock = effectiveStock <= 0 || product.stock_status === 'out_of_stock';
+  const isLimitedStock = !isOutOfStock && (product.stock_status === 'limited_stock' || (effectiveStock > 0 && effectiveStock <= 5));
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -33,22 +42,24 @@ function ProductCardInner({ product }: ProductCardProps) {
 
     if (isOutOfStock) return;
 
-    // Pick first variant if present
-    const firstVariant = product.variants?.[0];
+    const chosenVariant = product.variants?.find((v) => Number(v.stock ?? 0) > 0) || firstVariant;
+    const variantPrice = chosenVariant?.price != null ? chosenVariant.price : regularPrice;
+    const variantSalePrice = chosenVariant?.sale_price != null ? chosenVariant.sale_price : salePrice;
 
     addToCart({
       productId: product.id,
       name: product.name,
       slug: product.slug,
-      price: firstVariant?.price || product.price,
-      salePrice: firstVariant?.price ? null : product.sale_price,
+      price: variantPrice,
+      salePrice: variantSalePrice,
       image: primaryImage,
       quantity: 1,
-      selectedSize: firstVariant?.size || product.sizes?.[0],
-      selectedColor: firstVariant?.color || product.colors?.[0],
-      selectedVariantId: firstVariant?.id,
-      selectedVariantTitle: firstVariant?.title,
-      maxStock: firstVariant?.stock ?? product.stock,
+      selectedSize: chosenVariant?.size || product.sizes?.[0],
+      selectedColor: chosenVariant?.color || product.colors?.[0],
+      selectedVariantId: chosenVariant?.id,
+      selectedVariantTitle: chosenVariant?.title,
+      sku: chosenVariant?.sku || product.sku,
+      maxStock: chosenVariant?.stock ?? effectiveStock,
     });
     setJustAdded(true);
     setTimeout(() => setJustAdded(false), 1500);

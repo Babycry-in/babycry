@@ -114,6 +114,7 @@ create table if not exists public.product_variants (
     color text,
     sku text,
     price numeric(10, 2),
+    sale_price numeric(10, 2),
     stock integer default 0
 );
 

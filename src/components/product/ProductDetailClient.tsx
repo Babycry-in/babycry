@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Product, ProductVariant } from '@/types/database';
@@ -181,29 +181,41 @@ export function ProductDetailClient({ product, whatsappNumber: _whatsappNumber }
   }, [product.variants, selectedAttributes]);
 
 
-  // Price calculations: Admin-assigned variant price takes precedence
-  const hasVariantPrice = Boolean(
-    matchedVariant?.price != null && !isNaN(matchedVariant.price) && matchedVariant.price > 0
-  );
-  const unitPrice = hasVariantPrice
-    ? matchedVariant!.price!
-    : (product.sale_price || product.price);
-  const originalPrice = hasVariantPrice
-    ? (product.price > unitPrice ? product.price : unitPrice)
+  // Price calculations: Admin-assigned variant price & sale price take precedence
+  const hasVariantsList = Boolean(product.variants && product.variants.length > 0);
+  const hasVariant = Boolean(matchedVariant);
+
+  const variantRegularPrice = (hasVariant && matchedVariant?.price != null && !isNaN(matchedVariant.price) && matchedVariant.price > 0)
+    ? matchedVariant.price
     : product.price;
-  const hasDiscount = Boolean(
-    !hasVariantPrice && product.sale_price && product.sale_price < product.price
-  );
+
+  const variantSalePrice = (hasVariant && matchedVariant?.sale_price != null && !isNaN(matchedVariant.sale_price) && matchedVariant.sale_price > 0)
+    ? matchedVariant.sale_price
+    : (!hasVariant && product.sale_price ? product.sale_price : null);
+
+  const hasDiscount = Boolean(variantSalePrice && variantRegularPrice > variantSalePrice);
+  const unitPrice = (hasDiscount && variantSalePrice) ? variantSalePrice : variantRegularPrice;
+  const originalPrice = variantRegularPrice;
   const discountPercent = hasDiscount && originalPrice > 0
     ? Math.round(((originalPrice - unitPrice) / originalPrice) * 100)
     : 0;
 
-  // Stock check
-  const activeStock = (matchedVariant?.stock !== undefined && matchedVariant.stock > 0)
-    ? matchedVariant.stock
-    : product.stock;
-  const isOutOfStock = product.stock <= 0 || product.stock_status === 'out_of_stock' || activeStock <= 0;
-  const isLimitedStock = !isOutOfStock && (activeStock <= 5 || product.stock_status === 'limited_stock');
+  // Stock check: Variant inventory is independent and the sole source of truth
+  const activeStock = hasVariantsList
+    ? (matchedVariant ? Math.max(0, Number(matchedVariant.stock ?? 0)) : 0)
+    : Math.max(0, Number(product.stock ?? 0));
+
+  const isOutOfStock = activeStock <= 0 || (!hasVariantsList && product.stock_status === 'out_of_stock');
+  const isLimitedStock = !isOutOfStock && activeStock <= 5;
+
+  // When switching variants, revalidate current quantity against newly selected variant's stock
+  useEffect(() => {
+    if (activeStock <= 0) {
+      setQuantity(1);
+    } else if (quantity > activeStock) {
+      setQuantity(activeStock);
+    }
+  }, [matchedVariant?.id, activeStock]);
 
   const activeIndex = Math.max(
     0,
@@ -223,14 +235,15 @@ export function ProductDetailClient({ product, whatsappNumber: _whatsappNumber }
       productId: product.id,
       name: product.name,
       slug: product.slug,
-      price: unitPrice,
-      salePrice: null,
+      price: variantRegularPrice,
+      salePrice: variantSalePrice,
       image: activeImage,
       quantity,
       selectedSize: selectedAttributes['Size'],
       selectedColor: selectedAttributes['Color'],
       selectedVariantId: matchedVariant?.id,
       selectedVariantTitle: selectedVariantSummary,
+      sku: matchedVariant?.sku || product.sku,
       maxStock: activeStock,
     });
     setAddedAnimation(true);
@@ -245,6 +258,9 @@ export function ProductDetailClient({ product, whatsappNumber: _whatsappNumber }
     if (selectedVariantSummary) {
       params.set('variant', selectedVariantSummary);
     }
+    if (matchedVariant?.id) {
+      params.set('variantId', matchedVariant.id);
+    }
     if (selectedAttributes['Size']) {
       params.set('size', selectedAttributes['Size']);
     }
@@ -253,6 +269,9 @@ export function ProductDetailClient({ product, whatsappNumber: _whatsappNumber }
     }
     if (unitPrice) {
       params.set('price', String(unitPrice));
+    }
+    if (matchedVariant?.sku) {
+      params.set('sku', matchedVariant.sku);
     }
     router.push(`/order/${product.slug}?${params.toString()}`);
   };
@@ -347,9 +366,9 @@ export function ProductDetailClient({ product, whatsappNumber: _whatsappNumber }
             <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-emerald-800">
               {product.category?.name || product.brand || 'Baby Cry'}
             </span>
-            {product.sku && (
+            {(matchedVariant?.sku || product.sku) && (
               <span className="text-[11px] sm:text-xs text-slate-400 font-mono">
-                SKU: {product.sku}
+                SKU: {matchedVariant?.sku || product.sku}
               </span>
             )}
           </div>
@@ -371,8 +390,8 @@ export function ProductDetailClient({ product, whatsappNumber: _whatsappNumber }
               {isOutOfStock
                 ? 'Out of Stock'
                 : isLimitedStock
-                  ? `Limited Stock (Only ${product.stock} left!)`
-                  : `In Stock (${product.stock} available)`}
+                  ? `Limited Stock (Only ${activeStock} left!)`
+                  : `In Stock (${activeStock} available)`}
             </span>
             <span className="inline-flex items-center text-[11px] sm:text-xs font-medium text-slate-600 bg-slate-50 border border-slate-100 px-2.5 py-1 rounded-full">
               • Certified Baby Safe
@@ -427,17 +446,39 @@ export function ProductDetailClient({ product, whatsappNumber: _whatsappNumber }
                     {group.values.map((val) => {
                       const isSelected = selectedAttributes[group.type] === val;
 
+                      // Check if this specific variant is out of stock
+                      const optVariant = product.variants?.find((v) => {
+                        const type = getVariantType(v);
+                        const vVal = (v.variant_value || v.size || v.color || v.title || '')
+                          .replace(/^\[[A-Za-z]+\]\s*/, '')
+                          .trim();
+                        return (
+                          (type.toLowerCase() === group.type.toLowerCase() || group.type.toLowerCase() === 'custom') &&
+                          vVal.toLowerCase() === val.toLowerCase()
+                        );
+                      });
+                      const isOptOutOfStock = optVariant !== undefined && Number(optVariant.stock ?? 0) <= 0;
+
                       return (
                         <button
                           key={val}
                           type="button"
                           onClick={() => handleSelectAttribute(group.type, val)}
-                          className={`min-h-[42px] px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold border transition-all cursor-pointer inline-flex items-center justify-center ${isSelected
-                              ? 'bg-[#1A5741] text-white border-[#1A5741] shadow-2xs'
-                              : 'bg-white text-slate-700 border-slate-200 hover:border-emerald-300'
+                          className={`min-h-[42px] px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold border transition-all cursor-pointer inline-flex items-center justify-center gap-1.5 ${isSelected
+                              ? isOptOutOfStock
+                                ? 'bg-rose-700 text-white border-rose-700 shadow-2xs'
+                                : 'bg-[#1A5741] text-white border-[#1A5741] shadow-2xs'
+                              : isOptOutOfStock
+                                ? 'bg-slate-50 text-slate-400 border-slate-200 hover:border-rose-300'
+                                : 'bg-white text-slate-700 border-slate-200 hover:border-emerald-300'
                             }`}
                         >
-                          <span>{val}</span>
+                          <span className={isOptOutOfStock && !isSelected ? 'line-through opacity-75' : ''}>{val}</span>
+                          {isOptOutOfStock && (
+                            <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${isSelected ? 'bg-rose-900/60 text-white' : 'bg-rose-100 text-rose-700'}`}>
+                              Out of Stock
+                            </span>
+                          )}
                         </button>
                       );
                     })}
@@ -469,8 +510,8 @@ export function ProductDetailClient({ product, whatsappNumber: _whatsappNumber }
               </span>
               <button
                 type="button"
-                disabled={quantity >= product.stock}
-                onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
+                disabled={quantity >= activeStock}
+                onClick={() => setQuantity(Math.min(activeStock, quantity + 1))}
                 className="w-10 h-10 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-slate-600 hover:bg-slate-100 font-bold active:scale-95 transition-all cursor-pointer disabled:opacity-40"
                 aria-label="Increase quantity"
               >
